@@ -1,80 +1,216 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="TechAI SBS — khám phá cách ứng dụng AI vào công việc, từng bước một.">
-    <title>TechAI SBS — AI cho công việc hằng ngày</title>
-    <style>
-      :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101418; color: #f3f6f7; }
-      * { box-sizing: border-box; }
-      body { margin: 0; }
-      .wrap { width: min(1080px, calc(100% - 40px)); margin-inline: auto; }
-      header, footer { padding-block: 24px; }
-      header { border-bottom: 1px solid #303941; }
-      .bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-      a { color: inherit; text-underline-offset: 4px; }
-      a:focus-visible { outline: 2px solid #a8f4c4; outline-offset: 5px; }
-      .brand { font-weight: 800; text-decoration: none; }
-      .accent, .eyebrow { color: #a8f4c4; }
-      .eyebrow { font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-      .hero { padding-block: clamp(64px, 12vw, 132px); background: radial-gradient(ellipse at top right, #214039, transparent 65%); }
-      h1 { max-width: 13ch; margin: 12px 0 24px; font-size: clamp(2.8rem, 8vw, 6rem); line-height: 1.02; letter-spacing: -.055em; }
-      h2 { margin: 0 0 24px; font-size: clamp(1.8rem, 4vw, 3rem); letter-spacing: -.035em; }
-      p { max-width: 55ch; line-height: 1.65; color: #bac6cb; }
-      .button { display: inline-block; margin-top: 12px; padding: 13px 20px; border-radius: 8px; background: #a8f4c4; color: #101c15; font-weight: 750; text-decoration: none; }
-      .button:hover { background: #cdfadd; }
-      .examples { padding-block: 56px 72px; }
-      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 16px; }
-      article { padding: 24px; border: 1px solid #303941; border-radius: 12px; background: #171d22; }
-      article h3 { margin: 12px 0 8px; }
-      article p { margin: 0; }
-      footer { border-top: 1px solid #303941; color: #bac6cb; font-size: .9rem; }
-    </style>
-  </head>
-  <body>
-    <header>
-      <nav class="wrap bar" aria-label="Điều hướng chính">
-        <a class="brand" href="#trang-chu">TechAI <span class="accent">SBS</span></a>
-        <a href="#ung-dung">Ứng dụng</a>
-      </nav>
-    </header>
-    <main id="trang-chu">
-      <section class="hero" aria-labelledby="tieu-de">
-        <div class="wrap">
-          <p class="eyebrow">TechAI SBS</p>
-          <h1 id="tieu-de">Đưa AI vào <span class="accent">công việc hằng ngày</span></h1>
-          <p>Bắt đầu với một việc quen thuộc. Thử dùng AI để phác thảo nội dung, tóm tắt tài liệu hoặc chuẩn bị cho một cuộc họp.</p>
-          <a class="button" href="#ung-dung">Xem cách ứng dụng ↓</a>
-        </div>
-      </section>
-      <section class="wrap examples" id="ung-dung" aria-labelledby="vi-du">
-        <p class="eyebrow">Gợi ý thực hành</p>
-        <h2 id="vi-du">Ba việc bạn có thể thử</h2>
-        <div class="grid">
-          <article>
-            <span class="eyebrow">01</span>
-            <h3>Soạn email</h3>
-            <p>Đưa các ý chính cho AI để tạo bản nháp, rồi chỉnh giọng văn cho phù hợp với người nhận.</p>
-          </article>
-          <article>
-            <span class="eyebrow">02</span>
-            <h3>Tóm tắt tài liệu</h3>
-            <p>Yêu cầu AI rút ra ba ý quan trọng, sau đó đối chiếu chúng với tài liệu gốc.</p>
-          </article>
-          <article>
-            <span class="eyebrow">03</span>
-            <h3>Chuẩn bị cuộc họp</h3>
-            <p>Biến mục tiêu và ghi chú rời thành một chương trình họp có thứ tự rõ ràng.</p>
-          </article>
-        </div>
-      </section>
-    </main>
-    <footer>
-      <div class="wrap bar">
-        <span>TechAI SBS</span>
-        <a href="#trang-chu">Về đầu trang ↑</a>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio Marketing</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; color: #172b28; background: #f7f5ef; --green: #006451; --line: #d6dfd7; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: inherit; text-underline-offset: .25em; }
+    :focus-visible { outline: 3px solid #129575; outline-offset: 4px; }
+    .wrap { width: min(1060px, calc(100% - 40px)); margin-inline: auto; }
+    .bar, .actions, .tags { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
+    header { background: #f7f5ef; border-bottom: 1px solid var(--line); }
+    .bar { justify-content: space-between; padding-block: 16px; }
+    .bar a { text-decoration: none; }
+    .bar a:hover { text-decoration: underline; }
+    .mark { font-weight: 800; color: var(--green); }
+    .progress { position: fixed; top: 0; left: 0; z-index: 2; width: 100%; height: 4px; background: #2bbb94; transform: scaleX(0); transform-origin: left; }
+    .hero { background: radial-gradient(ellipse at 85% 20%, #225d51, transparent 65%), #122e2b; color: #f7f5ef; padding-block: clamp(52px, 9vw, 105px); }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, 28%); align-items: center; gap: clamp(20px, 6vw, 70px); }
+    .label { color: var(--green); font-weight: 800; text-transform: uppercase; letter-spacing: .12em; font-size: .76rem; }
+    .hero .label { color: #a1edd4; }
+    h1 { font-size: clamp(2.7rem, 7vw, 5.7rem); line-height: 1.02; letter-spacing: -.055em; margin: 12px 0 20px; }
+    h2 { font-size: clamp(1.75rem, 4vw, 2.6rem); letter-spacing: -.04em; margin: 0 0 22px; }
+    h3 { margin: 0 0 8px; line-height: 1.3; }
+    p, li { line-height: 1.65; }
+    .intro { color: #deede6; max-width: 62ch; }
+    .portrait { width: 100%; height: auto; max-width: 265px; border-radius: 45% 45% 18px 18px; border: 1px solid #73ad9d; justify-self: center; }
+    .monogram { display: grid; place-items: center; aspect-ratio: 4 / 5; background: #245449; color: #a1edd4; font-size: clamp(2rem, 6vw, 4rem); font-weight: 750; }
+    .actions { margin-top: 24px; }
+    .button { display: inline-block; border-radius: 7px; border: 1px solid transparent; background: #a1edd4; color: #13322c; padding: 10px 16px; font: inherit; font-weight: 750; text-decoration: none; cursor: pointer; }
+    .button:hover { background: #c8fae9; }
+    .button.secondary { border-color: #82a79b; background: transparent; color: inherit; }
+    section:not(.hero) { padding-block: 44px; border-bottom: 1px solid var(--line); }
+    .timeline { margin-left: 7px; padding-left: 22px; border-left: 2px solid #a8cbbd; display: grid; gap: 12px; }
+    details, .card { background: #fffefa; border: 1px solid var(--line); border-radius: 10px; }
+    details { position: relative; }
+    details::before { content: ""; position: absolute; left: -30px; top: 23px; width: 12px; height: 12px; border-radius: 50%; background: var(--green); }
+    summary { padding: 16px 20px; cursor: pointer; font-weight: 750; }
+    summary:hover { color: var(--green); }
+    .meta { display: block; color: #4e665d; margin: 5px 0 0 17px; font-size: .9rem; font-weight: 500; }
+    details ul { margin: 0; padding: 0 24px 18px 40px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); gap: 14px; }
+    .card { padding: 20px; overflow-wrap: anywhere; }
+    .card p { margin: 0; }
+    .tags { padding: 0; gap: 8px; list-style: none; }
+    .tags li { background: #e1efe8; color: #145542; padding: 4px 11px; border-radius: 30px; }
+    footer { padding-block: 26px; }
+    @media (max-width: 620px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .portrait { width: min(48%, 180px); justify-self: start; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      html { scroll-behavior: smooth; }
+      .button, .card { transition: transform .2s, background-color .2s; }
+      .button:hover, .card:hover { transform: translateY(-3px); }
+      @keyframes enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+      .hero-grid > *, .revealed { animation: enter .65s ease both; }
+    }
+    @media print {
+      nav, .progress, .actions, footer { display: none; }
+      .hero { background: none; color: #172b28; padding-block: 10px; }
+      .hero .label, .intro { color: #172b28; }
+      h1 { font-size: 35px; }
+      section:not(.hero) { padding-block: 16px; }
+      details, .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body id="top">
+  <div class="progress" aria-hidden="true"></div>
+  <header>
+    <nav class="wrap bar" aria-label="Điều hướng CV">
+      <a class="mark" href="#top">Portfolio / Marketing</a>
+      <div class="bar" style="padding:0">
+        <a href="#kinh-nghiem">Kinh nghiệm</a>
+        <a href="#du-an">Dự án</a>
+        <a href="#ky-nang">Kỹ năng</a>
       </div>
-    </footer>
-  </body>
+    </nav>
+  </header>
+  <main id="portfolio"></main>
+  <footer class="wrap"><a href="#top">Về đầu trang ↑</a></footer>
+  <noscript>Vui lòng bật JavaScript để xem nội dung CV.</noscript>
+  <script type="application/json" id="cv-data">
+  {
+    "name": "Hồ sơ Marketing",
+    "initials": "MK",
+    "role": "Mẫu portfolio · Marketing thương hiệu",
+    "intro": "Mẫu CV tương tác minh họa cách trình bày kinh nghiệm, dự án và kỹ năng marketing.",
+    "experience": [["Chuyên viên Marketing", "Doanh nghiệp minh họa · 2023 – nay", ["Xây dựng kế hoạch nội dung và phối hợp sản xuất ấn phẩm truyền thông."]]],
+    "projects": [["Chiến dịch giới thiệu sản phẩm", "Minh họa · Thiết kế ấn phẩm và biên tập nội dung"]],
+    "skills": ["Biên tập nội dung", "Thiết kế đồ họa", "Quản trị website"],
+    "softSkills": ["Tổ chức công việc", "Phối hợp nhóm"],
+    "education": ["Học vấn", "Thông tin minh họa"]
+  }
+  </script>
+  <script>
+    const cv = JSON.parse(document.querySelector('#cv-data').textContent);
+    const main = document.querySelector('#portfolio');
+    document.title = cv.name + ' | Portfolio Marketing';
+
+    function element(tag, content = '', className = '') {
+      const node = document.createElement(tag);
+      node.textContent = content;
+      node.className = className;
+      return node;
+    }
+
+    function link(label, href, className = '') {
+      const anchor = element('a', label, className);
+      anchor.href = href;
+      return anchor;
+    }
+
+    function section(id, title) {
+      const block = element('section', '', 'wrap');
+      block.id = id;
+      block.append(element('h2', title));
+      main.append(block);
+      return block;
+    }
+
+    function cards(entries) {
+      const grid = element('div', '', 'grid');
+      for (const [title, ...lines] of entries) {
+        const card = element('article', '', 'card');
+        card.append(element('h3', title), ...lines.map(line => element('p', line)));
+        grid.append(card);
+      }
+      return grid;
+    }
+
+    function tags(items) {
+      const list = element('ul', '', 'tags');
+      list.append(...items.map(item => element('li', item)));
+      return list;
+    }
+
+    const hero = element('section', '', 'hero');
+    const heroGrid = element('div', '', 'wrap hero-grid');
+    const intro = element('div');
+    const actions = element('div', '', 'actions');
+    const printButton = element('button', 'In / Lưu PDF', 'button secondary');
+    printButton.type = 'button';
+    printButton.addEventListener('click', () => window.print());
+    actions.append(link('Xem kinh nghiệm ↓', '#kinh-nghiem', 'button'), printButton);
+    if (cv.email) actions.append(link('Gửi email', 'mailto:' + cv.email));
+    intro.append(element('div', cv.role, 'label'), element('h1', cv.name), element('p', cv.intro, 'intro'), actions);
+    const portrait = cv.photo ? element('img', '', 'portrait') : element('div', cv.initials, 'portrait monogram');
+    if (cv.photo) {
+      portrait.src = cv.photo;
+      portrait.alt = 'Ảnh chân dung ' + cv.name;
+      portrait.width = 265;
+      portrait.height = 336;
+    } else {
+      portrait.setAttribute('aria-hidden', 'true');
+    }
+    heroGrid.append(intro, portrait);
+    hero.append(heroGrid);
+    main.append(hero);
+
+    const timeline = element('div', '', 'timeline');
+    cv.experience.forEach(([role, company, points], index) => {
+      const item = element('details');
+      item.open = index === 0;
+      const summary = element('summary', role);
+      summary.append(element('span', company, 'meta'));
+      const list = element('ul');
+      list.append(...points.map(point => element('li', point)));
+      item.append(summary, list);
+      timeline.append(item);
+    });
+    section('kinh-nghiem', 'Kinh nghiệm làm việc').append(timeline);
+    section('du-an', 'Dự án đã tham gia').append(cards(cv.projects));
+    const skills = section('ky-nang', 'Kỹ năng');
+    skills.append(element('h3', 'Chuyên môn'), tags(cv.skills), element('h3', 'Kỹ năng mềm'), tags(cv.softSkills));
+    section('hoc-van', 'Học vấn').append(cards([cv.education]));
+    if (cv.contact) section('lien-he', 'Liên hệ').append(cards([cv.contact]));
+    if (cv.references) section('tham-chieu', 'Tham chiếu').append(cards(cv.references));
+
+    const progress = document.querySelector('.progress');
+    function updateProgress() {
+      const distance = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.transform = 'scaleX(' + (distance > 0 ? window.scrollY / distance : 0) + ')';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress);
+    timeline.addEventListener('toggle', updateProgress, true);
+    updateProgress();
+
+    if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      }, { threshold: .12 });
+      main.querySelectorAll('.card, details').forEach(item => observer.observe(item));
+    }
+
+    let closedBeforePrint = [];
+    window.addEventListener('beforeprint', () => {
+      closedBeforePrint = [...timeline.querySelectorAll('details:not([open])')];
+      closedBeforePrint.forEach(item => { item.open = true; });
+    });
+    window.addEventListener('afterprint', () => {
+      closedBeforePrint.forEach(item => { item.open = false; });
+      closedBeforePrint = [];
+    });
+  </script>
+</body>
 </html>
