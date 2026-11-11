@@ -203,7 +203,11 @@
               <p class="eyebrow">07 / Demo dò mật khẩu</p>
               <h2>Mật khẩu ngắn bị đoán nhanh đến đâu?</h2>
               <p>Ở 10 lượt/giây và không giới hạn lượt thử, duyệt hết mã 4 chữ số mất <strong>16 phút 40 giây</strong>, còn mã 6 chữ số mất <strong>27 giờ 46 phút 40 giây</strong>. Thời gian thực tế tùy hệ thống.</p>
-              <p>Dùng mật khẩu dài, ngẫu nhiên và riêng cho từng tài khoản. Bật MFA. NIST yêu cầu ít nhất 15 ký tự khi mật khẩu là yếu tố xác thực duy nhất.</p>
+              <ul>
+                <li><strong>Vì sao ít nhất 15 ký tự?</strong> Mỗi ký tự ngẫu nhiên làm tăng số tổ hợp cần đoán. NIST đặt mức tối thiểu 15 ký tự khi mật khẩu là yếu tố xác thực duy nhất.</li>
+                <li><strong>Chữ hoa, chữ thường, số và ký hiệu giúp gì?</strong> Chúng tăng số lựa chọn cho mỗi vị trí khi được chọn ngẫu nhiên. Cách thêm <code>123!</code> vào cuối một từ quen thuộc vẫn dễ đoán.</li>
+              </ul>
+              <p>Dùng trình quản lý mật khẩu để tạo mật khẩu dài, riêng cho từng tài khoản và bật xác thực đa yếu tố (MFA).</p>
               <p><button class="secondary" id="open-password-guide" type="button" aria-haspopup="dialog">Hướng dẫn đặt mật khẩu</button></p>
               <a class="button" href="#mat-khau">Mở demo dò mật khẩu →</a>
             </div>
@@ -267,7 +271,7 @@
               <tr><th scope="row">Chỉ dùng mật khẩu</th><td>Tối thiểu 15 ký tự.</td></tr>
               <tr><th scope="row">Mật khẩu trong MFA</th><td>Hệ thống có thể cho phép ngắn hơn, với mức tối thiểu 8 ký tự.</td></tr>
               <tr><th scope="row">Độ dài tối đa cho phép</th><td>NIST khuyến nghị hệ thống hỗ trợ ít nhất 64 ký tự.</td></tr>
-              <tr><th scope="row">Thành phần ký tự</th><td>Không bắt buộc trộn chữ hoa, chữ thường, số và ký hiệu.</td></tr>
+              <tr><th scope="row">Thành phần ký tự</th><td>NIST không yêu cầu trộn các nhóm ký tự. Chữ hoa, chữ thường, số và ký hiệu có thể giúp mật khẩu khó đoán hơn khi được chọn ngẫu nhiên.</td></tr>
               <tr><th scope="row">Mật khẩu dễ đoán</th><td>Chặn giá trị phổ biến, dễ đoán hoặc đã bị lộ.</td></tr>
               <tr><th scope="row">Đổi mật khẩu</th><td>Yêu cầu đổi khi có bằng chứng mật khẩu bị xâm phạm. Không yêu cầu đổi định kỳ.</td></tr>
             </tbody>
@@ -317,7 +321,7 @@
           <p id="result" class="status" role="status">Chưa bắt đầu.</p>
         </div>
       </div>
-      <p class="note">Phòng vệ thực tế gồm mật khẩu dài và riêng cho từng tài khoản, giới hạn lượt thử, theo dõi đăng nhập bất thường và xác thực đa yếu tố (MFA).</p>
+      <p class="note"><strong>Khi đặt mật khẩu:</strong> Ưu tiên ít nhất 15 ký tự và tạo ngẫu nhiên bằng trình quản lý mật khẩu. Độ dài làm tăng số tổ hợp cần thử. Trộn chữ, số và ký hiệu ngẫu nhiên giúp tăng thêm số lựa chọn ở mỗi vị trí. Bật xác thực đa yếu tố (MFA) để thêm một lớp bảo vệ.</p>
     </section>
 
     <section class="lab" id="phishing" role="tabpanel" aria-labelledby="phishing-tab" tabindex="0" hidden>
