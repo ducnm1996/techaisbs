@@ -3,214 +3,245 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Portfolio Marketing</title>
+  <meta name="description" content="Phòng thực hành mô phỏng dò mật khẩu và nhận diện phishing bằng dữ liệu giả.">
+  <title>Cyber Lab · Demo an toàn thông tin</title>
   <style>
-    :root { font-family: system-ui, sans-serif; color: #172b28; background: #f7f5ef; --green: #006451; --line: #d6dfd7; }
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #09111b; color: #e7eef8; --muted: #a9b9cf; --line: #2a3b50; --accent: #78edc8; }
     * { box-sizing: border-box; }
     body { margin: 0; }
-    a { color: inherit; text-underline-offset: .25em; }
-    :focus-visible { outline: 3px solid #129575; outline-offset: 4px; }
-    .wrap { width: min(1060px, calc(100% - 40px)); margin-inline: auto; }
-    .bar, .actions, .tags { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
-    header { background: #f7f5ef; border-bottom: 1px solid var(--line); }
-    .bar { justify-content: space-between; padding-block: 16px; }
-    .bar a { text-decoration: none; }
-    .bar a:hover { text-decoration: underline; }
-    .mark { font-weight: 800; color: var(--green); }
-    .progress { position: fixed; top: 0; left: 0; z-index: 2; width: 100%; height: 4px; background: #2bbb94; transform: scaleX(0); transform-origin: left; }
-    .hero { background: radial-gradient(ellipse at 85% 20%, #225d51, transparent 65%), #122e2b; color: #f7f5ef; padding-block: clamp(52px, 9vw, 105px); }
-    .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, 28%); align-items: center; gap: clamp(20px, 6vw, 70px); }
-    .label { color: var(--green); font-weight: 800; text-transform: uppercase; letter-spacing: .12em; font-size: .76rem; }
-    .hero .label { color: #a1edd4; }
-    h1 { font-size: clamp(2.7rem, 7vw, 5.7rem); line-height: 1.02; letter-spacing: -.055em; margin: 12px 0 20px; }
-    h2 { font-size: clamp(1.75rem, 4vw, 2.6rem); letter-spacing: -.04em; margin: 0 0 22px; }
-    h3 { margin: 0 0 8px; line-height: 1.3; }
+    .wrap { width: min(1100px, calc(100% - 32px)); margin-inline: auto; }
+    header { border-bottom: 1px solid var(--line); }
+    nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; padding-block: 20px; }
+    .brand { margin-right: auto; font-weight: 800; color: var(--accent); }
+    a { color: inherit; text-underline-offset: 5px; }
+    .hero { padding-block: 60px 36px; }
+    .eyebrow { font-size: .78rem; letter-spacing: .12em; color: var(--accent); font-weight: 750; text-transform: uppercase; }
+    h1 { font-size: clamp(2.5rem, 6vw, 4.6rem); max-width: 18ch; line-height: 1.08; letter-spacing: -.05em; margin: 14px 0; }
+    h2 { font-size: 1.65rem; margin: 0 0 12px; }
+    h3 { margin-top: 0; }
     p, li { line-height: 1.65; }
-    .intro { color: #deede6; max-width: 62ch; }
-    .portrait { width: 100%; height: auto; max-width: 265px; border-radius: 45% 45% 18px 18px; border: 1px solid #73ad9d; justify-self: center; }
-    .monogram { display: grid; place-items: center; aspect-ratio: 4 / 5; background: #245449; color: #a1edd4; font-size: clamp(2rem, 6vw, 4rem); font-weight: 750; }
-    .actions { margin-top: 24px; }
-    .button { display: inline-block; border-radius: 7px; border: 1px solid transparent; background: #a1edd4; color: #13322c; padding: 10px 16px; font: inherit; font-weight: 750; text-decoration: none; cursor: pointer; }
-    .button:hover { background: #c8fae9; }
-    .button.secondary { border-color: #82a79b; background: transparent; color: inherit; }
-    section:not(.hero) { padding-block: 44px; border-bottom: 1px solid var(--line); }
-    .timeline { margin-left: 7px; padding-left: 22px; border-left: 2px solid #a8cbbd; display: grid; gap: 12px; }
-    details, .card { background: #fffefa; border: 1px solid var(--line); border-radius: 10px; }
-    details { position: relative; }
-    details::before { content: ""; position: absolute; left: -30px; top: 23px; width: 12px; height: 12px; border-radius: 50%; background: var(--green); }
-    summary { padding: 16px 20px; cursor: pointer; font-weight: 750; }
-    summary:hover { color: var(--green); }
-    .meta { display: block; color: #4e665d; margin: 5px 0 0 17px; font-size: .9rem; font-weight: 500; }
-    details ul { margin: 0; padding: 0 24px 18px 40px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); gap: 14px; }
-    .card { padding: 20px; overflow-wrap: anywhere; }
-    .card p { margin: 0; }
-    .tags { padding: 0; gap: 8px; list-style: none; }
-    .tags li { background: #e1efe8; color: #145542; padding: 4px 11px; border-radius: 30px; }
-    footer { padding-block: 26px; }
-    @media (max-width: 620px) {
-      .hero-grid { grid-template-columns: 1fr; }
-      .portrait { width: min(48%, 180px); justify-self: start; }
-    }
+    p { color: var(--muted); }
+    .badge { display: inline-block; border: 1px solid #36705d; border-radius: 30px; padding: 5px 12px; color: var(--accent); font-size: .85rem; }
+    section.lab { margin-block: 22px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--line); border-radius: 18px; background: #101d2d; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+    .panel { border: 1px solid var(--line); background: #0b1522; border-radius: 12px; padding: 22px; min-width: 0; }
+    label { display: block; margin: 18px 0 8px; font-weight: 650; }
+    input, select, button { font: inherit; }
+    input, select { width: 100%; min-width: 0; padding: 11px; background: #17283c; color: inherit; border: 1px solid #53677f; border-radius: 8px; }
+    button { border: 1px solid transparent; padding: 10px 15px; border-radius: 8px; cursor: pointer; background: var(--accent); color: #09261e; font-weight: 750; }
+    button:hover { filter: brightness(1.12); }
+    button:disabled { opacity: .5; cursor: default; }
+    .secondary { background: transparent; color: #dae5f4; border-color: #53677f; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    :focus-visible { outline: 3px solid #a4c8ff; outline-offset: 4px; }
+    code { color: #b8e1ff; overflow-wrap: anywhere; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; color: #a2dfca; font: .88rem/1.9 ui-monospace, monospace; height: 260px; overflow: auto; margin: 0; }
+    progress { width: 100%; accent-color: var(--accent); height: 12px; margin-block: 18px 8px; }
+    .status { min-height: 3.3em; margin-bottom: 0; }
+    .mail { background: #f2f5fa; color: #17283a; }
+    .mail p { color: #34475c; }
+    .mail .address { font-size: .86rem; overflow-wrap: anywhere; border-bottom: 1px solid #c4d1df; padding-bottom: 16px; }
+    .mail code { color: #852d2d; }
+    .mail-link { border: 1px dashed #8a9dad; padding: 12px; border-radius: 8px; overflow-wrap: anywhere; }
+    .choices { display: grid; gap: 10px; }
+    .answer { border-left: 3px solid var(--accent); padding-left: 15px; }
+    .note { font-size: .88rem; }
+    footer { color: var(--muted); padding-block: 24px 42px; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .hero { padding-top: 36px; } }
     @media (prefers-reduced-motion: no-preference) {
       html { scroll-behavior: smooth; }
-      .button, .card { transition: transform .2s, background-color .2s; }
-      .button:hover, .card:hover { transform: translateY(-3px); }
-      @keyframes enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-      .hero-grid > *, .revealed { animation: enter .65s ease both; }
-    }
-    @media print {
-      nav, .progress, .actions, footer { display: none; }
-      .hero { background: none; color: #172b28; padding-block: 10px; }
-      .hero .label, .intro { color: #172b28; }
-      h1 { font-size: 35px; }
-      section:not(.hero) { padding-block: 16px; }
-      details, .card { break-inside: avoid; }
+      button { transition: transform .15s; }
+      button:hover:enabled { transform: translateY(-2px); }
+      @keyframes appear { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+      .hero, .lab { animation: appear .5s ease both; }
     }
   </style>
 </head>
-<body id="top">
-  <div class="progress" aria-hidden="true"></div>
+<body>
   <header>
-    <nav class="wrap bar" aria-label="Điều hướng CV">
-      <a class="mark" href="#top">Portfolio / Marketing</a>
-      <div class="bar" style="padding:0">
-        <a href="#kinh-nghiem">Kinh nghiệm</a>
-        <a href="#du-an">Dự án</a>
-        <a href="#ky-nang">Kỹ năng</a>
-      </div>
+    <nav class="wrap" aria-label="Điều hướng demo">
+      <span class="brand">◈ CYBER LAB</span>
+      <a href="#mat-khau">Dò mật khẩu</a>
+      <a href="#phishing">Phishing</a>
     </nav>
   </header>
-  <main id="portfolio"></main>
-  <footer class="wrap"><a href="#top">Về đầu trang ↑</a></footer>
-  <noscript>Vui lòng bật JavaScript để xem nội dung CV.</noscript>
-  <script type="application/json" id="cv-data">
-  {
-    "name": "Hồ sơ Marketing",
-    "initials": "MK",
-    "role": "Mẫu portfolio · Marketing thương hiệu",
-    "intro": "Mẫu CV tương tác minh họa cách trình bày kinh nghiệm, dự án và kỹ năng marketing.",
-    "experience": [["Chuyên viên Marketing", "Doanh nghiệp minh họa · 2023 – nay", ["Xây dựng kế hoạch nội dung và phối hợp sản xuất ấn phẩm truyền thông."]]],
-    "projects": [["Chiến dịch giới thiệu sản phẩm", "Minh họa · Thiết kế ấn phẩm và biên tập nội dung"]],
-    "skills": ["Biên tập nội dung", "Thiết kế đồ họa", "Quản trị website"],
-    "softSkills": ["Tổ chức công việc", "Phối hợp nhóm"],
-    "education": ["Học vấn", "Thông tin minh họa"]
-  }
-  </script>
+  <main class="wrap">
+    <div class="hero">
+      <span class="badge">Mô phỏng giáo dục · Dữ liệu giả</span>
+      <h1>Hiểu cách tấn công.<br>Biết cách phòng vệ.</h1>
+      <p>Hai thí nghiệm tương tác giúp bạn quan sát việc thử mật khẩu và nhận diện email lừa đảo. Các thao tác chạy ngay trong trình duyệt với tài khoản và tên miền minh họa.</p>
+    </div>
+
+    <section class="lab" id="mat-khau" aria-labelledby="password-title">
+      <div class="eyebrow">Thí nghiệm 01</div>
+      <h2 id="password-title">Dò mật khẩu bằng danh sách</h2>
+      <p>Nhập một mật khẩu thử nghiệm rồi quan sát từng mục trong danh sách được so khớp với mật khẩu đó. Bật khóa tạm thời để so sánh kết quả.</p>
+      <div class="grid">
+        <form class="panel" id="password-form">
+          <h3>Thiết lập thí nghiệm</h3>
+          <label for="target-password">Mật khẩu thử nghiệm</label>
+          <input id="target-password" type="password" required autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="password-note" placeholder="Ví dụ: 123456">
+          <p class="note" id="password-note">Dùng mật khẩu tự đặt cho bài thử. Mật khẩu nhập chỉ được so khớp trong bộ nhớ của trang.</p>
+          <p class="note" id="dictionary-info"></p>
+          <label for="protection">Lớp bảo vệ</label>
+          <select id="protection">
+            <option value="off">Cho phép thử liên tiếp</option>
+            <option value="on">Khóa tạm sau 3 lần sai</option>
+          </select>
+          <div class="actions">
+            <button id="start" type="submit">Bắt đầu dò</button>
+            <button id="cancel" class="secondary" type="button" disabled>Dừng</button>
+            <button id="reset" class="secondary" type="button">Đặt lại</button>
+          </div>
+          <p class="note">Mỗi nhịp 80 ms thử tối đa 10 mục. Nhật ký hiển thị 10 lượt gần nhất. So khớp chính xác, phân biệt chữ hoa, chữ thường và khoảng trắng.</p>
+        </form>
+        <div class="panel">
+          <h3>Nhật ký thử nghiệm</h3>
+          <pre id="log" aria-label="Nhật ký 10 lượt thử gần nhất">Sẵn sàng. Nhập mật khẩu thử nghiệm để bắt đầu.</pre>
+          <progress id="progress" value="0" max="1000" aria-label="Số lượt đã thử"></progress>
+          <p id="result" class="status" role="status">Chưa bắt đầu.</p>
+        </div>
+      </div>
+      <p class="note">Phòng vệ thực tế gồm mật khẩu dài và riêng cho từng tài khoản, giới hạn lượt thử, theo dõi đăng nhập bất thường và xác thực đa yếu tố (MFA).</p>
+    </section>
+
+    <section class="lab" id="phishing" aria-labelledby="phishing-title">
+      <div class="eyebrow">Thí nghiệm 02</div>
+      <h2 id="phishing-title">Bạn có nhận ra email phishing?</h2>
+      <p>Đọc email giả, xem kỹ địa chỉ và chọn cách xử lý. Đường dẫn được trình bày dưới dạng văn bản để bạn phân tích.</p>
+      <div class="grid">
+        <article class="panel mail" aria-label="Email giả lập">
+          <h3>Tài khoản sẽ bị khóa sau 15 phút</h3>
+          <p class="address"><strong>Từ</strong> Bộ phận hỗ trợ<br><code>security@helpdesk-check.example</code></p>
+          <p>Chào bạn,</p>
+          <p>Chúng tôi phát hiện một yêu cầu đăng nhập bất thường. Hãy xác minh mật khẩu ngay để tránh bị khóa tài khoản sau 15 phút.</p>
+          <p class="mail-link"><strong>Xác minh tài khoản</strong><br><code>https://account-verify.example/login</code></p>
+          <p class="note">Trong tình huống này, cổng nội bộ chính thức là <strong>portal.example</strong>. Các tên miền đều là tên minh họa.</p>
+        </article>
+        <div class="panel">
+          <h3>Bạn sẽ làm gì?</h3>
+          <div class="choices">
+            <button class="secondary" data-choice="link" type="button">Mở liên kết và nhập mật khẩu</button>
+            <button class="secondary" data-choice="reply" type="button">Trả lời email để hỏi thêm</button>
+            <button data-choice="report" type="button">Báo cáo và kiểm tra qua cổng chính thức</button>
+          </div>
+          <p id="feedback" class="status" role="status">Chọn một cách xử lý để xem giải thích.</p>
+          <div id="explanation" hidden>
+            <h3>Dấu hiệu cần chú ý</h3>
+            <ul>
+              <li>Người gửi dùng tên miền khác cổng nội bộ.</li>
+              <li>Liên kết dẫn đến một tên miền khác nữa.</li>
+              <li>Thời hạn 15 phút tạo áp lực hành động.</li>
+              <li>Thông điệp yêu cầu xác minh mật khẩu qua liên kết.</li>
+            </ul>
+            <p class="answer">Mở cổng nội bộ bằng địa chỉ đã biết hoặc dấu trang, kiểm tra cảnh báo và báo cáo email qua kênh IT chính thức.</p>
+          </div>
+          <button id="retry" class="secondary" type="button" hidden>Thử lại câu hỏi</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap">CYBER LAB · Phòng thực hành nhận thức an toàn thông tin</footer>
+  <script type="application/json" id="password-list">["123456","123456789","123123","111111","anhyeuem","1234567","0123456789","0123456","12345678","000000","asdasd","25251325","1234567890","121212","123321","zxcvbnm","qweqwe","456789","112233","aaaaaa","123123123","987654321","11111111","qwerty","147258369","maiyeuem","123qwe","654321","iloveyou","123654","999999","qqqqqq","1111111","147258","hota407","anhtuan","222222","159753","11223344","anhnhoem","anh123","159357","qwertyuiop","asd123","0987654321","emyeuanh","mmmmmm","012345","666666","anhanh","123789","phuong","111222","qweasd","hanoiyeudau","nguyen","789456","1111111111","mylove","789456123","19001560","qwe123","asdfghjkl","pppppp","anhhung","1234560","abc123","maiyeu","123456a","zzzzzz","quangninh","987654","555555","tuananh","asasas","asdfgh","zxcvbn","321321","tinhyeu","147852369","456123","matkhau","147852","12345678910","thienthan","anhyeu","111111111","toilatoi","10cham0","0147258369","456456","khongbiet","789789","a123456","333333","888888","123654789","truong","maimaiyeuem","hhhhhh","12345","zxczxc","yankee","741852963","maimai","properties","loveyou","thanhtung","hoanganh","0000000000","01230123","778899","anhdung","010203","123456987","abcd@1234","234567","anhmaiyeuem","handoi","222333","yeuanh","9876543210","anhday","999999999","123456123","12341234","thanh123","0902166970","321654","147147","ngocanh","nhoemnhieu","090909","phuoclapmx","\"      \"","nolove","thanhbinh","anhduc","concac","qazwsx","777777","hahaha","hung123","asdasdasd","101010","0000000","anhnam","tttttt","thuong","00000000","huy123","mnbvcxz","anhcuong","123456q","ssssss","anhyeuem123","098765","lalala","llllll","nnnnnn","anhthanh","yeuemnhieu","aaaaaaa","7777777","010101","huyhuy","kkkkkk","444444","11111111111111111111111111111111","hoilamgi","anhthang","bbbbbb","chandoi","0147852369","tuan123","123asd","toiyeuem","anhhai","vietnam","hoailam","tinhlagi","113113","qwertyu","741852","maiyeuanh","1234566","thanhtam","thanhlong","anhthu","123465","forever","12344321","nam123","anhduy","thuylinh","lovely","ANHYEUEM","88888888","123456123456","anhvaem","oooooo","thanhcong","123457","anhquan","anhiuem","123789456","142536","thanhthuy","kiepdoden","123abc","tinhban","12345679","thanhthanh","001101","long123","hanhphuc","bigbang","01234567","dat123","1234568","123456789123456789","kimngan278","1234569","963852741","123456789a","lovelove","1234561","anhson","minh123","anhminh","hoang123","anhhuy","lonmemay","hunghung","ngocanh89","minhanh","huyhoang","thang123","124578","a","aspirine","1234512345","thanhthao","ngoctan","linh123","852456","hieu123","anhnhoemnhieu","minhminh","trung123","1234554321","nuttertools","heocon","linhlinh","123456789123","thuytrang","quynhanh","thanhnhan","qwqwqw","minhtuan","321654987","111222333","anhyeuem1","trunghieu","khongco","ppppppp","comchay+","0147258","hoanglong","thuthuy","meocon","anhdat","minhduc","0123654","0123654789","zxzxzx","kimngan","aaaaaaaa","khanh123","kimanh","hunter17051990","vananh","khongnho","meoghe","anhduong","piaggio15119","nhoemyeu3101","thanhtuan","qqqqqqq","thanhdat","gggggg","12121212","chiyeuminhem","tung123","cuong123","cccccc","phuonganh","0123123","121111","anhyeuemnhieu","dddddd","hoahong","0147852","000000000","246357","zxc123","456789123","012345678","01234567890","saobang","thienlong","son123","123123q","thanhnam","vvvvvv","namnam","1230123","19001570","thuyduong","hai123","qwertyui","thutrang","anhkhoa","2222222","langtu","123456aa","23456789","abc123456","0918273645","doilathe","ducanh","1122334455","123","vietanh","phuongthao","a123456789","369258147","9999999999","lamgithe99","babylove","Fantasy88","dung123","1231234","102030","thanhtrung","thuytien","qweqweqwe","binhminh","quanghuy","1234567899","qweasdzxc","haiyen","135792468","duy123","232323","anhhoang","meomeo","concho","6677028","tinhtinh","1234","1900561252","hihihi","hoangnam","hoanghai","lananh","159159","\"Khocviai,\"","anhquang","hantinh","minhthu","thuhuong","trungkien","tuananh1080","toilaai","asdzxc","huyentrang","asdqwe","hongnhung","mmmmmmm","anhtrung","duc123","nguyenhung8892","bao123","135790","thuthao","thanhhai","753951","thanhhoa","jjjjjj","aaaaaaaaaa","minhquan","hoanglan","hoangtu","theanh","123456789987654321","poipoi","cuncon","123455","123321123","xxxxxx","lon123","sasakiE>","kakaka","minhtam","anhtai","nhoanh","thanhtu","@yahoo.com","ffffff","246810","nhuquynh","quang123","abcdef","1231231","14188985","11111111111","khanhlinh","99999999","fantasy","wwwwww","123456654321","manhhung","7654321","anhkhanh","thuydung","123123456","conmemay","conyeume","ngoclinh","321456","tien123","sakura","212121","sasasa","686868","258369","chandoiwa1","anhtruong","012345678910","manhcuong","567890","asd123456","nhan123","147896325","654123","phong123","saxsax","9999999","thanhphobuon","anhngoc","1475369","qqqqqqqq","doremon","7894561230","113114","thanhtruc","handoivodoi","qwertyuio","134679","s1s1s1","haiduong","qqwwee","thaibinh","sieunhan","sting23","binhchon","ditmemay","898989","dangkhoa","thuyetyeu","thanhson","258456","pppppppp","baongoc","fuckyou","thaonguyen","minhtri","123qweasd","1","123698745","456852","thanhphong","3456789","maianh","sang123","963852","001122","123456as","thuhien","nothing","thuhang","ccvvbb","trang123","thanhvan","123456789asd","951753","thien123","halong","anhbinh","qazwsxedc","yyyyyy","q123456","love123","252525","22222222","5555555","ngocha","1230456","haidang","Aa123456","nhi123","131313","asdfghj","12345678900","dunghoi","anhviet","minhhieu","anhvinh","aaaaaaaaa","baobao","lam123","12301230","0123456987","taolatao","33213321","quan123","tinhanh","yennhi","1234qwer","khuong","tai123","longlong","handsome","cailon","\"@zing.vn \"","toan123","hjhjhj","poiuyt","a123123","iloveu","123987","haianh","thienha","thao123","......","thinh123","linhkute","012012","minhnhat","797979","q121212","000111","2345678","anhtuyen","123123a","quangvinh","thanhluan","anhsang","congchua","huhuhu","00000000000000000000000000000000","concat","hehehe","thanhtuyen","yeuemmai","thanhhuyen","1234567891","missyou","hoangvu","014789","t123456","duyanh","123qwe123","789123","345678","nghia123","phuong123","phuc123","onlylove","dragon","hoainam","thanh1","445566","1621991","123567","fafa22","maiyeunguoi","lamlam","phithienauto","anhlaai","anhlavip","123456798","chandoiwa","456123789","minhchau","minhtien","anhvan","ngoc123","asdasd1","abcabc","maimaimottinhyeu","nguyen123","123000","uuuuuu","votinh","112211","tam123","vanhung","thuyhang","q","chocon","viethung","tiendung","dkmdkm","1231230","hoangha","duong123","alo123","1478963","909090","thanhha","a12345","visaothe","english","hoahoa","112113","ronaldo","iiiiii","shinji1410","binh123","thanchet","Abc123","201090","3333333","hhhhhhh","anhdai","thugstools","223344","234234","123456asd","maimaiyeuanh","132456","hoa123",".adgjm","1q2w3e","tan123","trondoibenem","haihai","12345a","112233445566","khang123","vinh123","majyeuem","anhlapro","giadinh","hoanghuy","q1w2e3","thanhhung","ngochan","asdf2356","duykhanh","hoangminh","87654321","11112222","thuthu","0987654","nguyet","147369","qazqaz","mnbvcx","tungtung","hungpro","minhtan","q123123","anhkiet","abc&1234","mmmmmmmm","minhngoc","anhvanyeuem","111111111111","ZXCVBNM","manchester","anhphong","1a2b3c4d","ngocmai","danchoi","5201314","879118","thienduong","369258","bin123","truong123","thuhuyen","qÆ°erty","123456qwe","2222222222","anhthuan","0147896325","tuanhung","chuong","asdasd123","khongyeu","hunganh","123456456","loc123","nhatminh","141414","thuan123","tuantuan","vodanh","nhinhi","phuonglinh","nguyenhung","0123456789a","hau123","quynhnhu","eeeeee","pokemon","xinchao1","123456789789","anhchung","dismemay","anhdeptrai","binbin","huy123456","anhdao","maiyeuminhem","tiendat","235689","ngoclan","namdinh","456321","philong","454545","12345689","5555555555","00112233","phongvan","hhhhhhhh","12369874","minhhoang","159951","hanhphucao","kukumalu0410","vippro","thu123","01233210","qÆ°ertyuiop","minhthanh","manhmanh","thanhlam","hoangyen","123123qwe","samsung","minhtrang","minhphuong","honghanh","nhockute","anhchiyeuem","121314","asdfasdf","789654","789789789","thanhduy","12345600","emnhoanh","258963","giahuy","chienthang","linhchi","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","kimdung","tuanvu","1234567890123","123123123123","asddsa","khoa123","nguoitoiyeu","deptrai","anhchiyeuminhem","abcABC@123","imissyou","adadad","cuibap","thanhsang","```111","popopo","qaz123","abcd1234","thuyan","thuythuy","123anh","987987","namanh","09090909","6543210","minhthuan","anhvuong","151515","A123456","thanhtan","ngocthanh","112112","111112","conheo","anhphuc","kimlong","hotboy","ngocson","226348","aloalo","huong123","753159","anhnghia","0123321","quanganh","anhhao","socola","tuongvy","159753456","hongngoc","ngocminh","haiphong","anhdayem","1123456","conmeo","poiuytrewq","majmaj","anhlavodich","987456","135246","giang123","anhphuong","hoangdung","minhphuc","huyhuyhuy","duythanh","202020","thanhhien","lonlon","bantoi","456456456","147896","taokhongbiet","hoanglinh","852963","duongminhtri","anhyeuemmaimai","hung123456","014702580369","minhhai","456654","nobita","toiyeuban","nhatrang","dantruong","123654987","password","thai123","anhthinh","anhhoa","``````","quangminh","minhtu","leduclong","anhcanem","nhatanh","12345676","789987","224466","nhutren","van123","nhunhu","ngochuyen","01470147","ngocdung","chelsea","123456t","anhy3u3m","thanhtoan","qwaszx","yeuemmaimai","123456h","hao123","giangcoi","lanhuong","kiemthe","ASDASD","kien123","7895123","0908182327","dethuong","shinichi","hung12","thanhxuan","14789632","haydoiday","321123","quochuy","muasaobang","rrrrrr","vantuan","369852","hungdaica","\"My Computer\"","123456789z","aimabiet","123123aa","minhquang","anhyeuem12","quangtrung","147852963","nhocquan","thangkhung","ngochung","ngocbich","cuchuoi","thiensu","159357456","thanhvu","banthan","0nimekyo","321321321","hoangson","quocanh","hainam","654321q","123456789aa","chochet","mylinh","098098","kobiet","minhnhut","honganh","01234567890123456789","trungtin","258258","naruto","hoangtuan","kentom3012","duyduy","anhtinh","anhhien","quocbao","55555555","kimchi","nguyenvu","anhnguyen","hungyen","hoangphuc","yeu123","anhthien","sasa11","yeuanhnhieu","123147","123456A","888999","zxcasd","vandung","qazxsw","foreverlove","lkjhgfdsa","haohao","AAAAAA","tuyen123","ngoctram","01020304","tuankiet","1234565","anhchinh","789852","123456abc","11111","zzzzzzz","leanhtuan","baotran","33333333","qweqwe1","ngocthuy","vip123","viet123","123451","hoangviet","123zxc","phuongthuy","17051990","anhthao","minhhang","123458","ILOVEYOU","anhyeuemnhieulam","761311","thanhan","113355","020202","thanhdung","hieuhieu","thanhmai","787878"]</script>
   <script>
-    const cv = JSON.parse(document.querySelector('#cv-data').textContent);
-    const main = document.querySelector('#portfolio');
-    document.title = cv.name + ' | Portfolio Marketing';
+    const passwords = JSON.parse(document.querySelector('#password-list').textContent);
+    const targetInput = document.querySelector('#target-password');
+    const protection = document.querySelector('#protection');
+    const start = document.querySelector('#start');
+    const cancel = document.querySelector('#cancel');
+    const log = document.querySelector('#log');
+    const result = document.querySelector('#result');
+    const progress = document.querySelector('#progress');
+    let timer = null;
+    progress.max = passwords.length;
+    document.querySelector('#dictionary-info').textContent =
+      'Danh sách top1k-vn-passwords.txt · ' + passwords.length.toLocaleString('vi-VN') + ' mật khẩu.';
 
-    function element(tag, content = '', className = '') {
-      const node = document.createElement(tag);
-      node.textContent = content;
-      node.className = className;
-      return node;
+    function stop() {
+      clearInterval(timer);
+      timer = null;
+      start.disabled = false;
+      cancel.disabled = true;
+      targetInput.disabled = false;
+      protection.disabled = false;
     }
 
-    function link(label, href, className = '') {
-      const anchor = element('a', label, className);
-      anchor.href = href;
-      return anchor;
-    }
-
-    function section(id, title) {
-      const block = element('section', '', 'wrap');
-      block.id = id;
-      block.append(element('h2', title));
-      main.append(block);
-      return block;
-    }
-
-    function cards(entries) {
-      const grid = element('div', '', 'grid');
-      for (const [title, ...lines] of entries) {
-        const card = element('article', '', 'card');
-        card.append(element('h3', title), ...lines.map(line => element('p', line)));
-        grid.append(card);
-      }
-      return grid;
-    }
-
-    function tags(items) {
-      const list = element('ul', '', 'tags');
-      list.append(...items.map(item => element('li', item)));
-      return list;
-    }
-
-    const hero = element('section', '', 'hero');
-    const heroGrid = element('div', '', 'wrap hero-grid');
-    const intro = element('div');
-    const actions = element('div', '', 'actions');
-    const printButton = element('button', 'In / Lưu PDF', 'button secondary');
-    printButton.type = 'button';
-    printButton.addEventListener('click', () => window.print());
-    actions.append(link('Xem kinh nghiệm ↓', '#kinh-nghiem', 'button'), printButton);
-    if (cv.email) actions.append(link('Gửi email', 'mailto:' + cv.email));
-    intro.append(element('div', cv.role, 'label'), element('h1', cv.name), element('p', cv.intro, 'intro'), actions);
-    const portrait = cv.photo ? element('img', '', 'portrait') : element('div', cv.initials, 'portrait monogram');
-    if (cv.photo) {
-      portrait.src = cv.photo;
-      portrait.alt = 'Ảnh chân dung ' + cv.name;
-      portrait.width = 265;
-      portrait.height = 336;
-    } else {
-      portrait.setAttribute('aria-hidden', 'true');
-    }
-    heroGrid.append(intro, portrait);
-    hero.append(heroGrid);
-    main.append(hero);
-
-    const timeline = element('div', '', 'timeline');
-    cv.experience.forEach(([role, company, points], index) => {
-      const item = element('details');
-      item.open = index === 0;
-      const summary = element('summary', role);
-      summary.append(element('span', company, 'meta'));
-      const list = element('ul');
-      list.append(...points.map(point => element('li', point)));
-      item.append(summary, list);
-      timeline.append(item);
-    });
-    section('kinh-nghiem', 'Kinh nghiệm làm việc').append(timeline);
-    section('du-an', 'Dự án đã tham gia').append(cards(cv.projects));
-    const skills = section('ky-nang', 'Kỹ năng');
-    skills.append(element('h3', 'Chuyên môn'), tags(cv.skills), element('h3', 'Kỹ năng mềm'), tags(cv.softSkills));
-    section('hoc-van', 'Học vấn').append(cards([cv.education]));
-    if (cv.contact) section('lien-he', 'Liên hệ').append(cards([cv.contact]));
-    if (cv.references) section('tham-chieu', 'Tham chiếu').append(cards(cv.references));
-
-    const progress = document.querySelector('.progress');
-    function updateProgress() {
-      const distance = document.documentElement.scrollHeight - window.innerHeight;
-      progress.style.transform = 'scaleX(' + (distance > 0 ? window.scrollY / distance : 0) + ')';
-    }
-    window.addEventListener('scroll', updateProgress, { passive: true });
-    window.addEventListener('resize', updateProgress);
-    timeline.addEventListener('toggle', updateProgress, true);
-    updateProgress();
-
-    if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const observer = new IntersectionObserver(entries => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          entry.target.classList.add('revealed');
-          observer.unobserve(entry.target);
+    document.querySelector('#password-form').addEventListener('submit', event => {
+      event.preventDefault();
+      if (timer !== null || !targetInput.reportValidity()) return;
+      stop();
+      const target = targetInput.value;
+      const lockEnabled = protection.value === 'on';
+      let attempts = 0;
+      const recent = [];
+      log.textContent = '';
+      progress.value = 0;
+      start.disabled = true;
+      cancel.disabled = false;
+      targetInput.disabled = true;
+      protection.disabled = true;
+      result.textContent = 'Đang chạy mô phỏng…';
+      timer = setInterval(() => {
+        for (let batch = 0; batch < 10 && timer !== null; batch += 1) {
+          const candidate = passwords[attempts];
+          attempts += 1;
+          const matched = candidate === target;
+          recent.push('Lượt ' + attempts + ': ' + candidate + ' → ' + (matched ? 'KHỚP' : 'sai'));
+          if (recent.length > 10) recent.shift();
+          if (matched) {
+            result.textContent = 'Đã tìm thấy mật khẩu trong danh sách ở lượt ' + attempts + '/' + passwords.length + '.';
+            stop();
+          } else if (lockEnabled && attempts >= 3) {
+            result.textContent = 'Tài khoản giả bị khóa tạm sau 3 lần sai. Thí nghiệm dừng.';
+            stop();
+          } else if (attempts === passwords.length) {
+            result.textContent = 'Đã thử hết ' + passwords.length + ' mục và chưa tìm thấy. Kết quả chỉ áp dụng cho danh sách này.';
+            stop();
+          }
         }
-      }, { threshold: .12 });
-      main.querySelectorAll('.card, details').forEach(item => observer.observe(item));
-    }
+        progress.value = attempts;
+        log.textContent = recent.join('\n');
+        log.scrollTop = log.scrollHeight;
+        if (timer !== null) result.textContent = 'Đang dò: ' + attempts + '/' + passwords.length + ' lượt.';
+      }, 80);
+    });
 
-    let closedBeforePrint = [];
-    window.addEventListener('beforeprint', () => {
-      closedBeforePrint = [...timeline.querySelectorAll('details:not([open])')];
-      closedBeforePrint.forEach(item => { item.open = true; });
+    cancel.addEventListener('click', () => {
+      stop();
+      result.textContent = 'Đã dừng sau ' + progress.value + '/' + passwords.length + ' lượt. Bấm bắt đầu để dò lại từ đầu.';
     });
-    window.addEventListener('afterprint', () => {
-      closedBeforePrint.forEach(item => { item.open = false; });
-      closedBeforePrint = [];
+
+    document.querySelector('#reset').addEventListener('click', () => {
+      stop();
+      targetInput.value = '';
+      progress.value = 0;
+      log.textContent = 'Sẵn sàng. Nhập mật khẩu thử nghiệm để bắt đầu.';
+      result.textContent = 'Chưa bắt đầu.';
+      targetInput.focus();
     });
+
+    const feedback = document.querySelector('#feedback');
+    const explanation = document.querySelector('#explanation');
+    const retry = document.querySelector('#retry');
+    const responses = {
+      link: 'Cách này có thể làm lộ mật khẩu. Hãy kiểm tra yêu cầu bằng địa chỉ chính thức đã biết.',
+      reply: 'Trả lời người gửi chưa xác minh được danh tính của họ. Hãy dùng kênh liên hệ IT đã biết.',
+      report: 'Đúng hướng. Báo cáo email và tự mở cổng chính thức để kiểm tra yêu cầu.'
+    };
+    document.querySelectorAll('[data-choice]').forEach(button => {
+      button.addEventListener('click', () => {
+        feedback.textContent = responses[button.dataset.choice];
+        explanation.hidden = false;
+        retry.hidden = false;
+      });
+    });
+    retry.addEventListener('click', () => {
+      feedback.textContent = 'Chọn một cách xử lý để xem giải thích.';
+      explanation.hidden = true;
+      retry.hidden = true;
+      document.querySelector('[data-choice]').focus();
+    });
+    window.addEventListener('pagehide', stop);
   </script>
 </body>
 </html>
