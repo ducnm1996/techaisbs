@@ -356,7 +356,10 @@
           <input id="demo-new-password" type="password" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
           <label for="demo-confirm-password">Nhập lại mật khẩu mới</label>
           <input id="demo-confirm-password" type="password" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
-          <div class="actions"><button id="submit-demo-change" type="button">Xác nhận đổi mật khẩu</button></div>
+          <div class="actions">
+            <button id="fill-demo-passwords" class="secondary" type="button">Điền mã mẫu</button>
+            <button id="submit-demo-change" type="button">Xác nhận đổi mật khẩu</button>
+          </div>
           <p id="demo-change-error" role="status" hidden></p>
         </section>
         <section class="panel" id="demo-success" aria-labelledby="demo-success-title" hidden>
@@ -572,7 +575,9 @@
       .map(stage => document.querySelector('#demo-' + stage));
     const demoMailStatus = document.querySelector('#demo-mail-status');
     const demoMailLesson = document.querySelector('#demo-mail-lesson');
-    const demoPasswordSamples = ['Mau-Cu-01', 'Mau-Moi-02', 'Mau-Moi-03'];
+    const oldPasswordSample = 'Mau-Cu-01';
+    const newPasswordSamples = ['Mau-Moi-02', 'Mau-Moi-03'];
+    const allowedDemoCodes = [[oldPasswordSample], newPasswordSamples, newPasswordSamples];
     const demoPasswordFields = [...document.querySelectorAll('[data-demo-password]')];
     const demoChangeError = document.querySelector('#demo-change-error');
 
@@ -588,15 +593,25 @@
 
     document.querySelector('#open-demo-mail').addEventListener('click', () => showDemoStage('mail'));
     document.querySelector('#open-demo-change').addEventListener('click', () => showDemoStage('change'));
+    document.querySelector('#fill-demo-passwords').addEventListener('click', () => {
+      demoPasswordFields.forEach((field, index) => { field.value = allowedDemoCodes[index][0]; });
+      demoChangeError.hidden = true;
+    });
     document.querySelector('#submit-demo-change').addEventListener('click', () => {
-      const [oldPassword, newPassword, confirmation] = demoPasswordFields.map(field => {
-        const sample = demoPasswordSamples.find(value => value === field.value);
-        if (!sample) field.value = '';
-        return sample;
+      const fieldErrors = demoPasswordFields.map((field, index) => {
+        if (!field.value) return 'Chưa nhập ô “' + field.labels[0].textContent + '”.';
+        if (allowedDemoCodes[index].includes(field.value)) return '';
+        field.value = '';
+        return 'Ô “' + field.labels[0].textContent + '” chỉ nhận mã mẫu ghi ở trên.';
       });
-      if (oldPassword !== demoPasswordSamples[0] || !newPassword || oldPassword === newPassword || newPassword !== confirmation) {
-        demoChangeError.textContent = 'Nhập đúng mã mẫu cho ô đầu. Hai ô sau cần cùng một mã mẫu mới.';
+      if (!fieldErrors[1] && !fieldErrors[2] && demoPasswordFields[1].value !== demoPasswordFields[2].value) {
+        fieldErrors[2] = 'Mã ở ô xác nhận chưa khớp với mã mới.';
+      }
+      const firstError = fieldErrors.findIndex(Boolean);
+      if (firstError !== -1) {
+        demoChangeError.textContent = fieldErrors[firstError];
         demoChangeError.hidden = false;
+        demoPasswordFields[firstError].focus();
         return;
       }
       demoChangeError.hidden = true;
