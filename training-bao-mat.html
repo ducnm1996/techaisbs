@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Phòng thực hành mô phỏng dò mật khẩu và nhận diện phishing bằng dữ liệu giả.">
+  <title>TechAI SBS · Nhận thức về an toàn thông tin</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #09111b; color: #e7eef8; --muted: #a9b9cf; --line: #2a3b50; --accent: #78edc8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    .wrap { width: min(1100px, calc(100% - 32px)); margin-inline: auto; }
+    header { border-bottom: 1px solid var(--line); }
+    nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; padding-block: 20px; }
+    .brand { margin-right: auto; font-weight: 800; color: var(--accent); }
+    a { color: inherit; text-underline-offset: 5px; }
+    .hero { padding-block: 60px 36px; }
+    .slide-deck { margin-bottom: 30px; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: radial-gradient(ellipse at top right, #193c3a, #101d2d 65%); }
+    .slide { min-height: 400px; padding: clamp(24px, 5vw, 56px); }
+    .cover:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: clamp(20px, 4vw, 44px); }
+    .cover h1 { font-size: clamp(2.3rem, 5.2vw, 4.6rem); }
+    .cover img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); border-radius: 14px; }
+    .illustrated:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, 27%); align-items: center; gap: clamp(20px, 4vw, 42px); }
+    .slide-art { margin: 0; width: 100%; max-width: 320px; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 14px; background: url("security-slides.webp") var(--art-x) var(--art-y) / 300% 300% no-repeat; }
+    .slide-deck:fullscreen { display: flex; flex-direction: column; border: 0; border-radius: 0; margin: 0; }
+    .slide-deck:fullscreen #slides { flex: 1; overflow: auto; }
+    .slide-deck:fullscreen .slide { min-height: 100%; }
+    .slide-quote { margin: 24px 0 8px; padding-left: 16px; border-left: 3px solid var(--accent); font-size: clamp(1.25rem, 3vw, 1.8rem); }
+    dialog { width: min(680px, calc(100% - 28px)); max-height: calc(100dvh - 28px); padding: clamp(16px, 4vw, 30px); border: 1px solid #53677f; border-radius: 16px; background: #101d2d; color: inherit; }
+    dialog::backdrop { background: #050b13c9; }
+    dialog table { width: 100%; border-collapse: collapse; }
+    dialog th, dialog td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    dialog thead th { color: var(--accent); }
+    .slide h2 { font-size: clamp(1.8rem, 5vw, 3.2rem); line-height: 1.12; letter-spacing: -.035em; }
+    .slide p { max-width: 70ch; }
+    .slide a:not(.button), .brand { color: var(--accent); }
+    .slide .grid .panel { background: #0b1522; }
+    .slide .grid p:last-child { margin-bottom: 0; }
+    .slide-controls, .tabs { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .slide-controls { justify-content: space-between; border-top: 1px solid var(--line); padding: 16px clamp(16px, 4vw, 32px); background: #0b1522; }
+    .slide-controls button { min-width: 96px; }
+    .slide-controls-start { display: flex; align-items: center; gap: 8px; }
+    .slide-controls .fullscreen-icon { display: grid; place-items: center; min-width: 0; width: 44px; height: 44px; padding: 0; }
+    .slide-position { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .contents { padding-left: 1.6em; font-size: clamp(1.2rem, 2.35vw, 1.55rem); font-weight: 600; }
+    .contents li + li { margin-top: 4px; }
+    .tabs { margin-top: 24px; }
+    .tabs [aria-selected="false"] { background: transparent; color: #dae5f4; border-color: #53677f; }
+    .metrics { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .metrics output { color: var(--accent); font-weight: 750; }
+    [hidden] { display: none !important; }
+    .eyebrow { font-size: .78rem; letter-spacing: .12em; color: var(--accent); font-weight: 750; text-transform: uppercase; }
+    h1 { font-size: clamp(2.5rem, 6vw, 4.6rem); max-width: 18ch; line-height: 1.08; letter-spacing: -.05em; margin: 14px 0; }
+    h2 { font-size: 1.65rem; margin: 0 0 12px; }
+    h3 { margin-top: 0; }
+    p, li { line-height: 1.65; }
+    p { color: var(--muted); }
+    section.lab { margin-block: 22px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--line); border-radius: 18px; background: #101d2d; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+    .panel { border: 1px solid var(--line); background: #0b1522; border-radius: 12px; padding: 22px; min-width: 0; }
+    label { display: block; margin: 18px 0 8px; font-weight: 650; }
+    input, select, button { font: inherit; }
+    input, select { width: 100%; min-width: 0; padding: 11px; background: #17283c; color: inherit; border: 1px solid #53677f; border-radius: 8px; }
+    button { border: 1px solid transparent; padding: 10px 15px; border-radius: 8px; cursor: pointer; background: var(--accent); color: #09261e; font-weight: 750; }
+    .button { display: inline-block; background: var(--accent); color: #09261e; padding: 10px 15px; border-radius: 8px; font-weight: 750; text-decoration: none; }
+    button:hover, .button:hover { filter: brightness(1.12); }
+    button:disabled { opacity: .5; cursor: default; }
+    .secondary { background: transparent; color: #dae5f4; border-color: #53677f; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    :focus-visible { outline: 3px solid #a4c8ff; outline-offset: 4px; }
+    code { color: #b8e1ff; overflow-wrap: anywhere; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; color: #a2dfca; font: .88rem/1.9 ui-monospace, monospace; height: 260px; overflow: auto; margin: 0; }
+    progress { width: 100%; accent-color: var(--accent); height: 12px; margin-block: 18px 8px; }
+    .status { min-height: 3.3em; margin-bottom: 0; }
+    .mail { background: #f2f5fa; color: #17283a; }
+    .mail p { color: #34475c; }
+    .mail .address { font-size: .86rem; overflow-wrap: anywhere; border-bottom: 1px solid #c4d1df; padding-bottom: 16px; }
+    .mail code { color: #852d2d; }
+    .mail-row { display: grid; gap: 6px; width: 100%; padding: 14px; text-align: left; background: #e0eaf6; color: #17283a; border-color: #c4d1df; }
+    .mail-row span { font-size: .9rem; font-weight: 500; }
+    .mail-header { display: flex; gap: 14px; align-items: center; padding-block: 14px; border-bottom: 1px solid #c4d1df; }
+    .mail-avatar { display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: 50%; background: #075386; color: white; font-weight: 750; }
+    .mail-header p { margin: 0; }
+    .phishing-terminal { height: auto; max-height: 290px; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #070f19; }
+    [data-demo-password]::-ms-reveal { display: none; }
+    .note { font-size: .88rem; }
+    footer { color: var(--muted); padding-block: 24px 42px; }
+    @media (max-width: 720px) {
+      .grid, .cover:not([hidden]), .illustrated:not([hidden]) { grid-template-columns: 1fr; }
+      .slide-art { max-width: 200px; }
+      .hero { padding-top: 36px; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      html { scroll-behavior: smooth; }
+      button { transition: transform .15s; }
+      button:hover:enabled { transform: translateY(-2px); }
+      @keyframes appear { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+      .hero, .lab { animation: appear .5s ease both; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="wrap" aria-label="Điều hướng chính">
+      <a class="brand" href="index.html">◈ TECHAI SBS</a>
+      <a href="#trang-chu">Bài đào tạo</a>
+      <a href="#mat-khau">Dò mật khẩu</a>
+      <a href="#phishing">Phishing</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    <section class="hero" id="trang-chu" aria-label="Bài trình chiếu an toàn thông tin">
+      <div class="slide-deck" id="slide-deck" aria-label="10 slide giới thiệu" tabindex="0">
+        <div id="slides" aria-live="polite">
+          <article class="slide cover">
+            <div>
+              <p class="eyebrow">01 / Giới thiệu</p>
+              <h1>Nhận thức về an toàn bảo mật thông tin</h1>
+            </div>
+            <img src="security-cover.webp" width="960" height="720" alt="Ổ khóa kim loại trên bàn phím máy tính">
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">02 / Lộ trình</p>
+              <h2>Mục lục</h2>
+              <ol class="contents">
+                <li>Sự cố an ninh mạng tại Việt Nam</li>
+                <li>Định nghĩa an toàn thông tin</li>
+                <li>Các trường hợp mất an toàn thông tin</li>
+                <li>Các kiểu tấn công phổ biến</li>
+                <li>Demo dò mật khẩu</li>
+                <li>Demo nhận diện phishing</li>
+                <li>Tổng kết</li>
+                <li>Cảm ơn</li>
+              </ol>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Sổ tay và danh sách công việc" style="--art-x:0%; --art-y:0%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">03 / Sự cố thực tế</p>
+              <h2>Sự cố an ninh mạng tại Việt Nam</h2>
+              <div class="grid">
+                <div class="panel">
+                  <h3>Lừa đảo Tatao Live · 2026</h3>
+                  <p><strong>Thủ đoạn</strong> — Quảng cáo livestream AI tạo thu nhập tự động để dụ người dùng nộp tiền.</p>
+                  <p><strong>Hậu quả</strong> — Nền tảng ngừng hoạt động từ giữa tháng 4 và người tham gia không rút được tiền.</p>
+                  <p><strong>Quy mô</strong> — Bị hại đã nộp <strong>404 tỷ đồng</strong>. Cơ quan điều tra bước đầu thu hồi hơn <strong>8,6 tỷ đồng</strong>.</p>
+                  <p><a href="https://baochinhphu.vn/triet-pha-duong-day-lua-dao-hon-400-ty-thong-qua-nen-tang-ai-livestream-tatao-live-102261025205014552.htm">Báo Chính phủ · 25/10</a> · <a href="https://vtv.vn/thu-doan-lua-dao-nup-bong-ai-100261109211050734.htm">VTV · 10/11</a></p>
+                </div>
+                <div class="panel">
+                  <h3>Ứng dụng dịch vụ công giả · Hà Nội, 2024</h3>
+                  <p><strong>Nguyên nhân</strong> — Kẻ gian mạo danh công an, dụ nạn nhân cài ứng dụng giả.</p>
+                  <p><strong>Hậu quả</strong> — Kẻ gian chiếm quyền điều khiển thiết bị.</p>
+                  <p><strong>Thiệt hại</strong> — Nạn nhân mất <strong>1,2 tỷ đồng</strong> trong tài khoản ngân hàng.</p>
+                  <p><a href="https://baochinhphu.vn/mao-danh-ngan-hang-huong-dan-xac-thuc-tren-ung-dung-102240707164246532.htm">Báo Điện tử Chính phủ</a></p>
+                </div>
+              </div>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Máy tính tại văn phòng hiển thị cảnh báo" style="--art-x:50%; --art-y:0%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">04 / Khái niệm</p>
+              <h2>An toàn thông tin là gì?</h2>
+              <p>An toàn thông tin là việc bảo vệ dữ liệu và hệ thống khỏi truy cập, tiết lộ, sửa đổi, phá hủy hoặc làm gián đoạn trái phép.</p>
+              <ul>
+                <li><strong>Tính bí mật</strong> — Chỉ người có quyền mới được xem dữ liệu. Ví dụ, bảng lương chỉ mở cho người phụ trách.</li>
+                <li><strong>Tính toàn vẹn</strong> — Dữ liệu phải chính xác và chỉ được sửa đúng thẩm quyền. Ví dụ, số tiền trên hóa đơn chỉ thay đổi khi có phê duyệt.</li>
+                <li><strong>Tính sẵn sàng</strong> — Người có quyền dùng được dữ liệu và hệ thống khi cần. Ví dụ, có bản sao lưu để khôi phục hồ sơ khi máy chủ gặp sự cố.</li>
+              </ul>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Tủ lưu trữ dữ liệu bằng kim loại" style="--art-x:100%; --art-y:0%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">05 / Rủi ro</p>
+              <h2>Các trường hợp mất an toàn thông tin</h2>
+              <ol>
+                <li><strong>Sơ suất của người dùng</strong> — Gửi nhầm tài liệu, mắc bẫy lừa đảo, dùng mật khẩu yếu hoặc làm mất thiết bị.</li>
+                <li><strong>Tấn công từ bên ngoài</strong> — Mã độc tống tiền, tấn công từ chối dịch vụ (DDoS), khai thác lỗ hổng hoặc nghe lén.</li>
+                <li><strong>Lạm dụng quyền nội bộ</strong> — Cố ý tuồn dữ liệu, xem, sửa hoặc xóa thông tin trái phép.</li>
+                <li><strong>Sự cố kỹ thuật và hạ tầng</strong> — Cấu hình sai, hỏng thiết bị, thiếu bản sao lưu, mất điện hoặc cháy nổ.</li>
+              </ol>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Ổ sao lưu bên cạnh máy tính" style="--art-x:0%; --art-y:50%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">06 / Các kiểu tấn công</p>
+              <h2>Các kiểu tấn công phổ biến</h2>
+              <ul>
+                <li><strong>Dò mật khẩu</strong> — Thử nhiều mật khẩu để tìm giá trị đúng.</li>
+                <li><strong>Phishing</strong> — Mạo danh để lừa lấy thông tin hoặc dụ thao tác.</li>
+                <li><strong>Credential stuffing</strong> — Dùng thông tin đăng nhập đã lộ trên dịch vụ khác.</li>
+                <li><strong>Ransomware</strong> — Khóa hoặc mã hóa dữ liệu để tống tiền.</li>
+              </ul>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Dãy máy chủ có đèn cảnh báo" style="--art-x:50%; --art-y:50%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">07 / Demo dò mật khẩu</p>
+              <h2>Mật khẩu ngắn bị đoán nhanh đến đâu?</h2>
+              <p>Ở 10 lượt/giây và không giới hạn lượt thử, duyệt hết mã 4 chữ số mất <strong>16 phút 40 giây</strong>, còn mã 6 chữ số mất <strong>27 giờ 46 phút 40 giây</strong>. Thời gian thực tế tùy hệ thống.</p>
+              <p>Dùng mật khẩu dài, ngẫu nhiên và riêng cho từng tài khoản. Bật MFA. NIST yêu cầu ít nhất 15 ký tự khi mật khẩu là yếu tố xác thực duy nhất.</p>
+              <p><button class="secondary" id="open-password-guide" type="button" aria-haspopup="dialog">Hướng dẫn đặt mật khẩu</button></p>
+              <a class="button" href="#mat-khau">Mở demo dò mật khẩu →</a>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Ổ khóa nhỏ trên bàn phím" style="--art-x:100%; --art-y:50%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">08 / Demo phishing</p>
+              <h2>Xác minh yêu cầu qua kênh bạn tin cậy</h2>
+              <p>Cảnh giác khi có yêu cầu gấp về mật khẩu, mã OTP hoặc phê duyệt đăng nhập.</p>
+              <ol>
+                <li>Kiểm tra người gửi và tên miền liên kết.</li>
+                <li>Tự mở cổng chính thức hoặc xác minh qua kênh đã biết.</li>
+                <li>Báo IT. Nếu đã nhập mật khẩu, đổi ngay qua cổng chính thức.</li>
+              </ol>
+              <a class="button" href="#phishing">Mở demo nhận diện phishing →</a>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Điện thoại cạnh phong bì thư" style="--art-x:0%; --art-y:100%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">09 / Tổng kết</p>
+              <h2>Muốn bảo đảm an toàn thông tin cần làm gì?</h2>
+              <ol>
+                <li><strong>Tài khoản.</strong> Dùng mật khẩu riêng, bật xác thực hai bước, lưu bằng trình quản lý mật khẩu và tránh cho mượn tài khoản.</li>
+                <li><strong>Email và tệp.</strong> Kiểm tra người gửi. Xác minh yêu cầu gấp trước khi bấm link, mở tệp lạ hoặc bật macro.</li>
+                <li><strong>Thiết bị.</strong> Khóa máy khi rời bàn, cập nhật phần mềm và tránh dùng USB lạ hoặc phần mềm bẻ khóa.</li>
+                <li><strong>Mạng và dữ liệu.</strong> Tránh truy cập hệ thống nội bộ qua Wi-Fi công cộng. Kiểm tra người nhận và quyền chia sẻ. Báo IT ngay khi có dấu hiệu bất thường.</li>
+              </ol>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Khóa bảo mật và ổ sao lưu" style="--art-x:50%; --art-y:100%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">10 / Kết thúc</p>
+              <h2>Cảm ơn bạn!</h2>
+              <blockquote class="slide-quote">“Bảo mật là một quá trình.”</blockquote>
+              <p><a href="https://www.schneier.com/books/secrets-and-lies-pref/">Bruce Schneier, <cite>Secrets and Lies</cite></a></p>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Máy tính đóng trên bàn làm việc" style="--art-x:100%; --art-y:100%"></figure>
+          </article>
+        </div>
+        <div class="slide-controls">
+          <div class="slide-controls-start">
+            <button id="prev-slide" class="secondary" type="button" disabled>← Trước</button>
+            <button id="fullscreen-slide" class="secondary fullscreen-icon" type="button" aria-label="Toàn màn hình" title="Toàn màn hình">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>
+              </svg>
+            </button>
+          </div>
+          <span class="slide-position" id="slide-position">01 / 10</span>
+          <button id="next-slide" type="button">Tiếp →</button>
+        </div>
+        <dialog id="password-guide" aria-labelledby="password-guide-title">
+          <h2 id="password-guide-title">Hướng dẫn đặt mật khẩu</h2>
+          <p>Quy định dành cho hệ thống xác thực theo NIST SP 800-63B-4.</p>
+          <table>
+            <thead><tr><th scope="col">Tiêu chí</th><th scope="col">Quy định</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Chỉ dùng mật khẩu</th><td>Tối thiểu 15 ký tự.</td></tr>
+              <tr><th scope="row">Mật khẩu trong MFA</th><td>Hệ thống có thể cho phép ngắn hơn, với mức tối thiểu 8 ký tự.</td></tr>
+              <tr><th scope="row">Độ dài tối đa cho phép</th><td>NIST khuyến nghị hệ thống hỗ trợ ít nhất 64 ký tự.</td></tr>
+              <tr><th scope="row">Thành phần ký tự</th><td>Không bắt buộc trộn chữ hoa, chữ thường, số và ký hiệu.</td></tr>
+              <tr><th scope="row">Mật khẩu dễ đoán</th><td>Chặn giá trị phổ biến, dễ đoán hoặc đã bị lộ.</td></tr>
+              <tr><th scope="row">Đổi mật khẩu</th><td>Yêu cầu đổi khi có bằng chứng mật khẩu bị xâm phạm. Không yêu cầu đổi định kỳ.</td></tr>
+            </tbody>
+          </table>
+          <p><a href="https://pages.nist.gov/800-63-4/sp800-63b.html#passwordver">Đọc quy định của NIST</a></p>
+          <form method="dialog"><button type="submit" autofocus>Đóng</button></form>
+        </dialog>
+      </div>
+    </section>
+
+    <div id="labs" hidden>
+      <div class="tabs" role="tablist" aria-label="Bài thực hành">
+        <button id="password-tab" type="button" role="tab" aria-controls="mat-khau" aria-selected="true">Dò mật khẩu</button>
+        <button id="phishing-tab" type="button" role="tab" aria-controls="phishing" aria-selected="false" tabindex="-1">Phishing</button>
+      </div>
+    <section class="lab" id="mat-khau" role="tabpanel" aria-labelledby="password-tab" tabindex="0">
+      <div class="eyebrow">Thí nghiệm 01</div>
+      <h2 id="password-title">Dò mật khẩu bằng danh sách</h2>
+      <p>Nhập một mật khẩu thử nghiệm rồi quan sát từng mục trong danh sách được so khớp với mật khẩu đó. Bật khóa tạm thời để so sánh kết quả.</p>
+      <div class="grid">
+        <form class="panel" id="password-form">
+          <h3>Thiết lập thí nghiệm</h3>
+          <label for="target-password">Mật khẩu thử nghiệm</label>
+          <input id="target-password" type="password" required autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="password-note" placeholder="Ví dụ: 123456">
+          <p class="note" id="password-note">Dùng mật khẩu tự đặt cho bài thử. Mật khẩu nhập chỉ được so khớp trong bộ nhớ của trang.</p>
+          <p class="note">Thư viện gộp · 3.000 mục</p>
+          <label for="protection">Lớp bảo vệ</label>
+          <select id="protection">
+            <option value="off">Cho phép thử liên tiếp</option>
+            <option value="on">Khóa tạm sau 3 lần sai</option>
+          </select>
+          <div class="actions">
+            <button id="start" type="submit">Bắt đầu dò</button>
+            <button id="cancel" class="secondary" type="button" disabled>Dừng</button>
+            <button id="reset" class="secondary" type="button">Đặt lại</button>
+          </div>
+          <p class="note">Mỗi nhịp 80 ms thử tối đa 10 mục. Nhật ký hiển thị 10 lượt gần nhất. So khớp chính xác, phân biệt chữ hoa, chữ thường và khoảng trắng.</p>
+        </form>
+        <div class="panel">
+          <h3>Nhật ký thử nghiệm</h3>
+          <pre id="log" aria-label="Nhật ký 10 lượt thử gần nhất">Sẵn sàng. Nhập mật khẩu thử nghiệm để bắt đầu.</pre>
+          <progress id="progress" value="0" max="3000" aria-label="Số lượt đã thử"></progress>
+          <div class="metrics">
+            <span>Lượt thử <output id="attempt-count" aria-live="off">0 / 3.000</output></span>
+            <span>Thời gian <output id="elapsed" aria-live="off">0,00 giây</output></span>
+          </div>
+          <p id="result" class="status" role="status">Chưa bắt đầu.</p>
+        </div>
+      </div>
+      <p class="note">Phòng vệ thực tế gồm mật khẩu dài và riêng cho từng tài khoản, giới hạn lượt thử, theo dõi đăng nhập bất thường và xác thực đa yếu tố (MFA).</p>
+    </section>
+
+    <section class="lab" id="phishing" role="tabpanel" aria-labelledby="phishing-tab" tabindex="0" hidden>
+      <div class="eyebrow">Thí nghiệm 02</div>
+      <h2 id="phishing-title">Mô phỏng email yêu cầu đổi mật khẩu</h2>
+      <p>Mở thư cảnh báo để theo dõi từng bước. Bài thực hành dùng hộp thư và mật khẩu mẫu.</p>
+      <div class="grid">
+        <section class="panel mail" id="demo-inbox" aria-labelledby="inbox-title">
+          <h3 id="inbox-title" tabindex="-1">Hộp thư đến</h3>
+          <p class="address"><strong>Tài khoản mẫu</strong> <code>anv@ttcgroup.vn</code></p>
+          <button class="mail-row" id="open-demo-mail" type="button">
+            <strong>Mật khẩu sắp hết hạn / Password expiration notification</strong>
+            <span>Bộ phận hỗ trợ · it.alert@ttcgroup.info.vn</span>
+          </button>
+        </section>
+        <section class="panel mail" id="demo-mail" aria-labelledby="demo-mail-title" hidden>
+          <p class="note">Email mô phỏng</p>
+          <h3 id="demo-mail-title" tabindex="-1">Mật khẩu sắp hết hạn / Password expiration notification</h3>
+          <div class="mail-header">
+            <span class="mail-avatar" aria-hidden="true">IT</span>
+            <div>
+              <p><strong>Từ</strong> <code>it.alert@ttcgroup.info.vn</code></p>
+              <p><strong>Đến</strong> <code>anv@ttcgroup.vn</code></p>
+            </div>
+          </div>
+          <p>Kính gửi học viên,</p>
+          <p>Mật khẩu tài khoản mẫu sẽ hết hạn trong 15 phút. Vui lòng mở trang đổi mật khẩu để tiếp tục sử dụng hộp thư.</p>
+          <button id="open-demo-change" type="button">Mở trang đổi mật khẩu mô phỏng</button>
+          <p>Trân trọng,<br>Bộ phận hỗ trợ IT</p>
+        </section>
+        <section class="panel" id="demo-change" aria-labelledby="demo-change-title" hidden>
+          <h3 id="demo-change-title" tabindex="-1">Đổi mật khẩu · Mô phỏng</h3>
+          <p id="demo-password-note">Chỉ nhập mã mẫu. Dùng <code>Mau-Cu-01</code> cho ô đầu và gõ cùng một mã <code>Mau-Moi-02</code> hoặc <code>Mau-Moi-03</code> vào hai ô sau.</p>
+          <label for="demo-old-password">Mật khẩu cũ</label>
+          <input id="demo-old-password" type="password" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
+          <label for="demo-new-password">Mật khẩu mới</label>
+          <input id="demo-new-password" type="password" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
+          <label for="demo-confirm-password">Nhập lại mật khẩu mới</label>
+          <input id="demo-confirm-password" type="password" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
+          <div class="actions">
+            <button id="fill-demo-passwords" class="secondary" type="button">Điền mã mẫu</button>
+            <button id="submit-demo-change" type="button">Xác nhận đổi mật khẩu</button>
+          </div>
+          <p id="demo-change-error" role="status" hidden></p>
+        </section>
+        <section class="panel" id="demo-success" aria-labelledby="demo-success-title" hidden>
+          <h3 id="demo-success-title" tabindex="-1">Đổi mật khẩu thành công · Mô phỏng</h3>
+          <p>Trang giả có thể hiển thị thông báo thành công để người dùng tưởng rằng họ vừa cập nhật tài khoản.</p>
+          <button class="secondary" id="restart-demo-mail" type="button">Quay về hộp thư</button>
+        </section>
+        <aside class="panel" aria-labelledby="phishing-result-title">
+          <h3 id="phishing-result-title">Máy chủ của hacker · Mô phỏng</h3>
+          <p class="note">Nhật ký chạy trong trình duyệt và chỉ hiển thị dữ liệu mẫu.</p>
+          <pre id="phishing-terminal" class="phishing-terminal" role="log" aria-label="Nhật ký máy chủ mô phỏng" tabindex="0">[SẴN SÀNG] Đang chờ người dùng mở thư.</pre>
+          <div id="demo-mail-lesson" hidden>
+            <h3>Đối chiếu địa chỉ người gửi</h3>
+            <p><strong>Địa chỉ chính thống theo tình huống</strong><br><code>it.alert@ttcgroup.vn</code></p>
+            <p><strong>Địa chỉ giả trong tình huống</strong><br><code>it.alert@ttcgroup.info.vn</code></p>
+            <p>Phần sau dấu @ khác nhau. Khi nhận yêu cầu đổi mật khẩu bất ngờ, hãy tự mở cổng chính thức hoặc xác minh với IT qua kênh đã biết.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+    </div>
+  </main>
+  <footer class="wrap">CYBER LAB · Phòng thực hành nhận thức an toàn thông tin</footer>
+  <script type="application/json" id="password-list">["123456","123456789","123123","111111","anhyeuem","1234567","0123456789","0123456","12345678","000000","asdasd","25251325","1234567890","121212","123321","zxcvbnm","qweqwe","456789","112233","aaaaaa","123123123","987654321","11111111","qwerty","147258369","maiyeuem","123qwe","654321","iloveyou","123654","999999","qqqqqq","1111111","147258","hota407","anhtuan","222222","159753","11223344","anhnhoem","anh123","159357","qwertyuiop","asd123","0987654321","emyeuanh","mmmmmm","012345","666666","anhanh","123789","phuong","111222","qweasd","hanoiyeudau","nguyen","789456","1111111111","mylove","789456123","19001560","qwe123","asdfghjkl","pppppp","anhhung","1234560","abc123","maiyeu","123456a","zzzzzz","quangninh","987654","555555","tuananh","asasas","asdfgh","zxcvbn","321321","tinhyeu","147852369","456123","matkhau","147852","12345678910","thienthan","anhyeu","111111111","toilatoi","10cham0","0147258369","456456","khongbiet","789789","a123456","333333","888888","123654789","truong","maimaiyeuem","hhhhhh","12345","zxczxc","yankee","741852963","maimai","properties","loveyou","thanhtung","hoanganh","0000000000","01230123","778899","anhdung","010203","123456987","abcd@1234","234567","anhmaiyeuem","handoi","222333","yeuanh","9876543210","anhday","999999999","123456123","12341234","thanh123","0902166970","321654","147147","ngocanh","nhoemnhieu","090909","phuoclapmx","\"      \"","nolove","thanhbinh","anhduc","concac","qazwsx","777777","hahaha","hung123","asdasdasd","101010","0000000","anhnam","tttttt","thuong","00000000","huy123","mnbvcxz","anhcuong","123456q","ssssss","anhyeuem123","098765","lalala","llllll","nnnnnn","anhthanh","yeuemnhieu","aaaaaaa","7777777","010101","huyhuy","kkkkkk","444444","11111111111111111111111111111111","hoilamgi","anhthang","bbbbbb","chandoi","0147852369","tuan123","123asd","toiyeuem","anhhai","vietnam","hoailam","tinhlagi","113113","qwertyu","741852","maiyeuanh","1234566","thanhtam","thanhlong","anhthu","123465","forever","12344321","nam123","anhduy","thuylinh","lovely","ANHYEUEM","88888888","123456123456","anhvaem","oooooo","thanhcong","123457","anhquan","anhiuem","123789456","142536","thanhthuy","kiepdoden","123abc","tinhban","12345679","thanhthanh","001101","long123","hanhphuc","bigbang","01234567","dat123","1234568","123456789123456789","kimngan278","1234569","963852741","123456789a","lovelove","1234561","anhson","minh123","anhminh","hoang123","anhhuy","lonmemay","hunghung","ngocanh89","minhanh","huyhoang","thang123","124578","a","aspirine","1234512345","thanhthao","ngoctan","linh123","852456","hieu123","anhnhoemnhieu","minhminh","trung123","1234554321","nuttertools","heocon","linhlinh","123456789123","thuytrang","quynhanh","thanhnhan","qwqwqw","minhtuan","321654987","111222333","anhyeuem1","trunghieu","khongco","ppppppp","comchay+","0147258","hoanglong","thuthuy","meocon","anhdat","minhduc","0123654","0123654789","zxzxzx","kimngan","aaaaaaaa","khanh123","kimanh","hunter17051990","vananh","khongnho","meoghe","anhduong","piaggio15119","nhoemyeu3101","thanhtuan","qqqqqqq","thanhdat","gggggg","12121212","chiyeuminhem","tung123","cuong123","cccccc","phuonganh","0123123","121111","anhyeuemnhieu","dddddd","hoahong","0147852","000000000","246357","zxc123","456789123","012345678","01234567890","saobang","thienlong","son123","123123q","thanhnam","vvvvvv","namnam","1230123","19001570","thuyduong","hai123","qwertyui","thutrang","anhkhoa","2222222","langtu","123456aa","23456789","abc123456","0918273645","doilathe","ducanh","1122334455","123","vietanh","phuongthao","a123456789","369258147","9999999999","lamgithe99","babylove","Fantasy88","dung123","1231234","102030","thanhtrung","thuytien","qweqweqwe","binhminh","quanghuy","1234567899","qweasdzxc","haiyen","135792468","duy123","232323","anhhoang","meomeo","concho","6677028","tinhtinh","1234","1900561252","hihihi","hoangnam","hoanghai","lananh","159159","\"Khocviai,\"","anhquang","hantinh","minhthu","thuhuong","trungkien","tuananh1080","toilaai","asdzxc","huyentrang","asdqwe","hongnhung","mmmmmmm","anhtrung","duc123","nguyenhung8892","bao123","135790","thuthao","thanhhai","753951","thanhhoa","jjjjjj","aaaaaaaaaa","minhquan","hoanglan","hoangtu","theanh","123456789987654321","poipoi","cuncon","123455","123321123","xxxxxx","lon123","sasakiE>","kakaka","minhtam","anhtai","nhoanh","thanhtu","@yahoo.com","ffffff","246810","nhuquynh","quang123","abcdef","1231231","14188985","11111111111","khanhlinh","99999999","fantasy","wwwwww","123456654321","manhhung","7654321","anhkhanh","thuydung","123123456","conmemay","conyeume","ngoclinh","321456","tien123","sakura","212121","sasasa","686868","258369","chandoiwa1","anhtruong","012345678910","manhcuong","567890","asd123456","nhan123","147896325","654123","phong123","saxsax","9999999","thanhphobuon","anhngoc","1475369","qqqqqqqq","doremon","7894561230","113114","thanhtruc","handoivodoi","qwertyuio","134679","s1s1s1","haiduong","qqwwee","thaibinh","sieunhan","sting23","binhchon","ditmemay","898989","dangkhoa","thuyetyeu","thanhson","258456","pppppppp","baongoc","fuckyou","thaonguyen","minhtri","123qweasd","1","123698745","456852","thanhphong","3456789","maianh","sang123","963852","001122","123456as","thuhien","nothing","thuhang","ccvvbb","trang123","thanhvan","123456789asd","951753","thien123","halong","anhbinh","qazwsxedc","yyyyyy","q123456","love123","252525","22222222","5555555","ngocha","1230456","haidang","Aa123456","nhi123","131313","asdfghj","12345678900","dunghoi","anhviet","minhhieu","anhvinh","aaaaaaaaa","baobao","lam123","12301230","0123456987","taolatao","33213321","quan123","tinhanh","yennhi","1234qwer","khuong","tai123","longlong","handsome","cailon","\"@zing.vn \"","toan123","hjhjhj","poiuyt","a123123","iloveu","123987","haianh","thienha","thao123","......","thinh123","linhkute","012012","minhnhat","797979","q121212","000111","2345678","anhtuyen","123123a","quangvinh","thanhluan","anhsang","congchua","huhuhu","00000000000000000000000000000000","concat","hehehe","thanhtuyen","yeuemmai","thanhhuyen","1234567891","missyou","hoangvu","014789","t123456","duyanh","123qwe123","789123","345678","nghia123","phuong123","phuc123","onlylove","dragon","hoainam","thanh1","445566","1621991","123567","fafa22","maiyeunguoi","lamlam","phithienauto","anhlaai","anhlavip","123456798","chandoiwa","456123789","minhchau","minhtien","anhvan","ngoc123","asdasd1","abcabc","maimaimottinhyeu","nguyen123","123000","uuuuuu","votinh","112211","tam123","vanhung","thuyhang","q","chocon","viethung","tiendung","dkmdkm","1231230","hoangha","duong123","alo123","1478963","909090","thanhha","a12345","visaothe","english","hoahoa","112113","ronaldo","iiiiii","shinji1410","binh123","thanchet","Abc123","201090","3333333","hhhhhhh","anhdai","thugstools","223344","234234","123456asd","maimaiyeuanh","132456","hoa123",".adgjm","1q2w3e","tan123","trondoibenem","haihai","12345a","112233445566","khang123","vinh123","majyeuem","anhlapro","giadinh","hoanghuy","q1w2e3","thanhhung","ngochan","asdf2356","duykhanh","hoangminh","87654321","11112222","thuthu","0987654","nguyet","147369","qazqaz","mnbvcx","tungtung","hungpro","minhtan","q123123","anhkiet","abc&1234","mmmmmmmm","minhngoc","anhvanyeuem","111111111111","ZXCVBNM","manchester","anhphong","1a2b3c4d","ngocmai","danchoi","5201314","879118","thienduong","369258","bin123","truong123","thuhuyen","qÆ°erty","123456qwe","2222222222","anhthuan","0147896325","tuanhung","chuong","asdasd123","khongyeu","hunganh","123456456","loc123","nhatminh","141414","thuan123","tuantuan","vodanh","nhinhi","phuonglinh","nguyenhung","0123456789a","hau123","quynhnhu","eeeeee","pokemon","xinchao1","123456789789","anhchung","dismemay","anhdeptrai","binbin","huy123456","anhdao","maiyeuminhem","tiendat","235689","ngoclan","namdinh","456321","philong","454545","12345689","5555555555","00112233","phongvan","hhhhhhhh","12369874","minhhoang","159951","hanhphucao","kukumalu0410","vippro","thu123","01233210","qÆ°ertyuiop","minhthanh","manhmanh","thanhlam","hoangyen","123123qwe","samsung","minhtrang","minhphuong","honghanh","nhockute","anhchiyeuem","121314","asdfasdf","789654","789789789","thanhduy","12345600","emnhoanh","258963","giahuy","chienthang","linhchi","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","kimdung","tuanvu","1234567890123","123123123123","asddsa","khoa123","nguoitoiyeu","deptrai","anhchiyeuminhem","abcABC@123","imissyou","adadad","cuibap","thanhsang","```111","popopo","qaz123","abcd1234","thuyan","thuythuy","123anh","987987","namanh","09090909","6543210","minhthuan","anhvuong","151515","A123456","thanhtan","ngocthanh","112112","111112","conheo","anhphuc","kimlong","hotboy","ngocson","226348","aloalo","huong123","753159","anhnghia","0123321","quanganh","anhhao","socola","tuongvy","159753456","hongngoc","ngocminh","haiphong","anhdayem","1123456","conmeo","poiuytrewq","majmaj","anhlavodich","987456","135246","giang123","anhphuong","hoangdung","minhphuc","huyhuyhuy","duythanh","202020","thanhhien","lonlon","bantoi","456456456","147896","taokhongbiet","hoanglinh","852963","duongminhtri","anhyeuemmaimai","hung123456","014702580369","minhhai","456654","nobita","toiyeuban","nhatrang","dantruong","123654987","password","thai123","anhthinh","anhhoa","``````","quangminh","minhtu","leduclong","anhcanem","nhatanh","12345676","789987","224466","nhutren","van123","nhunhu","ngochuyen","01470147","ngocdung","chelsea","123456t","anhy3u3m","thanhtoan","qwaszx","yeuemmaimai","123456h","hao123","giangcoi","lanhuong","kiemthe","ASDASD","kien123","7895123","0908182327","dethuong","shinichi","hung12","thanhxuan","14789632","haydoiday","321123","quochuy","muasaobang","rrrrrr","vantuan","369852","hungdaica","\"My Computer\"","123456789z","aimabiet","123123aa","minhquang","anhyeuem12","quangtrung","147852963","nhocquan","thangkhung","ngochung","ngocbich","cuchuoi","thiensu","159357456","thanhvu","banthan","0nimekyo","321321321","hoangson","quocanh","hainam","654321q","123456789aa","chochet","mylinh","098098","kobiet","minhnhut","honganh","01234567890123456789","trungtin","258258","naruto","hoangtuan","kentom3012","duyduy","anhtinh","anhhien","quocbao","55555555","kimchi","nguyenvu","anhnguyen","hungyen","hoangphuc","yeu123","anhthien","sasa11","yeuanhnhieu","123147","123456A","888999","zxcasd","vandung","qazxsw","foreverlove","lkjhgfdsa","haohao","AAAAAA","tuyen123","ngoctram","01020304","tuankiet","1234565","anhchinh","789852","123456abc","11111","zzzzzzz","leanhtuan","baotran","33333333","qweqwe1","ngocthuy","vip123","viet123","123451","hoangviet","123zxc","phuongthuy","17051990","anhthao","minhhang","123458","ILOVEYOU","anhyeuemnhieulam","761311","thanhan","113355","020202","thanhdung","hieuhieu","thanhmai","787878","techai-lab-0001","techai-lab-0002","techai-lab-0003","techai-lab-0004","techai-lab-0005","techai-lab-0006","techai-lab-0007","techai-lab-0008","techai-lab-0009","techai-lab-0010","techai-lab-0011","techai-lab-0012","techai-lab-0013","techai-lab-0014","techai-lab-0015","techai-lab-0016","techai-lab-0017","techai-lab-0018","techai-lab-0019","techai-lab-0020","techai-lab-0021","techai-lab-0022","techai-lab-0023","techai-lab-0024","techai-lab-0025","techai-lab-0026","techai-lab-0027","techai-lab-0028","techai-lab-0029","techai-lab-0030","techai-lab-0031","techai-lab-0032","techai-lab-0033","techai-lab-0034","techai-lab-0035","techai-lab-0036","techai-lab-0037","techai-lab-0038","techai-lab-0039","techai-lab-0040","techai-lab-0041","techai-lab-0042","techai-lab-0043","techai-lab-0044","techai-lab-0045","techai-lab-0046","techai-lab-0047","techai-lab-0048","techai-lab-0049","techai-lab-0050","techai-lab-0051","techai-lab-0052","techai-lab-0053","techai-lab-0054","techai-lab-0055","techai-lab-0056","techai-lab-0057","techai-lab-0058","techai-lab-0059","techai-lab-0060","techai-lab-0061","techai-lab-0062","techai-lab-0063","techai-lab-0064","techai-lab-0065","techai-lab-0066","techai-lab-0067","techai-lab-0068","techai-lab-0069","techai-lab-0070","techai-lab-0071","techai-lab-0072","techai-lab-0073","techai-lab-0074","techai-lab-0075","techai-lab-0076","techai-lab-0077","techai-lab-0078","techai-lab-0079","techai-lab-0080","techai-lab-0081","techai-lab-0082","techai-lab-0083","techai-lab-0084","techai-lab-0085","techai-lab-0086","techai-lab-0087","techai-lab-0088","techai-lab-0089","techai-lab-0090","techai-lab-0091","techai-lab-0092","techai-lab-0093","techai-lab-0094","techai-lab-0095","techai-lab-0096","techai-lab-0097","techai-lab-0098","techai-lab-0099","techai-lab-0100","techai-lab-0101","techai-lab-0102","techai-lab-0103","techai-lab-0104","techai-lab-0105","techai-lab-0106","techai-lab-0107","techai-lab-0108","techai-lab-0109","techai-lab-0110","techai-lab-0111","techai-lab-0112","techai-lab-0113","techai-lab-0114","techai-lab-0115","techai-lab-0116","techai-lab-0117","techai-lab-0118","techai-lab-0119","techai-lab-0120","techai-lab-0121","techai-lab-0122","techai-lab-0123","techai-lab-0124","techai-lab-0125","techai-lab-0126","techai-lab-0127","techai-lab-0128","techai-lab-0129","techai-lab-0130","techai-lab-0131","techai-lab-0132","techai-lab-0133","techai-lab-0134","techai-lab-0135","techai-lab-0136","techai-lab-0137","techai-lab-0138","techai-lab-0139","techai-lab-0140","techai-lab-0141","techai-lab-0142","techai-lab-0143","techai-lab-0144","techai-lab-0145","techai-lab-0146","techai-lab-0147","techai-lab-0148","techai-lab-0149","techai-lab-0150","techai-lab-0151","techai-lab-0152","techai-lab-0153","techai-lab-0154","techai-lab-0155","techai-lab-0156","techai-lab-0157","techai-lab-0158","techai-lab-0159","techai-lab-0160","techai-lab-0161","techai-lab-0162","techai-lab-0163","techai-lab-0164","techai-lab-0165","techai-lab-0166","techai-lab-0167","techai-lab-0168","techai-lab-0169","techai-lab-0170","techai-lab-0171","techai-lab-0172","techai-lab-0173","techai-lab-0174","techai-lab-0175","techai-lab-0176","techai-lab-0177","techai-lab-0178","techai-lab-0179","techai-lab-0180","techai-lab-0181","techai-lab-0182","techai-lab-0183","techai-lab-0184","techai-lab-0185","techai-lab-0186","techai-lab-0187","techai-lab-0188","techai-lab-0189","techai-lab-0190","techai-lab-0191","techai-lab-0192","techai-lab-0193","techai-lab-0194","techai-lab-0195","techai-lab-0196","techai-lab-0197","techai-lab-0198","techai-lab-0199","techai-lab-0200","techai-lab-0201","techai-lab-0202","techai-lab-0203","techai-lab-0204","techai-lab-0205","techai-lab-0206","techai-lab-0207","techai-lab-0208","techai-lab-0209","techai-lab-0210","techai-lab-0211","techai-lab-0212","techai-lab-0213","techai-lab-0214","techai-lab-0215","techai-lab-0216","techai-lab-0217","techai-lab-0218","techai-lab-0219","techai-lab-0220","techai-lab-0221","techai-lab-0222","techai-lab-0223","techai-lab-0224","techai-lab-0225","techai-lab-0226","techai-lab-0227","techai-lab-0228","techai-lab-0229","techai-lab-0230","techai-lab-0231","techai-lab-0232","techai-lab-0233","techai-lab-0234","techai-lab-0235","techai-lab-0236","techai-lab-0237","techai-lab-0238","techai-lab-0239","techai-lab-0240","techai-lab-0241","techai-lab-0242","techai-lab-0243","techai-lab-0244","techai-lab-0245","techai-lab-0246","techai-lab-0247","techai-lab-0248","techai-lab-0249","techai-lab-0250","techai-lab-0251","techai-lab-0252","techai-lab-0253","techai-lab-0254","techai-lab-0255","techai-lab-0256","techai-lab-0257","techai-lab-0258","techai-lab-0259","techai-lab-0260","techai-lab-0261","techai-lab-0262","techai-lab-0263","techai-lab-0264","techai-lab-0265","techai-lab-0266","techai-lab-0267","techai-lab-0268","techai-lab-0269","techai-lab-0270","techai-lab-0271","techai-lab-0272","techai-lab-0273","techai-lab-0274","techai-lab-0275","techai-lab-0276","techai-lab-0277","techai-lab-0278","techai-lab-0279","techai-lab-0280","techai-lab-0281","techai-lab-0282","techai-lab-0283","techai-lab-0284","techai-lab-0285","techai-lab-0286","techai-lab-0287","techai-lab-0288","techai-lab-0289","techai-lab-0290","techai-lab-0291","techai-lab-0292","techai-lab-0293","techai-lab-0294","techai-lab-0295","techai-lab-0296","techai-lab-0297","techai-lab-0298","techai-lab-0299","techai-lab-0300","techai-lab-0301","techai-lab-0302","techai-lab-0303","techai-lab-0304","techai-lab-0305","techai-lab-0306","techai-lab-0307","techai-lab-0308","techai-lab-0309","techai-lab-0310","techai-lab-0311","techai-lab-0312","techai-lab-0313","techai-lab-0314","techai-lab-0315","techai-lab-0316","techai-lab-0317","techai-lab-0318","techai-lab-0319","techai-lab-0320","techai-lab-0321","techai-lab-0322","techai-lab-0323","techai-lab-0324","techai-lab-0325","techai-lab-0326","techai-lab-0327","techai-lab-0328","techai-lab-0329","techai-lab-0330","techai-lab-0331","techai-lab-0332","techai-lab-0333","techai-lab-0334","techai-lab-0335","techai-lab-0336","techai-lab-0337","techai-lab-0338","techai-lab-0339","techai-lab-0340","techai-lab-0341","techai-lab-0342","techai-lab-0343","techai-lab-0344","techai-lab-0345","techai-lab-0346","techai-lab-0347","techai-lab-0348","techai-lab-0349","techai-lab-0350","techai-lab-0351","techai-lab-0352","techai-lab-0353","techai-lab-0354","techai-lab-0355","techai-lab-0356","techai-lab-0357","techai-lab-0358","techai-lab-0359","techai-lab-0360","techai-lab-0361","techai-lab-0362","techai-lab-0363","techai-lab-0364","techai-lab-0365","techai-lab-0366","techai-lab-0367","techai-lab-0368","techai-lab-0369","techai-lab-0370","techai-lab-0371","techai-lab-0372","techai-lab-0373","techai-lab-0374","techai-lab-0375","techai-lab-0376","techai-lab-0377","techai-lab-0378","techai-lab-0379","techai-lab-0380","techai-lab-0381","techai-lab-0382","techai-lab-0383","techai-lab-0384","techai-lab-0385","techai-lab-0386","techai-lab-0387","techai-lab-0388","techai-lab-0389","techai-lab-0390","techai-lab-0391","techai-lab-0392","techai-lab-0393","techai-lab-0394","techai-lab-0395","techai-lab-0396","techai-lab-0397","techai-lab-0398","techai-lab-0399","techai-lab-0400","techai-lab-0401","techai-lab-0402","techai-lab-0403","techai-lab-0404","techai-lab-0405","techai-lab-0406","techai-lab-0407","techai-lab-0408","techai-lab-0409","techai-lab-0410","techai-lab-0411","techai-lab-0412","techai-lab-0413","techai-lab-0414","techai-lab-0415","techai-lab-0416","techai-lab-0417","techai-lab-0418","techai-lab-0419","techai-lab-0420","techai-lab-0421","techai-lab-0422","techai-lab-0423","techai-lab-0424","techai-lab-0425","techai-lab-0426","techai-lab-0427","techai-lab-0428","techai-lab-0429","techai-lab-0430","techai-lab-0431","techai-lab-0432","techai-lab-0433","techai-lab-0434","techai-lab-0435","techai-lab-0436","techai-lab-0437","techai-lab-0438","techai-lab-0439","techai-lab-0440","techai-lab-0441","techai-lab-0442","techai-lab-0443","techai-lab-0444","techai-lab-0445","techai-lab-0446","techai-lab-0447","techai-lab-0448","techai-lab-0449","techai-lab-0450","techai-lab-0451","techai-lab-0452","techai-lab-0453","techai-lab-0454","techai-lab-0455","techai-lab-0456","techai-lab-0457","techai-lab-0458","techai-lab-0459","techai-lab-0460","techai-lab-0461","techai-lab-0462","techai-lab-0463","techai-lab-0464","techai-lab-0465","techai-lab-0466","techai-lab-0467","techai-lab-0468","techai-lab-0469","techai-lab-0470","techai-lab-0471","techai-lab-0472","techai-lab-0473","techai-lab-0474","techai-lab-0475","techai-lab-0476","techai-lab-0477","techai-lab-0478","techai-lab-0479","techai-lab-0480","techai-lab-0481","techai-lab-0482","techai-lab-0483","techai-lab-0484","techai-lab-0485","techai-lab-0486","techai-lab-0487","techai-lab-0488","techai-lab-0489","techai-lab-0490","techai-lab-0491","techai-lab-0492","techai-lab-0493","techai-lab-0494","techai-lab-0495","techai-lab-0496","techai-lab-0497","techai-lab-0498","techai-lab-0499","techai-lab-0500","techai-lab-0501","techai-lab-0502","techai-lab-0503","techai-lab-0504","techai-lab-0505","techai-lab-0506","techai-lab-0507","techai-lab-0508","techai-lab-0509","techai-lab-0510","techai-lab-0511","techai-lab-0512","techai-lab-0513","techai-lab-0514","techai-lab-0515","techai-lab-0516","techai-lab-0517","techai-lab-0518","techai-lab-0519","techai-lab-0520","techai-lab-0521","techai-lab-0522","techai-lab-0523","techai-lab-0524","techai-lab-0525","techai-lab-0526","techai-lab-0527","techai-lab-0528","techai-lab-0529","techai-lab-0530","techai-lab-0531","techai-lab-0532","techai-lab-0533","techai-lab-0534","techai-lab-0535","techai-lab-0536","techai-lab-0537","techai-lab-0538","techai-lab-0539","techai-lab-0540","techai-lab-0541","techai-lab-0542","techai-lab-0543","techai-lab-0544","techai-lab-0545","techai-lab-0546","techai-lab-0547","techai-lab-0548","techai-lab-0549","techai-lab-0550","techai-lab-0551","techai-lab-0552","techai-lab-0553","techai-lab-0554","techai-lab-0555","techai-lab-0556","techai-lab-0557","techai-lab-0558","techai-lab-0559","techai-lab-0560","techai-lab-0561","techai-lab-0562","techai-lab-0563","techai-lab-0564","techai-lab-0565","techai-lab-0566","techai-lab-0567","techai-lab-0568","techai-lab-0569","techai-lab-0570","techai-lab-0571","techai-lab-0572","techai-lab-0573","techai-lab-0574","techai-lab-0575","techai-lab-0576","techai-lab-0577","techai-lab-0578","techai-lab-0579","techai-lab-0580","techai-lab-0581","techai-lab-0582","techai-lab-0583","techai-lab-0584","techai-lab-0585","techai-lab-0586","techai-lab-0587","techai-lab-0588","techai-lab-0589","techai-lab-0590","techai-lab-0591","techai-lab-0592","techai-lab-0593","techai-lab-0594","techai-lab-0595","techai-lab-0596","techai-lab-0597","techai-lab-0598","techai-lab-0599","techai-lab-0600","techai-lab-0601","techai-lab-0602","techai-lab-0603","techai-lab-0604","techai-lab-0605","techai-lab-0606","techai-lab-0607","techai-lab-0608","techai-lab-0609","techai-lab-0610","techai-lab-0611","techai-lab-0612","techai-lab-0613","techai-lab-0614","techai-lab-0615","techai-lab-0616","techai-lab-0617","techai-lab-0618","techai-lab-0619","techai-lab-0620","techai-lab-0621","techai-lab-0622","techai-lab-0623","techai-lab-0624","techai-lab-0625","techai-lab-0626","techai-lab-0627","techai-lab-0628","techai-lab-0629","techai-lab-0630","techai-lab-0631","techai-lab-0632","techai-lab-0633","techai-lab-0634","techai-lab-0635","techai-lab-0636","techai-lab-0637","techai-lab-0638","techai-lab-0639","techai-lab-0640","techai-lab-0641","techai-lab-0642","techai-lab-0643","techai-lab-0644","techai-lab-0645","techai-lab-0646","techai-lab-0647","techai-lab-0648","techai-lab-0649","techai-lab-0650","techai-lab-0651","techai-lab-0652","techai-lab-0653","techai-lab-0654","techai-lab-0655","techai-lab-0656","techai-lab-0657","techai-lab-0658","techai-lab-0659","techai-lab-0660","techai-lab-0661","techai-lab-0662","techai-lab-0663","techai-lab-0664","techai-lab-0665","techai-lab-0666","techai-lab-0667","techai-lab-0668","techai-lab-0669","techai-lab-0670","techai-lab-0671","techai-lab-0672","techai-lab-0673","techai-lab-0674","techai-lab-0675","techai-lab-0676","techai-lab-0677","techai-lab-0678","techai-lab-0679","techai-lab-0680","techai-lab-0681","techai-lab-0682","techai-lab-0683","techai-lab-0684","techai-lab-0685","techai-lab-0686","techai-lab-0687","techai-lab-0688","techai-lab-0689","techai-lab-0690","techai-lab-0691","techai-lab-0692","techai-lab-0693","techai-lab-0694","techai-lab-0695","techai-lab-0696","techai-lab-0697","techai-lab-0698","techai-lab-0699","techai-lab-0700","techai-lab-0701","techai-lab-0702","techai-lab-0703","techai-lab-0704","techai-lab-0705","techai-lab-0706","techai-lab-0707","techai-lab-0708","techai-lab-0709","techai-lab-0710","techai-lab-0711","techai-lab-0712","techai-lab-0713","techai-lab-0714","techai-lab-0715","techai-lab-0716","techai-lab-0717","techai-lab-0718","techai-lab-0719","techai-lab-0720","techai-lab-0721","techai-lab-0722","techai-lab-0723","techai-lab-0724","techai-lab-0725","techai-lab-0726","techai-lab-0727","techai-lab-0728","techai-lab-0729","techai-lab-0730","techai-lab-0731","techai-lab-0732","techai-lab-0733","techai-lab-0734","techai-lab-0735","techai-lab-0736","techai-lab-0737","techai-lab-0738","techai-lab-0739","techai-lab-0740","techai-lab-0741","techai-lab-0742","techai-lab-0743","techai-lab-0744","techai-lab-0745","techai-lab-0746","techai-lab-0747","techai-lab-0748","techai-lab-0749","techai-lab-0750","techai-lab-0751","techai-lab-0752","techai-lab-0753","techai-lab-0754","techai-lab-0755","techai-lab-0756","techai-lab-0757","techai-lab-0758","techai-lab-0759","techai-lab-0760","techai-lab-0761","techai-lab-0762","techai-lab-0763","techai-lab-0764","techai-lab-0765","techai-lab-0766","techai-lab-0767","techai-lab-0768","techai-lab-0769","techai-lab-0770","techai-lab-0771","techai-lab-0772","techai-lab-0773","techai-lab-0774","techai-lab-0775","techai-lab-0776","techai-lab-0777","techai-lab-0778","techai-lab-0779","techai-lab-0780","techai-lab-0781","techai-lab-0782","techai-lab-0783","techai-lab-0784","techai-lab-0785","techai-lab-0786","techai-lab-0787","techai-lab-0788","techai-lab-0789","techai-lab-0790","techai-lab-0791","techai-lab-0792","techai-lab-0793","techai-lab-0794","techai-lab-0795","techai-lab-0796","techai-lab-0797","techai-lab-0798","techai-lab-0799","techai-lab-0800","techai-lab-0801","techai-lab-0802","techai-lab-0803","techai-lab-0804","techai-lab-0805","techai-lab-0806","techai-lab-0807","techai-lab-0808","techai-lab-0809","techai-lab-0810","techai-lab-0811","techai-lab-0812","techai-lab-0813","techai-lab-0814","techai-lab-0815","techai-lab-0816","techai-lab-0817","techai-lab-0818","techai-lab-0819","techai-lab-0820","techai-lab-0821","techai-lab-0822","techai-lab-0823","techai-lab-0824","techai-lab-0825","techai-lab-0826","techai-lab-0827","techai-lab-0828","techai-lab-0829","techai-lab-0830","techai-lab-0831","techai-lab-0832","techai-lab-0833","techai-lab-0834","techai-lab-0835","techai-lab-0836","techai-lab-0837","techai-lab-0838","techai-lab-0839","techai-lab-0840","techai-lab-0841","techai-lab-0842","techai-lab-0843","techai-lab-0844","techai-lab-0845","techai-lab-0846","techai-lab-0847","techai-lab-0848","techai-lab-0849","techai-lab-0850","techai-lab-0851","techai-lab-0852","techai-lab-0853","techai-lab-0854","techai-lab-0855","techai-lab-0856","techai-lab-0857","techai-lab-0858","techai-lab-0859","techai-lab-0860","techai-lab-0861","techai-lab-0862","techai-lab-0863","techai-lab-0864","techai-lab-0865","techai-lab-0866","techai-lab-0867","techai-lab-0868","techai-lab-0869","techai-lab-0870","techai-lab-0871","techai-lab-0872","techai-lab-0873","techai-lab-0874","techai-lab-0875","techai-lab-0876","techai-lab-0877","techai-lab-0878","techai-lab-0879","techai-lab-0880","techai-lab-0881","techai-lab-0882","techai-lab-0883","techai-lab-0884","techai-lab-0885","techai-lab-0886","techai-lab-0887","techai-lab-0888","techai-lab-0889","techai-lab-0890","techai-lab-0891","techai-lab-0892","techai-lab-0893","techai-lab-0894","techai-lab-0895","techai-lab-0896","techai-lab-0897","techai-lab-0898","techai-lab-0899","techai-lab-0900","techai-lab-0901","techai-lab-0902","techai-lab-0903","techai-lab-0904","techai-lab-0905","techai-lab-0906","techai-lab-0907","techai-lab-0908","techai-lab-0909","techai-lab-0910","techai-lab-0911","techai-lab-0912","techai-lab-0913","techai-lab-0914","techai-lab-0915","techai-lab-0916","techai-lab-0917","techai-lab-0918","techai-lab-0919","techai-lab-0920","techai-lab-0921","techai-lab-0922","techai-lab-0923","techai-lab-0924","techai-lab-0925","techai-lab-0926","techai-lab-0927","techai-lab-0928","techai-lab-0929","techai-lab-0930","techai-lab-0931","techai-lab-0932","techai-lab-0933","techai-lab-0934","techai-lab-0935","techai-lab-0936","techai-lab-0937","techai-lab-0938","techai-lab-0939","techai-lab-0940","techai-lab-0941","techai-lab-0942","techai-lab-0943","techai-lab-0944","techai-lab-0945","techai-lab-0946","techai-lab-0947","techai-lab-0948","techai-lab-0949","techai-lab-0950","techai-lab-0951","techai-lab-0952","techai-lab-0953","techai-lab-0954","techai-lab-0955","techai-lab-0956","techai-lab-0957","techai-lab-0958","techai-lab-0959","techai-lab-0960","techai-lab-0961","techai-lab-0962","techai-lab-0963","techai-lab-0964","techai-lab-0965","techai-lab-0966","techai-lab-0967","techai-lab-0968","techai-lab-0969","techai-lab-0970","techai-lab-0971","techai-lab-0972","techai-lab-0973","techai-lab-0974","techai-lab-0975","techai-lab-0976","techai-lab-0977","techai-lab-0978","techai-lab-0979","techai-lab-0980","techai-lab-0981","techai-lab-0982","techai-lab-0983","techai-lab-0984","techai-lab-0985","techai-lab-0986","techai-lab-0987","techai-lab-0988","techai-lab-0989","techai-lab-0990","techai-lab-0991","techai-lab-0992","techai-lab-0993","techai-lab-0994","techai-lab-0995","techai-lab-0996","techai-lab-0997","techai-lab-0998","techai-lab-0999","techai-lab-1000","techai-lab-1001","techai-lab-1002","techai-lab-1003","techai-lab-1004","techai-lab-1005","techai-lab-1006","techai-lab-1007","techai-lab-1008","techai-lab-1009","techai-lab-1010","techai-lab-1011","techai-lab-1012","techai-lab-1013","techai-lab-1014","techai-lab-1015","techai-lab-1016","techai-lab-1017","techai-lab-1018","techai-lab-1019","techai-lab-1020","techai-lab-1021","techai-lab-1022","techai-lab-1023","techai-lab-1024","techai-lab-1025","techai-lab-1026","techai-lab-1027","techai-lab-1028","techai-lab-1029","techai-lab-1030","techai-lab-1031","techai-lab-1032","techai-lab-1033","techai-lab-1034","techai-lab-1035","techai-lab-1036","techai-lab-1037","techai-lab-1038","techai-lab-1039","techai-lab-1040","techai-lab-1041","techai-lab-1042","techai-lab-1043","techai-lab-1044","techai-lab-1045","techai-lab-1046","techai-lab-1047","techai-lab-1048","techai-lab-1049","techai-lab-1050","techai-lab-1051","techai-lab-1052","techai-lab-1053","techai-lab-1054","techai-lab-1055","techai-lab-1056","techai-lab-1057","techai-lab-1058","techai-lab-1059","techai-lab-1060","techai-lab-1061","techai-lab-1062","techai-lab-1063","techai-lab-1064","techai-lab-1065","techai-lab-1066","techai-lab-1067","techai-lab-1068","techai-lab-1069","techai-lab-1070","techai-lab-1071","techai-lab-1072","techai-lab-1073","techai-lab-1074","techai-lab-1075","techai-lab-1076","techai-lab-1077","techai-lab-1078","techai-lab-1079","techai-lab-1080","techai-lab-1081","techai-lab-1082","techai-lab-1083","techai-lab-1084","techai-lab-1085","techai-lab-1086","techai-lab-1087","techai-lab-1088","techai-lab-1089","techai-lab-1090","techai-lab-1091","techai-lab-1092","techai-lab-1093","techai-lab-1094","techai-lab-1095","techai-lab-1096","techai-lab-1097","techai-lab-1098","techai-lab-1099","techai-lab-1100","techai-lab-1101","techai-lab-1102","techai-lab-1103","techai-lab-1104","techai-lab-1105","techai-lab-1106","techai-lab-1107","techai-lab-1108","techai-lab-1109","techai-lab-1110","techai-lab-1111","techai-lab-1112","techai-lab-1113","techai-lab-1114","techai-lab-1115","techai-lab-1116","techai-lab-1117","techai-lab-1118","techai-lab-1119","techai-lab-1120","techai-lab-1121","techai-lab-1122","techai-lab-1123","techai-lab-1124","techai-lab-1125","techai-lab-1126","techai-lab-1127","techai-lab-1128","techai-lab-1129","techai-lab-1130","techai-lab-1131","techai-lab-1132","techai-lab-1133","techai-lab-1134","techai-lab-1135","techai-lab-1136","techai-lab-1137","techai-lab-1138","techai-lab-1139","techai-lab-1140","techai-lab-1141","techai-lab-1142","techai-lab-1143","techai-lab-1144","techai-lab-1145","techai-lab-1146","techai-lab-1147","techai-lab-1148","techai-lab-1149","techai-lab-1150","techai-lab-1151","techai-lab-1152","techai-lab-1153","techai-lab-1154","techai-lab-1155","techai-lab-1156","techai-lab-1157","techai-lab-1158","techai-lab-1159","techai-lab-1160","techai-lab-1161","techai-lab-1162","techai-lab-1163","techai-lab-1164","techai-lab-1165","techai-lab-1166","techai-lab-1167","techai-lab-1168","techai-lab-1169","techai-lab-1170","techai-lab-1171","techai-lab-1172","techai-lab-1173","techai-lab-1174","techai-lab-1175","techai-lab-1176","techai-lab-1177","techai-lab-1178","techai-lab-1179","techai-lab-1180","techai-lab-1181","techai-lab-1182","techai-lab-1183","techai-lab-1184","techai-lab-1185","techai-lab-1186","techai-lab-1187","techai-lab-1188","techai-lab-1189","techai-lab-1190","techai-lab-1191","techai-lab-1192","techai-lab-1193","techai-lab-1194","techai-lab-1195","techai-lab-1196","techai-lab-1197","techai-lab-1198","techai-lab-1199","techai-lab-1200","techai-lab-1201","techai-lab-1202","techai-lab-1203","techai-lab-1204","techai-lab-1205","techai-lab-1206","techai-lab-1207","techai-lab-1208","techai-lab-1209","techai-lab-1210","techai-lab-1211","techai-lab-1212","techai-lab-1213","techai-lab-1214","techai-lab-1215","techai-lab-1216","techai-lab-1217","techai-lab-1218","techai-lab-1219","techai-lab-1220","techai-lab-1221","techai-lab-1222","techai-lab-1223","techai-lab-1224","techai-lab-1225","techai-lab-1226","techai-lab-1227","techai-lab-1228","techai-lab-1229","techai-lab-1230","techai-lab-1231","techai-lab-1232","techai-lab-1233","techai-lab-1234","techai-lab-1235","techai-lab-1236","techai-lab-1237","techai-lab-1238","techai-lab-1239","techai-lab-1240","techai-lab-1241","techai-lab-1242","techai-lab-1243","techai-lab-1244","techai-lab-1245","techai-lab-1246","techai-lab-1247","techai-lab-1248","techai-lab-1249","techai-lab-1250","techai-lab-1251","techai-lab-1252","techai-lab-1253","techai-lab-1254","techai-lab-1255","techai-lab-1256","techai-lab-1257","techai-lab-1258","techai-lab-1259","techai-lab-1260","techai-lab-1261","techai-lab-1262","techai-lab-1263","techai-lab-1264","techai-lab-1265","techai-lab-1266","techai-lab-1267","techai-lab-1268","techai-lab-1269","techai-lab-1270","techai-lab-1271","techai-lab-1272","techai-lab-1273","techai-lab-1274","techai-lab-1275","techai-lab-1276","techai-lab-1277","techai-lab-1278","techai-lab-1279","techai-lab-1280","techai-lab-1281","techai-lab-1282","techai-lab-1283","techai-lab-1284","techai-lab-1285","techai-lab-1286","techai-lab-1287","techai-lab-1288","techai-lab-1289","techai-lab-1290","techai-lab-1291","techai-lab-1292","techai-lab-1293","techai-lab-1294","techai-lab-1295","techai-lab-1296","techai-lab-1297","techai-lab-1298","techai-lab-1299","techai-lab-1300","techai-lab-1301","techai-lab-1302","techai-lab-1303","techai-lab-1304","techai-lab-1305","techai-lab-1306","techai-lab-1307","techai-lab-1308","techai-lab-1309","techai-lab-1310","techai-lab-1311","techai-lab-1312","techai-lab-1313","techai-lab-1314","techai-lab-1315","techai-lab-1316","techai-lab-1317","techai-lab-1318","techai-lab-1319","techai-lab-1320","techai-lab-1321","techai-lab-1322","techai-lab-1323","techai-lab-1324","techai-lab-1325","techai-lab-1326","techai-lab-1327","techai-lab-1328","techai-lab-1329","techai-lab-1330","techai-lab-1331","techai-lab-1332","techai-lab-1333","techai-lab-1334","techai-lab-1335","techai-lab-1336","techai-lab-1337","techai-lab-1338","techai-lab-1339","techai-lab-1340","techai-lab-1341","techai-lab-1342","techai-lab-1343","techai-lab-1344","techai-lab-1345","techai-lab-1346","techai-lab-1347","techai-lab-1348","techai-lab-1349","techai-lab-1350","techai-lab-1351","techai-lab-1352","techai-lab-1353","techai-lab-1354","techai-lab-1355","techai-lab-1356","techai-lab-1357","techai-lab-1358","techai-lab-1359","techai-lab-1360","techai-lab-1361","techai-lab-1362","techai-lab-1363","techai-lab-1364","techai-lab-1365","techai-lab-1366","techai-lab-1367","techai-lab-1368","techai-lab-1369","techai-lab-1370","techai-lab-1371","techai-lab-1372","techai-lab-1373","techai-lab-1374","techai-lab-1375","techai-lab-1376","techai-lab-1377","techai-lab-1378","techai-lab-1379","techai-lab-1380","techai-lab-1381","techai-lab-1382","techai-lab-1383","techai-lab-1384","techai-lab-1385","techai-lab-1386","techai-lab-1387","techai-lab-1388","techai-lab-1389","techai-lab-1390","techai-lab-1391","techai-lab-1392","techai-lab-1393","techai-lab-1394","techai-lab-1395","techai-lab-1396","techai-lab-1397","techai-lab-1398","techai-lab-1399","techai-lab-1400","techai-lab-1401","techai-lab-1402","techai-lab-1403","techai-lab-1404","techai-lab-1405","techai-lab-1406","techai-lab-1407","techai-lab-1408","techai-lab-1409","techai-lab-1410","techai-lab-1411","techai-lab-1412","techai-lab-1413","techai-lab-1414","techai-lab-1415","techai-lab-1416","techai-lab-1417","techai-lab-1418","techai-lab-1419","techai-lab-1420","techai-lab-1421","techai-lab-1422","techai-lab-1423","techai-lab-1424","techai-lab-1425","techai-lab-1426","techai-lab-1427","techai-lab-1428","techai-lab-1429","techai-lab-1430","techai-lab-1431","techai-lab-1432","techai-lab-1433","techai-lab-1434","techai-lab-1435","techai-lab-1436","techai-lab-1437","techai-lab-1438","techai-lab-1439","techai-lab-1440","techai-lab-1441","techai-lab-1442","techai-lab-1443","techai-lab-1444","techai-lab-1445","techai-lab-1446","techai-lab-1447","techai-lab-1448","techai-lab-1449","techai-lab-1450","techai-lab-1451","techai-lab-1452","techai-lab-1453","techai-lab-1454","techai-lab-1455","techai-lab-1456","techai-lab-1457","techai-lab-1458","techai-lab-1459","techai-lab-1460","techai-lab-1461","techai-lab-1462","techai-lab-1463","techai-lab-1464","techai-lab-1465","techai-lab-1466","techai-lab-1467","techai-lab-1468","techai-lab-1469","techai-lab-1470","techai-lab-1471","techai-lab-1472","techai-lab-1473","techai-lab-1474","techai-lab-1475","techai-lab-1476","techai-lab-1477","techai-lab-1478","techai-lab-1479","techai-lab-1480","techai-lab-1481","techai-lab-1482","techai-lab-1483","techai-lab-1484","techai-lab-1485","techai-lab-1486","techai-lab-1487","techai-lab-1488","techai-lab-1489","techai-lab-1490","techai-lab-1491","techai-lab-1492","techai-lab-1493","techai-lab-1494","techai-lab-1495","techai-lab-1496","techai-lab-1497","techai-lab-1498","techai-lab-1499","techai-lab-1500","techai-lab-1501","techai-lab-1502","techai-lab-1503","techai-lab-1504","techai-lab-1505","techai-lab-1506","techai-lab-1507","techai-lab-1508","techai-lab-1509","techai-lab-1510","techai-lab-1511","techai-lab-1512","techai-lab-1513","techai-lab-1514","techai-lab-1515","techai-lab-1516","techai-lab-1517","techai-lab-1518","techai-lab-1519","techai-lab-1520","techai-lab-1521","techai-lab-1522","techai-lab-1523","techai-lab-1524","techai-lab-1525","techai-lab-1526","techai-lab-1527","techai-lab-1528","techai-lab-1529","techai-lab-1530","techai-lab-1531","techai-lab-1532","techai-lab-1533","techai-lab-1534","techai-lab-1535","techai-lab-1536","techai-lab-1537","techai-lab-1538","techai-lab-1539","techai-lab-1540","techai-lab-1541","techai-lab-1542","techai-lab-1543","techai-lab-1544","techai-lab-1545","techai-lab-1546","techai-lab-1547","techai-lab-1548","techai-lab-1549","techai-lab-1550","techai-lab-1551","techai-lab-1552","techai-lab-1553","techai-lab-1554","techai-lab-1555","techai-lab-1556","techai-lab-1557","techai-lab-1558","techai-lab-1559","techai-lab-1560","techai-lab-1561","techai-lab-1562","techai-lab-1563","techai-lab-1564","techai-lab-1565","techai-lab-1566","techai-lab-1567","techai-lab-1568","techai-lab-1569","techai-lab-1570","techai-lab-1571","techai-lab-1572","techai-lab-1573","techai-lab-1574","techai-lab-1575","techai-lab-1576","techai-lab-1577","techai-lab-1578","techai-lab-1579","techai-lab-1580","techai-lab-1581","techai-lab-1582","techai-lab-1583","techai-lab-1584","techai-lab-1585","techai-lab-1586","techai-lab-1587","techai-lab-1588","techai-lab-1589","techai-lab-1590","techai-lab-1591","techai-lab-1592","techai-lab-1593","techai-lab-1594","techai-lab-1595","techai-lab-1596","techai-lab-1597","techai-lab-1598","techai-lab-1599","techai-lab-1600","techai-lab-1601","techai-lab-1602","techai-lab-1603","techai-lab-1604","techai-lab-1605","techai-lab-1606","techai-lab-1607","techai-lab-1608","techai-lab-1609","techai-lab-1610","techai-lab-1611","techai-lab-1612","techai-lab-1613","techai-lab-1614","techai-lab-1615","techai-lab-1616","techai-lab-1617","techai-lab-1618","techai-lab-1619","techai-lab-1620","techai-lab-1621","techai-lab-1622","techai-lab-1623","techai-lab-1624","techai-lab-1625","techai-lab-1626","techai-lab-1627","techai-lab-1628","techai-lab-1629","techai-lab-1630","techai-lab-1631","techai-lab-1632","techai-lab-1633","techai-lab-1634","techai-lab-1635","techai-lab-1636","techai-lab-1637","techai-lab-1638","techai-lab-1639","techai-lab-1640","techai-lab-1641","techai-lab-1642","techai-lab-1643","techai-lab-1644","techai-lab-1645","techai-lab-1646","techai-lab-1647","techai-lab-1648","techai-lab-1649","techai-lab-1650","techai-lab-1651","techai-lab-1652","techai-lab-1653","techai-lab-1654","techai-lab-1655","techai-lab-1656","techai-lab-1657","techai-lab-1658","techai-lab-1659","techai-lab-1660","techai-lab-1661","techai-lab-1662","techai-lab-1663","techai-lab-1664","techai-lab-1665","techai-lab-1666","techai-lab-1667","techai-lab-1668","techai-lab-1669","techai-lab-1670","techai-lab-1671","techai-lab-1672","techai-lab-1673","techai-lab-1674","techai-lab-1675","techai-lab-1676","techai-lab-1677","techai-lab-1678","techai-lab-1679","techai-lab-1680","techai-lab-1681","techai-lab-1682","techai-lab-1683","techai-lab-1684","techai-lab-1685","techai-lab-1686","techai-lab-1687","techai-lab-1688","techai-lab-1689","techai-lab-1690","techai-lab-1691","techai-lab-1692","techai-lab-1693","techai-lab-1694","techai-lab-1695","techai-lab-1696","techai-lab-1697","techai-lab-1698","techai-lab-1699","techai-lab-1700","techai-lab-1701","techai-lab-1702","techai-lab-1703","techai-lab-1704","techai-lab-1705","techai-lab-1706","techai-lab-1707","techai-lab-1708","techai-lab-1709","techai-lab-1710","techai-lab-1711","techai-lab-1712","techai-lab-1713","techai-lab-1714","techai-lab-1715","techai-lab-1716","techai-lab-1717","techai-lab-1718","techai-lab-1719","techai-lab-1720","techai-lab-1721","techai-lab-1722","techai-lab-1723","techai-lab-1724","techai-lab-1725","techai-lab-1726","techai-lab-1727","techai-lab-1728","techai-lab-1729","techai-lab-1730","techai-lab-1731","techai-lab-1732","techai-lab-1733","techai-lab-1734","techai-lab-1735","techai-lab-1736","techai-lab-1737","techai-lab-1738","techai-lab-1739","techai-lab-1740","techai-lab-1741","techai-lab-1742","techai-lab-1743","techai-lab-1744","techai-lab-1745","techai-lab-1746","techai-lab-1747","techai-lab-1748","techai-lab-1749","techai-lab-1750","techai-lab-1751","techai-lab-1752","techai-lab-1753","techai-lab-1754","techai-lab-1755","techai-lab-1756","techai-lab-1757","techai-lab-1758","techai-lab-1759","techai-lab-1760","techai-lab-1761","techai-lab-1762","techai-lab-1763","techai-lab-1764","techai-lab-1765","techai-lab-1766","techai-lab-1767","techai-lab-1768","techai-lab-1769","techai-lab-1770","techai-lab-1771","techai-lab-1772","techai-lab-1773","techai-lab-1774","techai-lab-1775","techai-lab-1776","techai-lab-1777","techai-lab-1778","techai-lab-1779","techai-lab-1780","techai-lab-1781","techai-lab-1782","techai-lab-1783","techai-lab-1784","techai-lab-1785","techai-lab-1786","techai-lab-1787","techai-lab-1788","techai-lab-1789","techai-lab-1790","techai-lab-1791","techai-lab-1792","techai-lab-1793","techai-lab-1794","techai-lab-1795","techai-lab-1796","techai-lab-1797","techai-lab-1798","techai-lab-1799","techai-lab-1800","techai-lab-1801","techai-lab-1802","techai-lab-1803","techai-lab-1804","techai-lab-1805","techai-lab-1806","techai-lab-1807","techai-lab-1808","techai-lab-1809","techai-lab-1810","techai-lab-1811","techai-lab-1812","techai-lab-1813","techai-lab-1814","techai-lab-1815","techai-lab-1816","techai-lab-1817","techai-lab-1818","techai-lab-1819","techai-lab-1820","techai-lab-1821","techai-lab-1822","techai-lab-1823","techai-lab-1824","techai-lab-1825","techai-lab-1826","techai-lab-1827","techai-lab-1828","techai-lab-1829","techai-lab-1830","techai-lab-1831","techai-lab-1832","techai-lab-1833","techai-lab-1834","techai-lab-1835","techai-lab-1836","techai-lab-1837","techai-lab-1838","techai-lab-1839","techai-lab-1840","techai-lab-1841","techai-lab-1842","techai-lab-1843","techai-lab-1844","techai-lab-1845","techai-lab-1846","techai-lab-1847","techai-lab-1848","techai-lab-1849","techai-lab-1850","techai-lab-1851","techai-lab-1852","techai-lab-1853","techai-lab-1854","techai-lab-1855","techai-lab-1856","techai-lab-1857","techai-lab-1858","techai-lab-1859","techai-lab-1860","techai-lab-1861","techai-lab-1862","techai-lab-1863","techai-lab-1864","techai-lab-1865","techai-lab-1866","techai-lab-1867","techai-lab-1868","techai-lab-1869","techai-lab-1870","techai-lab-1871","techai-lab-1872","techai-lab-1873","techai-lab-1874","techai-lab-1875","techai-lab-1876","techai-lab-1877","techai-lab-1878","techai-lab-1879","techai-lab-1880","techai-lab-1881","techai-lab-1882","techai-lab-1883","techai-lab-1884","techai-lab-1885","techai-lab-1886","techai-lab-1887","techai-lab-1888","techai-lab-1889","techai-lab-1890","techai-lab-1891","techai-lab-1892","techai-lab-1893","techai-lab-1894","techai-lab-1895","techai-lab-1896","techai-lab-1897","techai-lab-1898","techai-lab-1899","techai-lab-1900","techai-lab-1901","techai-lab-1902","techai-lab-1903","techai-lab-1904","techai-lab-1905","techai-lab-1906","techai-lab-1907","techai-lab-1908","techai-lab-1909","techai-lab-1910","techai-lab-1911","techai-lab-1912","techai-lab-1913","techai-lab-1914","techai-lab-1915","techai-lab-1916","techai-lab-1917","techai-lab-1918","techai-lab-1919","techai-lab-1920","techai-lab-1921","techai-lab-1922","techai-lab-1923","techai-lab-1924","techai-lab-1925","techai-lab-1926","techai-lab-1927","techai-lab-1928","techai-lab-1929","techai-lab-1930","techai-lab-1931","techai-lab-1932","techai-lab-1933","techai-lab-1934","techai-lab-1935","techai-lab-1936","techai-lab-1937","techai-lab-1938","techai-lab-1939","techai-lab-1940","techai-lab-1941","techai-lab-1942","techai-lab-1943","techai-lab-1944","techai-lab-1945","techai-lab-1946","techai-lab-1947","techai-lab-1948","techai-lab-1949","techai-lab-1950","techai-lab-1951","techai-lab-1952","techai-lab-1953","techai-lab-1954","techai-lab-1955","techai-lab-1956","techai-lab-1957","techai-lab-1958","techai-lab-1959","techai-lab-1960","techai-lab-1961","techai-lab-1962","techai-lab-1963","techai-lab-1964","techai-lab-1965","techai-lab-1966","techai-lab-1967","techai-lab-1968","techai-lab-1969","techai-lab-1970","techai-lab-1971","techai-lab-1972","techai-lab-1973","techai-lab-1974","techai-lab-1975","techai-lab-1976","techai-lab-1977","techai-lab-1978","techai-lab-1979","techai-lab-1980","techai-lab-1981","techai-lab-1982","techai-lab-1983","techai-lab-1984","techai-lab-1985","techai-lab-1986","techai-lab-1987","techai-lab-1988","techai-lab-1989","techai-lab-1990","techai-lab-1991","techai-lab-1992","techai-lab-1993","techai-lab-1994","techai-lab-1995","techai-lab-1996","techai-lab-1997","techai-lab-1998","techai-lab-1999","techai-lab-2000"]</script>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const previousSlide = document.querySelector('#prev-slide');
+    const nextSlide = document.querySelector('#next-slide');
+    const slidePosition = document.querySelector('#slide-position');
+    let slideIndex = 0;
+
+    function moveSlide(offset) {
+      const nextIndex = slideIndex + offset;
+      if (nextIndex < 0 || nextIndex >= slides.length) return;
+      slides[slideIndex].hidden = true;
+      slideIndex = nextIndex;
+      slides[slideIndex].hidden = false;
+      document.querySelector('#slides').scrollTop = 0;
+      slidePosition.textContent = String(slideIndex + 1).padStart(2, '0') + ' / ' + slides.length;
+      previousSlide.disabled = slideIndex === 0;
+      nextSlide.disabled = slideIndex === slides.length - 1;
+    }
+
+    previousSlide.addEventListener('click', () => moveSlide(-1));
+    nextSlide.addEventListener('click', () => moveSlide(1));
+    const slideDeck = document.querySelector('#slide-deck');
+    const guide = document.querySelector('#password-guide');
+    document.querySelector('#open-password-guide').addEventListener('click', () => guide.showModal());
+    const fullscreenButton = document.querySelector('#fullscreen-slide');
+    fullscreenButton.hidden = !document.fullscreenEnabled;
+    function labelFullscreenButton(label) {
+      fullscreenButton.setAttribute('aria-label', label);
+      fullscreenButton.title = label;
+    }
+    fullscreenButton.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement === slideDeck) await document.exitFullscreen();
+        else await slideDeck.requestFullscreen();
+      } catch {
+        labelFullscreenButton('Thử lại toàn màn hình');
+      }
+    });
+    document.addEventListener('fullscreenchange', () => {
+      labelFullscreenButton(document.fullscreenElement === slideDeck ? 'Thoát toàn màn hình' : 'Toàn màn hình');
+    });
+    slideDeck.addEventListener('keydown', event => {
+      if (guide.open) return;
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      moveSlide(event.key === 'ArrowLeft' ? -1 : 1);
+    });
+
+    const home = document.querySelector('#trang-chu');
+    const labs = document.querySelector('#labs');
+    const tabs = [...labs.querySelectorAll('[role="tab"]')];
+    const panels = tabs.map(tab => document.getElementById(tab.getAttribute('aria-controls')));
+
+    function renderPage() {
+      const selected = panels.findIndex(panel => '#' + panel.id === location.hash);
+      home.hidden = selected !== -1;
+      labs.hidden = selected === -1;
+      tabs.forEach((tab, index) => {
+        const active = index === selected;
+        tab.setAttribute('aria-selected', active);
+        tab.tabIndex = active ? 0 : -1;
+        panels[index].hidden = !active;
+      });
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => { location.hash = panels[index].id; });
+      tab.addEventListener('keydown', event => {
+        const keys = ['ArrowLeft', 'ArrowRight', 'Home', 'End'];
+        if (!keys.includes(event.key)) return;
+        event.preventDefault();
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : 1 - index;
+        tabs[next].click();
+        tabs[next].focus();
+      });
+    });
+    window.addEventListener('hashchange', () => {
+      renderPage();
+      if (home.hidden && document.fullscreenElement === slideDeck) {
+        document.exitFullscreen().catch(() => {});
+      }
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+    renderPage();
+
+    const passwords = JSON.parse(document.querySelector('#password-list').textContent);
+    const integerFormat = new Intl.NumberFormat('vi-VN');
+    const elapsedFormat = new Intl.NumberFormat('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const targetInput = document.querySelector('#target-password');
+    const protection = document.querySelector('#protection');
+    const start = document.querySelector('#start');
+    const cancel = document.querySelector('#cancel');
+    const log = document.querySelector('#log');
+    const result = document.querySelector('#result');
+    const progress = document.querySelector('#progress');
+    const attemptCount = document.querySelector('#attempt-count');
+    const elapsed = document.querySelector('#elapsed');
+    let timer = null;
+    let startedAt = 0;
+
+    function updateMetrics(attempts, milliseconds) {
+      progress.value = attempts;
+      attemptCount.value = integerFormat.format(attempts) + ' / ' + integerFormat.format(progress.max);
+      elapsed.value = elapsedFormat.format(milliseconds / 1000) + ' giây';
+    }
+
+    function resetResults() {
+      progress.max = passwords.length;
+      updateMetrics(0, 0);
+      log.textContent = 'Sẵn sàng. Nhập mật khẩu thử nghiệm để bắt đầu.';
+      result.textContent = 'Chưa bắt đầu.';
+    }
+
+    resetResults();
+
+    function stop() {
+      clearInterval(timer);
+      timer = null;
+      start.disabled = false;
+      cancel.disabled = true;
+      targetInput.disabled = false;
+      protection.disabled = false;
+    }
+
+    document.querySelector('#password-form').addEventListener('submit', event => {
+      event.preventDefault();
+      if (timer !== null || !targetInput.reportValidity()) return;
+      const target = targetInput.value;
+      const lockEnabled = protection.value === 'on';
+      let attempts = 0;
+      const recent = [];
+      log.textContent = '';
+      updateMetrics(0, 0);
+      start.disabled = true;
+      cancel.disabled = false;
+      targetInput.disabled = true;
+      protection.disabled = true;
+      result.textContent = 'Đang chạy mô phỏng…';
+      startedAt = performance.now();
+      timer = setInterval(() => {
+        for (let batch = 0; batch < 10 && timer !== null; batch += 1) {
+          const candidate = passwords[attempts];
+          attempts += 1;
+          const matched = candidate === target;
+          recent.push('Lượt ' + attempts + ': ' + candidate + ' → ' + (matched ? 'KHỚP' : 'sai'));
+          if (recent.length > 10) recent.shift();
+          if (matched) {
+            result.textContent = 'Đã tìm thấy mật khẩu trong danh sách ở lượt ' + attempts + '/' + passwords.length + '.';
+            stop();
+          } else if (lockEnabled && attempts >= 3) {
+            result.textContent = 'Tài khoản giả bị khóa tạm sau 3 lần sai. Thí nghiệm dừng.';
+            stop();
+          } else if (attempts === passwords.length) {
+            result.textContent = 'Đã thử hết ' + passwords.length + ' mục và chưa tìm thấy. Kết quả chỉ áp dụng cho danh sách này.';
+            stop();
+          }
+        }
+        updateMetrics(attempts, performance.now() - startedAt);
+        log.textContent = recent.join('\n');
+        log.scrollTop = log.scrollHeight;
+      }, 80);
+    });
+
+    cancel.addEventListener('click', () => {
+      updateMetrics(progress.value, performance.now() - startedAt);
+      stop();
+      result.textContent = 'Đã dừng sau ' + progress.value + '/' + progress.max + ' lượt. Bấm bắt đầu để dò lại từ đầu.';
+    });
+
+    document.querySelector('#reset').addEventListener('click', () => {
+      stop();
+      targetInput.value = '';
+      resetResults();
+      targetInput.focus();
+    });
+
+    const demoStages = ['inbox', 'mail', 'change', 'success']
+      .map(stage => document.querySelector('#demo-' + stage));
+    const phishingTerminal = document.querySelector('#phishing-terminal');
+    const initialPhishingLog = phishingTerminal.textContent;
+    const demoMailLesson = document.querySelector('#demo-mail-lesson');
+    const oldPasswordSample = 'Mau-Cu-01';
+    const newPasswordSamples = ['Mau-Moi-02', 'Mau-Moi-03'];
+    const allowedDemoCodes = [[oldPasswordSample], newPasswordSamples, newPasswordSamples];
+    const demoPasswordFields = [...document.querySelectorAll('[data-demo-password]')];
+    const demoChangeError = document.querySelector('#demo-change-error');
+
+    function showDemoStage(activeStage) {
+      demoStages.forEach(stage => { stage.hidden = stage.id !== 'demo-' + activeStage; });
+      document.querySelector('#demo-' + activeStage + ' h3').focus();
+      demoMailLesson.hidden = activeStage !== 'success';
+    }
+
+    function logPhishingDemo(...lines) {
+      phishingTerminal.textContent += '\n' + lines.join('\n');
+      phishingTerminal.scrollTop = phishingTerminal.scrollHeight;
+    }
+
+    document.querySelector('#open-demo-mail').addEventListener('click', () => {
+      logPhishingDemo('[01] Người dùng mở email cảnh báo hết hạn mật khẩu.');
+      showDemoStage('mail');
+    });
+    document.querySelector('#open-demo-change').addEventListener('click', () => {
+      logPhishingDemo('[02] Người dùng bấm mở trang đổi mật khẩu giả.');
+      showDemoStage('change');
+    });
+    document.querySelector('#fill-demo-passwords').addEventListener('click', () => {
+      demoPasswordFields.forEach((field, index) => { field.value = allowedDemoCodes[index][0]; });
+      demoChangeError.hidden = true;
+    });
+    document.querySelector('#submit-demo-change').addEventListener('click', () => {
+      const fieldErrors = demoPasswordFields.map((field, index) => {
+        if (!field.value) return 'Chưa nhập ô “' + field.labels[0].textContent + '”.';
+        if (allowedDemoCodes[index].includes(field.value)) return '';
+        field.value = '';
+        return 'Ô “' + field.labels[0].textContent + '” chỉ nhận mã mẫu ghi ở trên.';
+      });
+      if (!fieldErrors[1] && !fieldErrors[2] && demoPasswordFields[1].value !== demoPasswordFields[2].value) {
+        fieldErrors[2] = 'Mã ở ô xác nhận chưa khớp với mã mới.';
+      }
+      const firstError = fieldErrors.findIndex(Boolean);
+      if (firstError !== -1) {
+        demoChangeError.textContent = fieldErrors[firstError];
+        demoChangeError.hidden = false;
+        demoPasswordFields[firstError].focus();
+        logPhishingDemo('[KIỂM TRA] Chưa hoàn tất. Nhật ký chưa nhận dữ liệu mẫu.');
+        return;
+      }
+      demoChangeError.hidden = true;
+      const newPasswordSample = newPasswordSamples.find(sample => sample === demoPasswordFields[1].value);
+      logPhishingDemo(
+        '[03] Người dùng bấm xác nhận. Hai mã mới khớp nhau.',
+        '[04] Máy chủ mô phỏng nhận dữ liệu mẫu.',
+        '     Tài khoản: anv@ttcgroup.vn',
+        '     Mật khẩu cũ: ' + oldPasswordSample,
+        '     Mật khẩu mới: ' + newPasswordSample,
+        '[05] Trang giả hiển thị thông báo đổi mật khẩu thành công.'
+      );
+      demoPasswordFields.forEach(field => { field.value = ''; });
+      showDemoStage('success');
+    });
+    document.querySelector('#restart-demo-mail').addEventListener('click', () => {
+      phishingTerminal.textContent = initialPhishingLog;
+      showDemoStage('inbox');
+    });
+    window.addEventListener('pagehide', stop);
+  </script>
+</body>
+</html>
