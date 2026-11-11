@@ -20,6 +20,17 @@
     .cover:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: clamp(20px, 4vw, 44px); }
     .cover h1 { font-size: clamp(2.3rem, 5.2vw, 4.6rem); }
     .cover img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); border-radius: 14px; }
+    .illustrated:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, 27%); align-items: center; gap: clamp(20px, 4vw, 42px); }
+    .slide-art { margin: 0; width: 100%; max-width: 320px; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 14px; background: url("security-slides.webp") var(--art-x) var(--art-y) / 300% 300% no-repeat; }
+    .slide-deck:fullscreen { display: flex; flex-direction: column; border: 0; border-radius: 0; margin: 0; }
+    .slide-deck:fullscreen #slides { flex: 1; overflow: auto; }
+    .slide-deck:fullscreen .slide { min-height: 100%; }
+    .slide-quote { margin: 24px 0 8px; padding-left: 16px; border-left: 3px solid var(--accent); font-size: clamp(1.25rem, 3vw, 1.8rem); }
+    dialog { width: min(680px, calc(100% - 28px)); max-height: calc(100dvh - 28px); padding: clamp(16px, 4vw, 30px); border: 1px solid #53677f; border-radius: 16px; background: #101d2d; color: inherit; }
+    dialog::backdrop { background: #050b13c9; }
+    dialog table { width: 100%; border-collapse: collapse; }
+    dialog th, dialog td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    dialog thead th { color: var(--accent); }
     .slide h2 { font-size: clamp(1.8rem, 5vw, 3.2rem); line-height: 1.12; letter-spacing: -.035em; }
     .slide p { max-width: 70ch; }
     .slide a:not(.button), .brand { color: var(--accent); }
@@ -67,7 +78,11 @@
     .answer { border-left: 3px solid var(--accent); padding-left: 15px; }
     .note { font-size: .88rem; }
     footer { color: var(--muted); padding-block: 24px 42px; }
-    @media (max-width: 720px) { .grid, .cover:not([hidden]) { grid-template-columns: 1fr; } .hero { padding-top: 36px; } }
+    @media (max-width: 720px) {
+      .grid, .cover:not([hidden]), .illustrated:not([hidden]) { grid-template-columns: 1fr; }
+      .slide-art { max-width: 200px; }
+      .hero { padding-top: 36px; }
+    }
     @media (prefers-reduced-motion: no-preference) {
       html { scroll-behavior: smooth; }
       button { transition: transform .15s; }
@@ -97,112 +112,155 @@
             </div>
             <img src="security-cover.webp" width="960" height="720" alt="Ổ khóa kim loại trên bàn phím máy tính">
           </article>
-          <article class="slide" hidden>
-            <p class="eyebrow">02 / Lộ trình</p>
-            <h2>Mục lục</h2>
-            <ol class="contents" start="3">
-              <li><button type="button" data-slide="3">Hai sự cố tại Việt Nam</button></li>
-              <li><button type="button" data-slide="4">Định nghĩa an toàn thông tin</button></li>
-              <li><button type="button" data-slide="5">Bốn rủi ro và cách phòng tránh</button></li>
-              <li><button type="button" data-slide="6">Bốn kiểu tấn công phổ biến</button></li>
-              <li><button type="button" data-slide="7">Demo dò mật khẩu</button></li>
-              <li><button type="button" data-slide="8">Demo nhận diện phishing</button></li>
-              <li><button type="button" data-slide="9">Tổng kết</button></li>
-              <li><button type="button" data-slide="10">Cảm ơn</button></li>
-            </ol>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">02 / Lộ trình</p>
+              <h2>Mục lục</h2>
+              <ol class="contents" start="3">
+                <li><button type="button" data-slide="3">Hai sự cố tại Việt Nam</button></li>
+                <li><button type="button" data-slide="4">Định nghĩa an toàn thông tin</button></li>
+                <li><button type="button" data-slide="5">Bốn rủi ro và cách phòng tránh</button></li>
+                <li><button type="button" data-slide="6">Bốn kiểu tấn công phổ biến</button></li>
+                <li><button type="button" data-slide="7">Demo dò mật khẩu</button></li>
+                <li><button type="button" data-slide="8">Demo nhận diện phishing</button></li>
+                <li><button type="button" data-slide="9">Tổng kết</button></li>
+                <li><button type="button" data-slide="10">Cảm ơn</button></li>
+              </ol>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Sổ tay và danh sách công việc" style="--art-x:0%; --art-y:0%"></figure>
           </article>
-          <article class="slide" hidden>
-            <p class="eyebrow">03 / Sự cố thực tế</p>
-            <h2>Hai sự cố tại Việt Nam</h2>
-            <div class="grid">
-              <div class="panel">
-                <h3>PVOIL · 02/04/2024</h3>
-                <p><strong>Nguyên nhân</strong> — Ransomware mã hóa dữ liệu hệ thống.</p>
-                <p><strong>Hậu quả</strong> — Hóa đơn điện tử và phiếu xuất kho bị gián đoạn.</p>
-                <p><strong>Thiệt hại</strong> — 39 giờ đến khi phát hành lại chứng từ qua hệ thống thay thế. Thông cáo không nêu số tiền thiệt hại.</p>
-                <p><a href="https://www.pvoil.com.vn/thong-cao-bao-chi-11">Thông cáo PVOIL</a></p>
-              </div>
-              <div class="panel">
-                <h3>Ứng dụng dịch vụ công giả · Hà Nội, 2024</h3>
-                <p><strong>Nguyên nhân</strong> — Kẻ gian mạo danh công an, dụ nạn nhân cài ứng dụng giả.</p>
-                <p><strong>Hậu quả</strong> — Kẻ gian chiếm quyền điều khiển thiết bị.</p>
-                <p><strong>Thiệt hại</strong> — Nạn nhân mất <strong>1,2 tỷ đồng</strong> trong tài khoản ngân hàng.</p>
-                <p><a href="https://baochinhphu.vn/mao-danh-ngan-hang-huong-dan-xac-thuc-tren-ung-dung-102240707164246532.htm">Báo Điện tử Chính phủ</a></p>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">03 / Sự cố thực tế</p>
+              <h2>Hai sự cố tại Việt Nam</h2>
+              <div class="grid">
+                <div class="panel">
+                  <h3>PVOIL · 02/04/2024</h3>
+                  <p><strong>Nguyên nhân</strong> — Ransomware mã hóa dữ liệu hệ thống.</p>
+                  <p><strong>Hậu quả</strong> — Hóa đơn điện tử và phiếu xuất kho bị gián đoạn.</p>
+                  <p><strong>Thiệt hại</strong> — 39 giờ đến khi phát hành lại chứng từ qua hệ thống thay thế. Thông cáo không nêu số tiền thiệt hại.</p>
+                  <p><a href="https://www.pvoil.com.vn/thong-cao-bao-chi-11">Thông cáo PVOIL</a></p>
+                </div>
+                <div class="panel">
+                  <h3>Ứng dụng dịch vụ công giả · Hà Nội, 2024</h3>
+                  <p><strong>Nguyên nhân</strong> — Kẻ gian mạo danh công an, dụ nạn nhân cài ứng dụng giả.</p>
+                  <p><strong>Hậu quả</strong> — Kẻ gian chiếm quyền điều khiển thiết bị.</p>
+                  <p><strong>Thiệt hại</strong> — Nạn nhân mất <strong>1,2 tỷ đồng</strong> trong tài khoản ngân hàng.</p>
+                  <p><a href="https://baochinhphu.vn/mao-danh-ngan-hang-huong-dan-xac-thuc-tren-ung-dung-102240707164246532.htm">Báo Điện tử Chính phủ</a></p>
+                </div>
               </div>
             </div>
+            <figure class="slide-art" role="img" aria-label="Máy tính tại văn phòng hiển thị cảnh báo" style="--art-x:50%; --art-y:0%"></figure>
           </article>
-          <article class="slide" hidden>
-            <p class="eyebrow">04 / Khái niệm</p>
-            <h2>An toàn thông tin là gì?</h2>
-            <p>Bảo vệ dữ liệu và hệ thống theo ba mục tiêu CIA.</p>
-            <ul>
-              <li><strong>Bí mật</strong> — Chỉ người có quyền được xem.</li>
-              <li><strong>Toàn vẹn</strong> — Dữ liệu chính xác, tránh sửa đổi trái phép.</li>
-              <li><strong>Sẵn sàng</strong> — Truy cập được khi cần.</li>
-            </ul>
-          </article>
-          <article class="slide" hidden>
-            <p class="eyebrow">05 / Rủi ro và cách phòng tránh</p>
-            <h2>Bốn tình huống thường gặp</h2>
-            <ol>
-              <li><strong>Mất tài khoản</strong> → Dùng mật khẩu riêng và bật MFA.</li>
-              <li><strong>Lộ tài liệu</strong> → Chỉ chia sẻ cho người cần.</li>
-              <li><strong>Mất thiết bị</strong> → Mã hóa ổ đĩa, khóa màn hình và báo IT.</li>
-              <li><strong>Mất dữ liệu</strong> → Sao lưu tách biệt và thử khôi phục.</li>
-            </ol>
-          </article>
-          <article class="slide" hidden>
-            <p class="eyebrow">06 / Các kiểu tấn công</p>
-            <h2>Bốn kiểu tấn công phổ biến</h2>
-            <ul>
-              <li><strong>Dò mật khẩu</strong> — Thử nhiều mật khẩu để tìm giá trị đúng.</li>
-              <li><strong>Phishing</strong> — Mạo danh để lừa lấy thông tin hoặc dụ thao tác.</li>
-              <li><strong>Credential stuffing</strong> — Dùng thông tin đăng nhập đã lộ trên dịch vụ khác.</li>
-              <li><strong>Ransomware</strong> — Khóa hoặc mã hóa dữ liệu để tống tiền.</li>
-            </ul>
-          </article>
-          <article class="slide" hidden>
-            <p class="eyebrow">07 / Demo dò mật khẩu</p>
-            <h2>Mật khẩu ngắn bị đoán nhanh đến đâu?</h2>
-            <p>Ở 10 lượt/giây và không giới hạn lượt thử, duyệt hết mã 4 chữ số mất <strong>16 phút 40 giây</strong>, còn mã 6 chữ số mất <strong>27 giờ 46 phút 40 giây</strong>. Thời gian thực tế tùy hệ thống.</p>
-            <p>Dùng mật khẩu dài, ngẫu nhiên và riêng cho từng tài khoản. Bật MFA. NIST yêu cầu ít nhất 15 ký tự khi mật khẩu là yếu tố xác thực duy nhất.</p>
-            <p><a href="https://pages.nist.gov/800-63-4/sp800-63b.html#passwordver">Hướng dẫn mật khẩu của NIST</a></p>
-            <a class="button" href="#mat-khau">Mở demo dò mật khẩu →</a>
-          </article>
-          <article class="slide" hidden>
-            <p class="eyebrow">08 / Demo phishing</p>
-            <h2>Xác minh yêu cầu qua kênh bạn tin cậy</h2>
-            <p>Cảnh giác khi có yêu cầu gấp về mật khẩu, mã OTP hoặc phê duyệt đăng nhập.</p>
-            <ol>
-              <li>Kiểm tra người gửi và tên miền liên kết.</li>
-              <li>Tự mở cổng chính thức hoặc xác minh qua kênh đã biết.</li>
-              <li>Báo IT. Nếu đã nhập mật khẩu, đổi ngay qua cổng chính thức.</li>
-            </ol>
-            <a class="button" href="#phishing">Mở demo nhận diện phishing →</a>
-          </article>
-          <article class="slide" hidden>
-            <p class="eyebrow">09 / Tổng kết</p>
-            <h2>Ba việc có thể làm ngay</h2>
-            <ol>
-              <li>Dùng mật khẩu riêng và bật MFA.</li>
-              <li>Xác minh yêu cầu bất ngờ qua kênh chính thức.</li>
-              <li>Kiểm tra quyền chia sẻ, sao lưu và báo sớm sự cố.</li>
-            </ol>
-          </article>
-          <article class="slide" hidden>
-            <p class="eyebrow">10 / Kết thúc</p>
-            <h2>Cảm ơn bạn!</h2>
-            <div class="actions">
-              <a class="button" href="#mat-khau">Dò mật khẩu</a>
-              <a class="button secondary" href="#phishing">Nhận diện phishing</a>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">04 / Khái niệm</p>
+              <h2>An toàn thông tin là gì?</h2>
+              <p>An toàn thông tin là việc bảo vệ dữ liệu và hệ thống khỏi truy cập, tiết lộ, sửa đổi, phá hủy hoặc làm gián đoạn trái phép. Ba mục tiêu chính được gọi là CIA.</p>
+              <ul>
+                <li><strong>Bí mật</strong> — Chỉ người có quyền được xem.</li>
+                <li><strong>Toàn vẹn</strong> — Dữ liệu chính xác, tránh sửa đổi trái phép.</li>
+                <li><strong>Sẵn sàng</strong> — Truy cập được khi cần.</li>
+              </ul>
             </div>
+            <figure class="slide-art" role="img" aria-label="Tủ lưu trữ dữ liệu bằng kim loại" style="--art-x:100%; --art-y:0%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">05 / Rủi ro và cách phòng tránh</p>
+              <h2>Bốn tình huống thường gặp</h2>
+              <ol>
+                <li><strong>Mất tài khoản</strong> → Dùng mật khẩu riêng và bật MFA.</li>
+                <li><strong>Lộ tài liệu</strong> → Chỉ chia sẻ cho người cần.</li>
+                <li><strong>Mất thiết bị</strong> → Mã hóa ổ đĩa, khóa màn hình và báo IT.</li>
+                <li><strong>Mất dữ liệu</strong> → Sao lưu tách biệt và thử khôi phục.</li>
+              </ol>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Ổ sao lưu bên cạnh máy tính" style="--art-x:0%; --art-y:50%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">06 / Các kiểu tấn công</p>
+              <h2>Bốn kiểu tấn công phổ biến</h2>
+              <ul>
+                <li><strong>Dò mật khẩu</strong> — Thử nhiều mật khẩu để tìm giá trị đúng.</li>
+                <li><strong>Phishing</strong> — Mạo danh để lừa lấy thông tin hoặc dụ thao tác.</li>
+                <li><strong>Credential stuffing</strong> — Dùng thông tin đăng nhập đã lộ trên dịch vụ khác.</li>
+                <li><strong>Ransomware</strong> — Khóa hoặc mã hóa dữ liệu để tống tiền.</li>
+              </ul>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Dãy máy chủ có đèn cảnh báo" style="--art-x:50%; --art-y:50%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">07 / Demo dò mật khẩu</p>
+              <h2>Mật khẩu ngắn bị đoán nhanh đến đâu?</h2>
+              <p>Ở 10 lượt/giây và không giới hạn lượt thử, duyệt hết mã 4 chữ số mất <strong>16 phút 40 giây</strong>, còn mã 6 chữ số mất <strong>27 giờ 46 phút 40 giây</strong>. Thời gian thực tế tùy hệ thống.</p>
+              <p>Dùng mật khẩu dài, ngẫu nhiên và riêng cho từng tài khoản. Bật MFA. NIST yêu cầu ít nhất 15 ký tự khi mật khẩu là yếu tố xác thực duy nhất.</p>
+              <p><button class="secondary" id="open-password-guide" type="button" aria-haspopup="dialog">Hướng dẫn đặt mật khẩu</button></p>
+              <a class="button" href="#mat-khau">Mở demo dò mật khẩu →</a>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Ổ khóa nhỏ trên bàn phím" style="--art-x:100%; --art-y:50%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">08 / Demo phishing</p>
+              <h2>Xác minh yêu cầu qua kênh bạn tin cậy</h2>
+              <p>Cảnh giác khi có yêu cầu gấp về mật khẩu, mã OTP hoặc phê duyệt đăng nhập.</p>
+              <ol>
+                <li>Kiểm tra người gửi và tên miền liên kết.</li>
+                <li>Tự mở cổng chính thức hoặc xác minh qua kênh đã biết.</li>
+                <li>Báo IT. Nếu đã nhập mật khẩu, đổi ngay qua cổng chính thức.</li>
+              </ol>
+              <a class="button" href="#phishing">Mở demo nhận diện phishing →</a>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Điện thoại cạnh phong bì thư" style="--art-x:0%; --art-y:100%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">09 / Tổng kết</p>
+              <h2>Ba việc có thể làm ngay</h2>
+              <ol>
+                <li>Dùng mật khẩu riêng và bật MFA.</li>
+                <li>Xác minh yêu cầu bất ngờ qua kênh chính thức.</li>
+                <li>Kiểm tra quyền chia sẻ, sao lưu và báo sớm sự cố.</li>
+              </ol>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Khóa bảo mật và ổ sao lưu" style="--art-x:50%; --art-y:100%"></figure>
+          </article>
+          <article class="slide illustrated" hidden>
+            <div>
+              <p class="eyebrow">10 / Kết thúc</p>
+              <h2>Cảm ơn bạn!</h2>
+              <blockquote class="slide-quote" lang="en">“Security is a process”</blockquote>
+              <p>Bảo mật là một quá trình. <a href="https://www.schneier.com/books/secrets-and-lies-pref/">Bruce Schneier, <cite>Secrets and Lies</cite></a></p>
+            </div>
+            <figure class="slide-art" role="img" aria-label="Máy tính đóng trên bàn làm việc" style="--art-x:100%; --art-y:100%"></figure>
           </article>
         </div>
         <div class="slide-controls">
           <button id="prev-slide" class="secondary" type="button" disabled>← Trước</button>
           <span class="slide-position" id="slide-position">01 / 10</span>
+          <button id="fullscreen-slide" class="secondary" type="button">Toàn màn hình</button>
           <button id="next-slide" type="button">Tiếp →</button>
         </div>
+        <dialog id="password-guide" aria-labelledby="password-guide-title">
+          <h2 id="password-guide-title">Hướng dẫn đặt mật khẩu</h2>
+          <p>Quy định dành cho hệ thống xác thực theo NIST SP 800-63B-4.</p>
+          <table>
+            <thead><tr><th scope="col">Tiêu chí</th><th scope="col">Quy định</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Chỉ dùng mật khẩu</th><td>Tối thiểu 15 ký tự.</td></tr>
+              <tr><th scope="row">Mật khẩu trong MFA</th><td>Hệ thống có thể cho phép ngắn hơn, với mức tối thiểu 8 ký tự.</td></tr>
+              <tr><th scope="row">Độ dài tối đa cho phép</th><td>NIST khuyến nghị hệ thống hỗ trợ ít nhất 64 ký tự.</td></tr>
+              <tr><th scope="row">Thành phần ký tự</th><td>Không bắt buộc trộn chữ hoa, chữ thường, số và ký hiệu.</td></tr>
+              <tr><th scope="row">Mật khẩu dễ đoán</th><td>Chặn giá trị phổ biến, dễ đoán hoặc đã bị lộ.</td></tr>
+              <tr><th scope="row">Đổi mật khẩu</th><td>Yêu cầu đổi khi có bằng chứng mật khẩu bị xâm phạm. Không yêu cầu đổi định kỳ.</td></tr>
+            </tbody>
+          </table>
+          <p><a href="https://pages.nist.gov/800-63-4/sp800-63b.html#passwordver">Đọc quy định của NIST</a></p>
+          <form method="dialog"><button type="submit" autofocus>Đóng</button></form>
+        </dialog>
       </div>
     </section>
 
@@ -306,6 +364,7 @@
       slides[slideIndex].hidden = true;
       slideIndex = nextIndex;
       slides[slideIndex].hidden = false;
+      document.querySelector('#slides').scrollTop = 0;
       slidePosition.textContent = String(slideIndex + 1).padStart(2, '0') + ' / ' + slides.length;
       previousSlide.disabled = slideIndex === 0;
       nextSlide.disabled = slideIndex === slides.length - 1;
@@ -314,6 +373,21 @@
     previousSlide.addEventListener('click', () => moveSlide(-1));
     nextSlide.addEventListener('click', () => moveSlide(1));
     const slideDeck = document.querySelector('#slide-deck');
+    const guide = document.querySelector('#password-guide');
+    document.querySelector('#open-password-guide').addEventListener('click', () => guide.showModal());
+    const fullscreenButton = document.querySelector('#fullscreen-slide');
+    fullscreenButton.hidden = !document.fullscreenEnabled;
+    fullscreenButton.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement === slideDeck) await document.exitFullscreen();
+        else await slideDeck.requestFullscreen();
+      } catch {
+        fullscreenButton.textContent = 'Thử lại toàn màn hình';
+      }
+    });
+    document.addEventListener('fullscreenchange', () => {
+      fullscreenButton.textContent = document.fullscreenElement === slideDeck ? 'Thoát toàn màn hình' : 'Toàn màn hình';
+    });
     document.querySelectorAll('[data-slide]').forEach(button => {
       button.addEventListener('click', () => {
         moveSlide(Number(button.dataset.slide) - 1 - slideIndex);
@@ -322,6 +396,7 @@
       });
     });
     slideDeck.addEventListener('keydown', event => {
+      if (guide.open) return;
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
       event.preventDefault();
       moveSlide(event.key === 'ArrowLeft' ? -1 : 1);
@@ -357,6 +432,9 @@
     });
     window.addEventListener('hashchange', () => {
       renderPage();
+      if (home.hidden && document.fullscreenElement === slideDeck) {
+        document.exitFullscreen().catch(() => {});
+      }
       window.scrollTo({ top: 0, behavior: 'instant' });
     });
     renderPage();
