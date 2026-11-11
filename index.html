@@ -30,8 +30,6 @@
     .slide-controls button { min-width: 96px; }
     .slide-position { color: var(--muted); font-variant-numeric: tabular-nums; }
     .contents button { padding: 3px 0; background: transparent; color: var(--accent); text-align: left; text-decoration: underline; text-underline-offset: 4px; font-weight: 600; }
-    .appendix summary { cursor: pointer; font-weight: 750; }
-    .appendix h3 { margin-top: 20px; }
     .tabs { margin-top: 24px; }
     .tabs [aria-selected="false"] { background: transparent; color: #dae5f4; border-color: #53677f; }
     .metrics { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -112,7 +110,6 @@
               <li><button type="button" data-slide="9">Tổng kết</button></li>
               <li><button type="button" data-slide="10">Cảm ơn</button></li>
             </ol>
-            <button class="secondary" type="button" data-open-appendix>Phụ lục</button>
           </article>
           <article class="slide" hidden>
             <p class="eyebrow">03 / Sự cố thực tế</p>
@@ -198,7 +195,6 @@
             <div class="actions">
               <a class="button" href="#mat-khau">Dò mật khẩu</a>
               <a class="button secondary" href="#phishing">Nhận diện phishing</a>
-              <button class="secondary" type="button" data-open-appendix>Phụ lục</button>
             </div>
           </article>
         </div>
@@ -208,22 +204,6 @@
           <button id="next-slide" type="button">Tiếp →</button>
         </div>
       </div>
-      <details class="panel appendix" id="appendix">
-        <summary>Phụ lục</summary>
-        <h3>Nguồn tham khảo</h3>
-        <ul>
-          <li><a href="https://www.pvoil.com.vn/thong-cao-bao-chi-11">Thông cáo PVOIL về việc phát hành lại chứng từ</a></li>
-          <li><a href="https://baochinhphu.vn/mao-danh-ngan-hang-huong-dan-xac-thuc-tren-ung-dung-102240707164246532.htm">Báo Điện tử Chính phủ về vụ ứng dụng giả tại Hà Nội</a></li>
-          <li><a href="https://pages.nist.gov/800-63-4/sp800-63b.html#passwordver">NIST SP 800-63B-4 về mật khẩu và giới hạn lượt thử</a></li>
-        </ul>
-        <h3>Cách tính thời gian dò</h3>
-        <p>Với mã chỉ gồm chữ số, mỗi vị trí có 10 lựa chọn, kể cả số 0 ở đầu. Số khả năng là 10<sup>n</sup>, với n là số chữ số. Chia số khả năng cho số lượt thử mỗi giây để tính thời gian duyệt hết.</p>
-        <ul>
-          <li>4 chữ số ở 10 lượt/giây mất tối đa 10.000 ÷ 10 = 1.000 giây.</li>
-          <li>6 chữ số ở 10 lượt/giây mất tối đa 1.000.000 ÷ 10 = 100.000 giây.</li>
-        </ul>
-        <p>Demo đo thời gian so khớp với thư viện trên trình duyệt. Mật khẩu có thể khớp trước khi duyệt hết.</p>
-      </details>
     </section>
 
     <div id="labs" hidden>
@@ -339,14 +319,6 @@
         moveSlide(Number(button.dataset.slide) - 1 - slideIndex);
         slideDeck.focus();
         slideDeck.scrollIntoView({ block: 'start' });
-      });
-    });
-    const appendix = document.querySelector('#appendix');
-    document.querySelectorAll('[data-open-appendix]').forEach(button => {
-      button.addEventListener('click', () => {
-        appendix.open = true;
-        appendix.querySelector('summary').focus();
-        appendix.scrollIntoView({ block: 'start' });
       });
     });
     slideDeck.addEventListener('keydown', event => {
