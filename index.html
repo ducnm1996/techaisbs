@@ -82,6 +82,7 @@
     .mail-header p { margin: 0; }
     .demo-values { margin: 0 0 16px; }
     .demo-values dd { margin: 4px 0 12px; }
+    [data-demo-password]::-ms-reveal { display: none; }
     .note { font-size: .88rem; }
     footer { color: var(--muted); padding-block: 24px 42px; }
     @media (max-width: 720px) {
@@ -350,11 +351,11 @@
           <h3 id="demo-change-title" tabindex="-1">Đổi mật khẩu · Mô phỏng</h3>
           <p id="demo-password-note">Chỉ nhập mã mẫu. Dùng <code>Mau-Cu-01</code> cho ô đầu và gõ cùng một mã <code>Mau-Moi-02</code> hoặc <code>Mau-Moi-03</code> vào hai ô sau.</p>
           <label for="demo-old-password">Mật khẩu cũ</label>
-          <input id="demo-old-password" type="text" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
+          <input id="demo-old-password" type="password" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
           <label for="demo-new-password">Mật khẩu mới</label>
-          <input id="demo-new-password" type="text" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
+          <input id="demo-new-password" type="password" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
           <label for="demo-confirm-password">Nhập lại mật khẩu mới</label>
-          <input id="demo-confirm-password" type="text" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
+          <input id="demo-confirm-password" type="password" data-demo-password autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="demo-password-note">
           <div class="actions"><button id="submit-demo-change" type="button">Xác nhận đổi mật khẩu</button></div>
           <p id="demo-change-error" role="status" hidden></p>
         </section>
@@ -599,9 +600,7 @@
         return;
       }
       demoChangeError.hidden = true;
-      document.querySelector('#demo-old-result').textContent = oldPassword;
-      document.querySelector('#demo-new-result').textContent = newPassword;
-      document.querySelector('#demo-confirm-result').textContent = confirmation;
+      document.querySelectorAll('.demo-values code').forEach(result => { result.textContent = '••••••••'; });
       demoPasswordFields.forEach(field => { field.value = ''; });
       showDemoStage('success');
     });
