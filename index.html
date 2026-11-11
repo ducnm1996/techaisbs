@@ -17,6 +17,9 @@
     .hero { padding-block: 60px 36px; }
     .slide-deck { margin-bottom: 30px; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: radial-gradient(ellipse at top right, #193c3a, #101d2d 65%); }
     .slide { min-height: 400px; padding: clamp(24px, 5vw, 56px); }
+    .cover:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: clamp(20px, 4vw, 44px); }
+    .cover h1 { font-size: clamp(2.3rem, 5.2vw, 4.6rem); }
+    .cover img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); border-radius: 14px; }
     .slide h2 { font-size: clamp(1.8rem, 5vw, 3.2rem); line-height: 1.12; letter-spacing: -.035em; }
     .slide p { max-width: 70ch; }
     .slide a:not(.button), .brand { color: var(--accent); }
@@ -37,7 +40,6 @@
     h3 { margin-top: 0; }
     p, li { line-height: 1.65; }
     p { color: var(--muted); }
-    .badge { display: inline-block; border: 1px solid #36705d; border-radius: 30px; padding: 5px 12px; color: var(--accent); font-size: .85rem; }
     section.lab { margin-block: 22px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--line); border-radius: 18px; background: #101d2d; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
     .panel { border: 1px solid var(--line); background: #0b1522; border-radius: 12px; padding: 22px; min-width: 0; }
@@ -64,7 +66,7 @@
     .answer { border-left: 3px solid var(--accent); padding-left: 15px; }
     .note { font-size: .88rem; }
     footer { color: var(--muted); padding-block: 24px 42px; }
-    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .hero { padding-top: 36px; } }
+    @media (max-width: 720px) { .grid, .cover:not([hidden]) { grid-template-columns: 1fr; } .hero { padding-top: 36px; } }
     @media (prefers-reduced-motion: no-preference) {
       html { scroll-behavior: smooth; }
       button { transition: transform .15s; }
@@ -87,11 +89,12 @@
     <section class="hero" id="trang-chu" aria-label="Bài trình chiếu an toàn thông tin">
       <div class="slide-deck" id="slide-deck" aria-label="10 slide giới thiệu" tabindex="0">
         <div id="slides" aria-live="polite">
-          <article class="slide">
-            <p class="eyebrow">01 / Khai mạc</p>
-            <h1>Nhận thức về an toàn bảo mật thông tin</h1>
-            <p>Từ hai sự cố có thật đến hai bài thực hành. Cùng xem cách bảo vệ tài khoản, dữ liệu và công việc hằng ngày.</p>
-            <span class="badge">TechAI SBS · Bài trình chiếu và mô phỏng</span>
+          <article class="slide cover">
+            <div>
+              <p class="eyebrow">01 / Khai mạc</p>
+              <h1>Nhận thức về an toàn bảo mật thông tin</h1>
+            </div>
+            <img src="security-cover.webp" width="960" height="720" alt="Ổ khóa kim loại trên bàn phím máy tính">
           </article>
           <article class="slide" hidden>
             <p class="eyebrow">02 / Lộ trình</p>
