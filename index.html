@@ -75,6 +75,11 @@
     .mail code { color: #852d2d; }
     .mail-row { display: grid; gap: 6px; width: 100%; padding: 14px; text-align: left; background: #e0eaf6; color: #17283a; border-color: #c4d1df; }
     .mail-row span { font-size: .9rem; font-weight: 500; }
+    .mail-header { display: flex; gap: 14px; align-items: center; padding-block: 14px; border-bottom: 1px solid #c4d1df; }
+    .mail-avatar { display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: 50%; background: #075386; color: white; font-weight: 750; }
+    .mail-header p { margin: 0; }
+    .demo-values { margin: 0 0 16px; }
+    .demo-values dd { margin: 4px 0 12px; }
     .note { font-size: .88rem; }
     footer { color: var(--muted); padding-block: 24px 42px; }
     @media (max-width: 720px) {
@@ -314,27 +319,36 @@
           <h3 id="inbox-title" tabindex="-1">Hộp thư đến</h3>
           <p class="address"><strong>Tài khoản mẫu</strong> <code>hocvien@techai.example</code></p>
           <button class="mail-row" id="open-demo-mail" type="button">
-            <strong>Cảnh báo bảo mật · Đổi mật khẩu trong 15 phút</strong>
-            <span>Bộ phận hỗ trợ · security@helpdesk-check.example</span>
+            <strong>Mật khẩu sắp hết hạn / Password expiration notification</strong>
+            <span>Bộ phận hỗ trợ · it.alert@techai.info.example</span>
           </button>
         </section>
         <section class="panel mail" id="demo-mail" aria-labelledby="demo-mail-title" hidden>
-          <h3 id="demo-mail-title" tabindex="-1">Cảnh báo đổi mật khẩu</h3>
-          <p class="address"><strong>Từ</strong> Bộ phận hỗ trợ · <code>security@helpdesk-check.example</code></p>
-          <p>Hộp thư mẫu vừa nhận cảnh báo đăng nhập bất thường. Email yêu cầu đổi mật khẩu trong vòng 15 phút.</p>
-          <p><strong>Địa chỉ hiển thị trong thư</strong><br><code>https://account-verify.example/password</code></p>
+          <p class="note">Email mô phỏng</p>
+          <h3 id="demo-mail-title" tabindex="-1">Mật khẩu sắp hết hạn / Password expiration notification</h3>
+          <div class="mail-header">
+            <span class="mail-avatar" aria-hidden="true">IT</span>
+            <div>
+              <p><strong>Từ</strong> <code>it.alert@techai.info.example</code></p>
+              <p><strong>Đến</strong> <code>hocvien@techai.example</code></p>
+            </div>
+          </div>
+          <p>Kính gửi học viên,</p>
+          <p>Mật khẩu tài khoản mẫu sẽ hết hạn trong 15 phút. Vui lòng mở trang đổi mật khẩu để tiếp tục sử dụng hộp thư.</p>
           <button id="open-demo-change" type="button">Mở trang đổi mật khẩu mô phỏng</button>
+          <p>Trân trọng,<br>Bộ phận hỗ trợ IT</p>
         </section>
         <section class="panel" id="demo-change" aria-labelledby="demo-change-title" hidden>
           <h3 id="demo-change-title" tabindex="-1">Đổi mật khẩu · Mô phỏng</h3>
-          <p>Ba ô dùng giá trị mẫu điền sẵn.</p>
+          <p>Chọn ba giá trị mẫu để xem chúng xuất hiện ở cột kết quả.</p>
           <label for="demo-old-password">Mật khẩu cũ</label>
-          <input id="demo-old-password" type="password" value="MatKhauCuMau" readonly>
+          <select id="demo-old-password" data-demo-password></select>
           <label for="demo-new-password">Mật khẩu mới</label>
-          <input id="demo-new-password" type="password" value="MatKhauMoiMau" readonly>
+          <select id="demo-new-password" data-demo-password></select>
           <label for="demo-confirm-password">Nhập lại mật khẩu mới</label>
-          <input id="demo-confirm-password" type="password" value="MatKhauMoiMau" readonly>
+          <select id="demo-confirm-password" data-demo-password></select>
           <div class="actions"><button id="submit-demo-change" type="button">Xác nhận đổi mật khẩu</button></div>
+          <p id="demo-change-error" role="status" hidden></p>
         </section>
         <section class="panel" id="demo-success" aria-labelledby="demo-success-title" hidden>
           <h3 id="demo-success-title" tabindex="-1">Đổi mật khẩu thành công · Mô phỏng</h3>
@@ -345,7 +359,15 @@
           <h3 id="phishing-result-title">Kết quả mô phỏng</h3>
           <p id="demo-mail-status" role="status">Tài khoản mẫu sẽ xuất hiện khi hoàn tất mô phỏng.</p>
           <div id="demo-mail-lesson" hidden>
-            <p>Yêu cầu gấp và tên miền khác cổng chính thức là dấu hiệu phishing. Hãy tự mở cổng chính thức và báo cho IT.</p>
+            <dl class="demo-values">
+              <dt>Mật khẩu cũ · Mẫu</dt><dd><code id="demo-old-result"></code></dd>
+              <dt>Mật khẩu mới · Mẫu</dt><dd><code id="demo-new-result"></code></dd>
+              <dt>Xác nhận mật khẩu · Mẫu</dt><dd><code id="demo-confirm-result"></code></dd>
+            </dl>
+            <h3>Đối chiếu địa chỉ người gửi</h3>
+            <p><strong>Địa chỉ chính thống theo tình huống</strong><br><code>it.alert@ttcgroup.vn</code></p>
+            <p><strong>Địa chỉ giả trong tình huống</strong><br><code>it.alert@ttcgroup.info.vn</code></p>
+            <p>Phần sau dấu @ khác nhau. Khi nhận yêu cầu đổi mật khẩu bất ngờ, hãy tự mở cổng chính thức hoặc xác minh với IT qua kênh đã biết.</p>
           </div>
         </aside>
       </div>
@@ -537,6 +559,14 @@
       .map(stage => document.querySelector('#demo-' + stage));
     const demoMailStatus = document.querySelector('#demo-mail-status');
     const demoMailLesson = document.querySelector('#demo-mail-lesson');
+    const demoPasswordSamples = ['Mau-Cu-01', 'Mau-Moi-02', 'Mau-Moi-03'];
+    const demoPasswordFields = [...document.querySelectorAll('[data-demo-password]')];
+    const demoChangeError = document.querySelector('#demo-change-error');
+
+    demoPasswordFields.forEach(field => {
+      field.add(new Option('Chọn mật khẩu mẫu', ''));
+      demoPasswordSamples.forEach((sample, index) => field.add(new Option(sample, String(index))));
+    });
 
     function showDemoStage(activeStage) {
       demoStages.forEach(stage => { stage.hidden = stage.id !== 'demo-' + activeStage; });
@@ -550,8 +580,22 @@
 
     document.querySelector('#open-demo-mail').addEventListener('click', () => showDemoStage('mail'));
     document.querySelector('#open-demo-change').addEventListener('click', () => showDemoStage('change'));
-    document.querySelector('#submit-demo-change').addEventListener('click', () => showDemoStage('success'));
+    document.querySelector('#submit-demo-change').addEventListener('click', () => {
+      const [oldPassword, newPassword, confirmation] = demoPasswordFields.map(field => demoPasswordSamples[field.value]);
+      if (!oldPassword || !newPassword || !confirmation || oldPassword === newPassword || newPassword !== confirmation) {
+        demoChangeError.textContent = 'Chọn đủ ba giá trị. Mật khẩu mới phải khác mật khẩu cũ và khớp với ô xác nhận.';
+        demoChangeError.hidden = false;
+        return;
+      }
+      demoChangeError.hidden = true;
+      document.querySelector('#demo-old-result').textContent = oldPassword;
+      document.querySelector('#demo-new-result').textContent = newPassword;
+      document.querySelector('#demo-confirm-result').textContent = confirmation;
+      showDemoStage('success');
+    });
     document.querySelector('#restart-demo-mail').addEventListener('click', () => {
+      demoPasswordFields.forEach(field => { field.selectedIndex = 0; });
+      document.querySelectorAll('.demo-values code').forEach(result => { result.textContent = ''; });
       showDemoStage('inbox');
     });
     window.addEventListener('pagehide', stop);
