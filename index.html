@@ -39,6 +39,8 @@
     .slide-controls, .tabs { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
     .slide-controls { justify-content: space-between; border-top: 1px solid var(--line); padding: 16px clamp(16px, 4vw, 32px); background: #0b1522; }
     .slide-controls button { min-width: 96px; }
+    .slide-controls-start { display: flex; align-items: center; gap: 8px; }
+    .slide-controls .fullscreen-icon { display: grid; place-items: center; min-width: 0; width: 44px; height: 44px; padding: 0; }
     .slide-position { color: var(--muted); font-variant-numeric: tabular-nums; }
     .contents button { padding: 3px 0; background: transparent; color: var(--accent); text-align: left; text-decoration: underline; text-underline-offset: 4px; font-weight: 600; }
     .tabs { margin-top: 24px; }
@@ -243,9 +245,15 @@
           </article>
         </div>
         <div class="slide-controls">
-          <button id="prev-slide" class="secondary" type="button" disabled>← Trước</button>
+          <div class="slide-controls-start">
+            <button id="prev-slide" class="secondary" type="button" disabled>← Trước</button>
+            <button id="fullscreen-slide" class="secondary fullscreen-icon" type="button" aria-label="Toàn màn hình" title="Toàn màn hình">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>
+              </svg>
+            </button>
+          </div>
           <span class="slide-position" id="slide-position">01 / 10</span>
-          <button id="fullscreen-slide" class="secondary" type="button">Toàn màn hình</button>
           <button id="next-slide" type="button">Tiếp →</button>
         </div>
         <dialog id="password-guide" aria-labelledby="password-guide-title">
@@ -402,16 +410,20 @@
     document.querySelector('#open-password-guide').addEventListener('click', () => guide.showModal());
     const fullscreenButton = document.querySelector('#fullscreen-slide');
     fullscreenButton.hidden = !document.fullscreenEnabled;
+    function labelFullscreenButton(label) {
+      fullscreenButton.setAttribute('aria-label', label);
+      fullscreenButton.title = label;
+    }
     fullscreenButton.addEventListener('click', async () => {
       try {
         if (document.fullscreenElement === slideDeck) await document.exitFullscreen();
         else await slideDeck.requestFullscreen();
       } catch {
-        fullscreenButton.textContent = 'Thử lại toàn màn hình';
+        labelFullscreenButton('Thử lại toàn màn hình');
       }
     });
     document.addEventListener('fullscreenchange', () => {
-      fullscreenButton.textContent = document.fullscreenElement === slideDeck ? 'Thoát toàn màn hình' : 'Toàn màn hình';
+      labelFullscreenButton(document.fullscreenElement === slideDeck ? 'Thoát toàn màn hình' : 'Toàn màn hình');
     });
     document.querySelectorAll('[data-slide]').forEach(button => {
       button.addEventListener('click', () => {
