@@ -80,8 +80,7 @@
     .mail-header { display: flex; gap: 14px; align-items: center; padding-block: 14px; border-bottom: 1px solid #c4d1df; }
     .mail-avatar { display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: 50%; background: #075386; color: white; font-weight: 750; }
     .mail-header p { margin: 0; }
-    .demo-values { margin: 0 0 16px; }
-    .demo-values dd { margin: 4px 0 12px; }
+    .phishing-terminal { height: auto; max-height: 290px; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #070f19; }
     [data-demo-password]::-ms-reveal { display: none; }
     .note { font-size: .88rem; }
     footer { color: var(--muted); padding-block: 24px 42px; }
@@ -368,14 +367,10 @@
           <button class="secondary" id="restart-demo-mail" type="button">Quay về hộp thư</button>
         </section>
         <aside class="panel" aria-labelledby="phishing-result-title">
-          <h3 id="phishing-result-title">Kết quả mô phỏng</h3>
-          <p id="demo-mail-status" role="status">Tài khoản mẫu sẽ xuất hiện khi hoàn tất mô phỏng.</p>
+          <h3 id="phishing-result-title">Máy chủ của hacker · Mô phỏng</h3>
+          <p class="note">Nhật ký chạy trong trình duyệt và chỉ hiển thị dữ liệu mẫu.</p>
+          <pre id="phishing-terminal" class="phishing-terminal" role="log" aria-label="Nhật ký máy chủ mô phỏng" tabindex="0">[SẴN SÀNG] Đang chờ người dùng mở thư.</pre>
           <div id="demo-mail-lesson" hidden>
-            <dl class="demo-values">
-              <dt>Mật khẩu cũ · Mẫu</dt><dd><code id="demo-old-result"></code></dd>
-              <dt>Mật khẩu mới · Mẫu</dt><dd><code id="demo-new-result"></code></dd>
-              <dt>Xác nhận mật khẩu · Mẫu</dt><dd><code id="demo-confirm-result"></code></dd>
-            </dl>
             <h3>Đối chiếu địa chỉ người gửi</h3>
             <p><strong>Địa chỉ chính thống theo tình huống</strong><br><code>it.alert@ttcgroup.vn</code></p>
             <p><strong>Địa chỉ giả trong tình huống</strong><br><code>it.alert@ttcgroup.info.vn</code></p>
@@ -573,7 +568,8 @@
 
     const demoStages = ['inbox', 'mail', 'change', 'success']
       .map(stage => document.querySelector('#demo-' + stage));
-    const demoMailStatus = document.querySelector('#demo-mail-status');
+    const phishingTerminal = document.querySelector('#phishing-terminal');
+    const initialPhishingLog = phishingTerminal.textContent;
     const demoMailLesson = document.querySelector('#demo-mail-lesson');
     const oldPasswordSample = 'Mau-Cu-01';
     const newPasswordSamples = ['Mau-Moi-02', 'Mau-Moi-03'];
@@ -584,15 +580,22 @@
     function showDemoStage(activeStage) {
       demoStages.forEach(stage => { stage.hidden = stage.id !== 'demo-' + activeStage; });
       document.querySelector('#demo-' + activeStage + ' h3').focus();
-      const completed = activeStage === 'success';
-      demoMailStatus.textContent = completed
-        ? 'Tài khoản mẫu · anv@ttcgroup.vn'
-        : 'Tài khoản mẫu sẽ xuất hiện khi hoàn tất mô phỏng.';
-      demoMailLesson.hidden = !completed;
+      demoMailLesson.hidden = activeStage !== 'success';
     }
 
-    document.querySelector('#open-demo-mail').addEventListener('click', () => showDemoStage('mail'));
-    document.querySelector('#open-demo-change').addEventListener('click', () => showDemoStage('change'));
+    function logPhishingDemo(...lines) {
+      phishingTerminal.textContent += '\n' + lines.join('\n');
+      phishingTerminal.scrollTop = phishingTerminal.scrollHeight;
+    }
+
+    document.querySelector('#open-demo-mail').addEventListener('click', () => {
+      logPhishingDemo('[01] Người dùng mở email cảnh báo hết hạn mật khẩu.');
+      showDemoStage('mail');
+    });
+    document.querySelector('#open-demo-change').addEventListener('click', () => {
+      logPhishingDemo('[02] Người dùng bấm mở trang đổi mật khẩu giả.');
+      showDemoStage('change');
+    });
     document.querySelector('#fill-demo-passwords').addEventListener('click', () => {
       demoPasswordFields.forEach((field, index) => { field.value = allowedDemoCodes[index][0]; });
       demoChangeError.hidden = true;
@@ -612,15 +615,24 @@
         demoChangeError.textContent = fieldErrors[firstError];
         demoChangeError.hidden = false;
         demoPasswordFields[firstError].focus();
+        logPhishingDemo('[KIỂM TRA] Chưa hoàn tất. Nhật ký chưa nhận dữ liệu mẫu.');
         return;
       }
       demoChangeError.hidden = true;
-      document.querySelectorAll('.demo-values code').forEach(result => { result.textContent = '••••••••'; });
+      const newPasswordSample = newPasswordSamples.find(sample => sample === demoPasswordFields[1].value);
+      logPhishingDemo(
+        '[03] Người dùng bấm xác nhận. Hai mã mới khớp nhau.',
+        '[04] Máy chủ mô phỏng nhận dữ liệu mẫu.',
+        '     Tài khoản: anv@ttcgroup.vn',
+        '     Mật khẩu cũ: ' + oldPasswordSample,
+        '     Mật khẩu mới: ' + newPasswordSample,
+        '[05] Trang giả hiển thị thông báo đổi mật khẩu thành công.'
+      );
       demoPasswordFields.forEach(field => { field.value = ''; });
       showDemoStage('success');
     });
     document.querySelector('#restart-demo-mail').addEventListener('click', () => {
-      document.querySelectorAll('.demo-values code').forEach(result => { result.textContent = ''; });
+      phishingTerminal.textContent = initialPhishingLog;
       showDemoStage('inbox');
     });
     window.addEventListener('pagehide', stop);
