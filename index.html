@@ -42,7 +42,8 @@
     .slide-controls-start { display: flex; align-items: center; gap: 8px; }
     .slide-controls .fullscreen-icon { display: grid; place-items: center; min-width: 0; width: 44px; height: 44px; padding: 0; }
     .slide-position { color: var(--muted); font-variant-numeric: tabular-nums; }
-    .contents button { padding: 3px 0; background: transparent; color: var(--accent); text-align: left; text-decoration: underline; text-underline-offset: 4px; font-weight: 600; }
+    .contents { padding-left: 1.6em; font-size: clamp(1.2rem, 2.35vw, 1.55rem); font-weight: 600; }
+    .contents li + li { margin-top: 4px; }
     .tabs { margin-top: 24px; }
     .tabs [aria-selected="false"] { background: transparent; color: #dae5f4; border-color: #53677f; }
     .metrics { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -122,15 +123,15 @@
             <div>
               <p class="eyebrow">02 / Lộ trình</p>
               <h2>Mục lục</h2>
-              <ol class="contents" start="3">
-                <li><button type="button" data-slide="3">Hai sự cố tại Việt Nam</button></li>
-                <li><button type="button" data-slide="4">Định nghĩa an toàn thông tin</button></li>
-                <li><button type="button" data-slide="5">Bốn rủi ro và cách phòng tránh</button></li>
-                <li><button type="button" data-slide="6">Bốn kiểu tấn công phổ biến</button></li>
-                <li><button type="button" data-slide="7">Demo dò mật khẩu</button></li>
-                <li><button type="button" data-slide="8">Demo nhận diện phishing</button></li>
-                <li><button type="button" data-slide="9">Tổng kết</button></li>
-                <li><button type="button" data-slide="10">Cảm ơn</button></li>
+              <ol class="contents">
+                <li>Hai sự cố tại Việt Nam</li>
+                <li>Định nghĩa an toàn thông tin</li>
+                <li>Bốn rủi ro và cách phòng tránh</li>
+                <li>Bốn kiểu tấn công phổ biến</li>
+                <li>Demo dò mật khẩu</li>
+                <li>Demo nhận diện phishing</li>
+                <li>Tổng kết</li>
+                <li>Cảm ơn</li>
               </ol>
             </div>
             <figure class="slide-art" role="img" aria-label="Sổ tay và danh sách công việc" style="--art-x:0%; --art-y:0%"></figure>
@@ -423,13 +424,6 @@
     });
     document.addEventListener('fullscreenchange', () => {
       labelFullscreenButton(document.fullscreenElement === slideDeck ? 'Thoát toàn màn hình' : 'Toàn màn hình');
-    });
-    document.querySelectorAll('[data-slide]').forEach(button => {
-      button.addEventListener('click', () => {
-        moveSlide(Number(button.dataset.slide) - 1 - slideIndex);
-        slideDeck.focus();
-        slideDeck.scrollIntoView({ block: 'start' });
-      });
     });
     slideDeck.addEventListener('keydown', event => {
       if (guide.open) return;
