@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Phòng thực hành mô phỏng dò mật khẩu và nhận diện phishing bằng dữ liệu giả.">
-  <title>Cyber Lab · Demo an toàn thông tin</title>
+  <title>TechAI SBS · Nhận thức về an toàn thông tin</title>
   <style>
     :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #09111b; color: #e7eef8; --muted: #a9b9cf; --line: #2a3b50; --accent: #78edc8; }
     * { box-sizing: border-box; }
@@ -15,6 +15,22 @@
     .brand { margin-right: auto; font-weight: 800; color: var(--accent); }
     a { color: inherit; text-underline-offset: 5px; }
     .hero { padding-block: 60px 36px; }
+    .slide-deck { margin-bottom: 30px; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: radial-gradient(ellipse at top right, #193c3a, #101d2d 65%); }
+    .slide { min-height: 400px; padding: clamp(24px, 5vw, 56px); }
+    .slide h2 { font-size: clamp(1.8rem, 5vw, 3.2rem); line-height: 1.12; letter-spacing: -.035em; }
+    .slide p { max-width: 70ch; }
+    .slide a:not(.button), .brand { color: var(--accent); }
+    .slide .grid .panel { background: #0b1522; }
+    .slide .grid p:last-child { margin-bottom: 0; }
+    .slide-controls, .tabs { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .slide-controls { justify-content: space-between; border-top: 1px solid var(--line); padding: 16px clamp(16px, 4vw, 32px); background: #0b1522; }
+    .slide-controls button { min-width: 96px; }
+    .slide-position { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .tabs { margin-top: 24px; }
+    .tabs [aria-selected="false"] { background: transparent; color: #dae5f4; border-color: #53677f; }
+    .metrics { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .metrics output { color: var(--accent); font-weight: 750; }
+    [hidden] { display: none !important; }
     .eyebrow { font-size: .78rem; letter-spacing: .12em; color: var(--accent); font-weight: 750; text-transform: uppercase; }
     h1 { font-size: clamp(2.5rem, 6vw, 4.6rem); max-width: 18ch; line-height: 1.08; letter-spacing: -.05em; margin: 14px 0; }
     h2 { font-size: 1.65rem; margin: 0 0 12px; }
@@ -29,7 +45,8 @@
     input, select, button { font: inherit; }
     input, select { width: 100%; min-width: 0; padding: 11px; background: #17283c; color: inherit; border: 1px solid #53677f; border-radius: 8px; }
     button { border: 1px solid transparent; padding: 10px 15px; border-radius: 8px; cursor: pointer; background: var(--accent); color: #09261e; font-weight: 750; }
-    button:hover { filter: brightness(1.12); }
+    .button { display: inline-block; background: var(--accent); color: #09261e; padding: 10px 15px; border-radius: 8px; font-weight: 750; text-decoration: none; }
+    button:hover, .button:hover { filter: brightness(1.12); }
     button:disabled { opacity: .5; cursor: default; }
     .secondary { background: transparent; color: #dae5f4; border-color: #53677f; }
     .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
@@ -59,20 +76,135 @@
 </head>
 <body>
   <header>
-    <nav class="wrap" aria-label="Điều hướng demo">
-      <span class="brand">◈ CYBER LAB</span>
+    <nav class="wrap" aria-label="Điều hướng chính">
+      <a class="brand" href="#trang-chu">◈ TECHAI SBS</a>
+      <a href="#trang-chu">Trang chủ</a>
       <a href="#mat-khau">Dò mật khẩu</a>
       <a href="#phishing">Phishing</a>
     </nav>
   </header>
   <main class="wrap">
-    <div class="hero">
-      <span class="badge">Mô phỏng giáo dục · Dữ liệu giả</span>
-      <h1>Hiểu cách tấn công.<br>Biết cách phòng vệ.</h1>
-      <p>Hai thí nghiệm tương tác giúp bạn quan sát việc thử mật khẩu và nhận diện email lừa đảo. Các thao tác chạy ngay trong trình duyệt với tài khoản và tên miền minh họa.</p>
-    </div>
+    <section class="hero" id="trang-chu" aria-label="Bài trình chiếu an toàn thông tin">
+      <div class="slide-deck" id="slide-deck" aria-label="10 slide giới thiệu" tabindex="0">
+        <div id="slides" aria-live="polite">
+          <article class="slide">
+            <p class="eyebrow">01 / Khai mạc</p>
+            <h1>Nhận thức về an toàn bảo mật thông tin</h1>
+            <p>Từ hai sự cố có thật đến hai bài thực hành. Cùng xem cách bảo vệ tài khoản, dữ liệu và công việc hằng ngày.</p>
+            <span class="badge">TechAI SBS · Bài trình chiếu và mô phỏng</span>
+          </article>
+          <article class="slide" hidden>
+            <p class="eyebrow">02 / Lộ trình</p>
+            <h2>Mục lục</h2>
+            <ol>
+              <li>Hai sự cố thực tế và nguyên nhân đã xác nhận</li>
+              <li>Định nghĩa an toàn thông tin và bốn rủi ro thường gặp</li>
+              <li>Bốn kiểu tấn công và cách phòng vệ</li>
+              <li>Thực hành dò mật khẩu và nhận diện phishing</li>
+              <li>Tổng kết các bước có thể áp dụng ngay</li>
+            </ol>
+          </article>
+          <article class="slide" hidden>
+            <p class="eyebrow">03 / Sự cố thực tế năm 2026</p>
+            <h2>Hai vụ truy cập trái phép</h2>
+            <div class="grid">
+              <div class="panel">
+                <h3>PingCAP · Tháng 9–10/2026</h3>
+                <p><strong>Nguyên nhân đã xác nhận:</strong> Một tài khoản GitHub bị xâm phạm và thông tin xác thực bị lộ đã bị dùng để truy cập hệ thống nội bộ.</p>
+                <p><strong>Hệ quả:</strong> Mã nguồn và một số bản ghi nội bộ bị sao chép.</p>
+                <p><a href="https://www.pingcap.com/trust-hub/security/ceo-note-october-2026/">Thông báo của PingCAP</a></p>
+              </div>
+              <div class="panel">
+                <h3>Iron Mountain · 02/02/2026</h3>
+                <p><strong>Nguyên nhân đã xác nhận:</strong> Một thông tin đăng nhập bị xâm phạm đã bị dùng để mở một thư mục trên dịch vụ chia sẻ tệp.</p>
+                <p><strong>Hệ quả:</strong> Phạm vi được công bố giới hạn ở một thư mục, chủ yếu chứa tài liệu tiếp thị.</p>
+                <p><a href="https://www.ironmountain.com/about-us/media-center/press-releases/2026/february/iron-mountain-statement-cybersecurity-issue">Thông báo của Iron Mountain</a></p>
+              </div>
+            </div>
+          </article>
+          <article class="slide" hidden>
+            <p class="eyebrow">04 / Khái niệm</p>
+            <h2>An toàn thông tin là gì?</h2>
+            <p>Bảo vệ thông tin và hệ thống khỏi việc truy cập, sửa đổi, tiết lộ hoặc làm gián đoạn trái phép. Ba mục tiêu chính thường được gọi là CIA.</p>
+            <ul>
+              <li><strong>Tính bí mật:</strong> Chỉ người có quyền mới xem được hồ sơ.</li>
+              <li><strong>Tính toàn vẹn:</strong> Dữ liệu chính xác và chỉ được sửa bởi người có quyền.</li>
+              <li><strong>Tính sẵn sàng:</strong> Người có quyền truy cập được hệ thống khi cần.</li>
+            </ul>
+          </article>
+          <article class="slide" hidden>
+            <p class="eyebrow">05 / Rủi ro và cách phòng tránh</p>
+            <h2>Bốn tình huống thường gặp</h2>
+            <ol>
+              <li><strong>Tài khoản bị chiếm vì dùng lại mật khẩu:</strong> Tạo mật khẩu riêng cho từng dịch vụ và bật MFA.</li>
+              <li><strong>Tài liệu nội bộ bị chia sẻ công khai:</strong> Chỉ cấp quyền cho đúng người và rà soát liên kết chia sẻ.</li>
+              <li><strong>Thiết bị thất lạc:</strong> Bật mã hóa ổ đĩa, khóa màn hình và báo IT để thu hồi quyền truy cập.</li>
+              <li><strong>Dữ liệu bị xóa hoặc mã hóa:</strong> Duy trì bản sao lưu tách biệt và kiểm tra khả năng khôi phục.</li>
+            </ol>
+          </article>
+          <article class="slide" hidden>
+            <p class="eyebrow">06 / Các kiểu tấn công</p>
+            <h2>Bốn kiểu tấn công phổ biến</h2>
+            <ul>
+              <li><strong>Dò mật khẩu:</strong> Thử nhiều giá trị để tìm mật khẩu đúng.</li>
+              <li><strong>Phishing:</strong> Giả danh người hoặc tổ chức đáng tin để dụ nạn nhân tiết lộ thông tin hoặc thực hiện một hành động.</li>
+              <li><strong>Credential stuffing:</strong> Thử thông tin đăng nhập đã bị lộ trên dịch vụ khác, dựa vào thói quen dùng lại mật khẩu.</li>
+              <li><strong>Ransomware:</strong> Mã độc khóa hoặc mã hóa dữ liệu để tống tiền, đôi khi kèm đe dọa công bố dữ liệu bị lấy cắp.</li>
+            </ul>
+          </article>
+          <article class="slide" hidden>
+            <p class="eyebrow">07 / Demo dò mật khẩu</p>
+            <h2>Mật khẩu ngắn bị đoán nhanh đến đâu?</h2>
+            <p><strong>Ví dụ lý thuyết ở 10 lượt/giây, không giới hạn lượt thử:</strong> 4 chữ số có 10.000 khả năng, thử hết trong 16 phút 40 giây. 6 chữ số có 1.000.000 khả năng, thử hết trong 27 giờ 46 phút 40 giây. Nếu chuỗi nằm đầu danh sách phổ biến, nó có thể bị đoán ngay lượt đầu.</p>
+            <p>Thời gian thật phụ thuộc vào tốc độ thử, giới hạn đăng nhập và cách mật khẩu được lưu trữ. Đồng hồ trong demo đo thời gian mô phỏng trên trình duyệt.</p>
+            <p><strong>Cách đặt:</strong> Tạo mật khẩu dài và riêng cho từng tài khoản bằng trình quản lý mật khẩu, hoặc dùng cụm từ gồm nhiều từ được chọn ngẫu nhiên. Bật MFA nếu có. NIST quy định tối thiểu 15 ký tự khi mật khẩu là yếu tố xác thực duy nhất.</p>
+            <p><a href="https://pages.nist.gov/800-63-4/sp800-63b.html#passwordver">Hướng dẫn mật khẩu của NIST</a></p>
+            <a class="button" href="#mat-khau">Mở demo dò mật khẩu →</a>
+          </article>
+          <article class="slide" hidden>
+            <p class="eyebrow">08 / Demo phishing</p>
+            <h2>Xác minh yêu cầu qua kênh bạn tin cậy</h2>
+            <p>Phishing có thể giả danh bộ phận IT và thúc giục bạn nhập mật khẩu, cung cấp mã OTP hoặc xác nhận một yêu cầu đăng nhập.</p>
+            <ol>
+              <li>Kiểm tra địa chỉ người gửi và tên miền của liên kết. Cảnh giác với yêu cầu gấp hoặc bất thường.</li>
+              <li>Tự mở cổng chính thức bằng dấu trang hoặc địa chỉ đã biết. Xác minh qua kênh liên lạc độc lập.</li>
+              <li>Báo cáo cho IT. Nếu đã nhập mật khẩu, báo ngay và đổi mật khẩu qua cổng chính thức.</li>
+            </ol>
+            <a class="button" href="#phishing">Mở demo nhận diện phishing →</a>
+          </article>
+          <article class="slide" hidden>
+            <p class="eyebrow">09 / Tổng kết</p>
+            <h2>Ba việc có thể làm ngay</h2>
+            <ol>
+              <li>Đặt mật khẩu dài, riêng cho từng tài khoản và bật MFA.</li>
+              <li>Xác minh qua kênh chính thức trước khi nhập thông tin hoặc phê duyệt yêu cầu bất ngờ.</li>
+              <li>Rà soát quyền chia sẻ, kiểm tra bản sao lưu và báo sớm khi nghi có sự cố.</li>
+            </ol>
+          </article>
+          <article class="slide" hidden>
+            <p class="eyebrow">10 / Kết thúc</p>
+            <h2>Cảm ơn bạn!</h2>
+            <p>Chọn một bài thực hành để thử lại những gì vừa học.</p>
+            <div class="actions">
+              <a class="button" href="#mat-khau">Dò mật khẩu</a>
+              <a class="button secondary" href="#phishing">Nhận diện phishing</a>
+            </div>
+          </article>
+        </div>
+        <div class="slide-controls">
+          <button id="prev-slide" class="secondary" type="button" disabled>← Trước</button>
+          <span class="slide-position" id="slide-position">01 / 10</span>
+          <button id="next-slide" type="button">Tiếp →</button>
+        </div>
+      </div>
+    </section>
 
-    <section class="lab" id="mat-khau" aria-labelledby="password-title">
+    <div id="labs" hidden>
+      <div class="tabs" role="tablist" aria-label="Bài thực hành">
+        <button id="password-tab" type="button" role="tab" aria-controls="mat-khau" aria-selected="true">Dò mật khẩu</button>
+        <button id="phishing-tab" type="button" role="tab" aria-controls="phishing" aria-selected="false" tabindex="-1">Phishing</button>
+      </div>
+    <section class="lab" id="mat-khau" role="tabpanel" aria-labelledby="password-tab" tabindex="0">
       <div class="eyebrow">Thí nghiệm 01</div>
       <h2 id="password-title">Dò mật khẩu bằng danh sách</h2>
       <p>Nhập một mật khẩu thử nghiệm rồi quan sát từng mục trong danh sách được so khớp với mật khẩu đó. Bật khóa tạm thời để so sánh kết quả.</p>
@@ -82,6 +214,12 @@
           <label for="target-password">Mật khẩu thử nghiệm</label>
           <input id="target-password" type="password" required autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="password-note" placeholder="Ví dụ: 123456">
           <p class="note" id="password-note">Dùng mật khẩu tự đặt cho bài thử. Mật khẩu nhập chỉ được so khớp trong bộ nhớ của trang.</p>
+          <label for="dictionary">Thư viện mật khẩu</label>
+          <select id="dictionary" aria-describedby="dictionary-info">
+            <option value="original">Danh sách đã gửi · 1.000 mục</option>
+            <option value="extra">Danh sách mẫu bổ sung · 2.000 mục</option>
+            <option value="combined">Cả hai danh sách · 3.000 mục</option>
+          </select>
           <p class="note" id="dictionary-info"></p>
           <label for="protection">Lớp bảo vệ</label>
           <select id="protection">
@@ -99,13 +237,17 @@
           <h3>Nhật ký thử nghiệm</h3>
           <pre id="log" aria-label="Nhật ký 10 lượt thử gần nhất">Sẵn sàng. Nhập mật khẩu thử nghiệm để bắt đầu.</pre>
           <progress id="progress" value="0" max="1000" aria-label="Số lượt đã thử"></progress>
+          <div class="metrics">
+            <span>Lượt thử <output id="attempt-count" aria-live="off">0 / 1.000</output></span>
+            <span>Thời gian <output id="elapsed" aria-live="off">0,00 giây</output></span>
+          </div>
           <p id="result" class="status" role="status">Chưa bắt đầu.</p>
         </div>
       </div>
       <p class="note">Phòng vệ thực tế gồm mật khẩu dài và riêng cho từng tài khoản, giới hạn lượt thử, theo dõi đăng nhập bất thường và xác thực đa yếu tố (MFA).</p>
     </section>
 
-    <section class="lab" id="phishing" aria-labelledby="phishing-title">
+    <section class="lab" id="phishing" role="tabpanel" aria-labelledby="phishing-tab" tabindex="0" hidden>
       <div class="eyebrow">Thí nghiệm 02</div>
       <h2 id="phishing-title">Bạn có nhận ra email phishing?</h2>
       <p>Đọc email giả, xem kỹ địa chỉ và chọn cách xử lý. Đường dẫn được trình bày dưới dạng văn bản để bạn phân tích.</p>
@@ -140,11 +282,87 @@
         </div>
       </div>
     </section>
+    </div>
   </main>
   <footer class="wrap">CYBER LAB · Phòng thực hành nhận thức an toàn thông tin</footer>
   <script type="application/json" id="password-list">["123456","123456789","123123","111111","anhyeuem","1234567","0123456789","0123456","12345678","000000","asdasd","25251325","1234567890","121212","123321","zxcvbnm","qweqwe","456789","112233","aaaaaa","123123123","987654321","11111111","qwerty","147258369","maiyeuem","123qwe","654321","iloveyou","123654","999999","qqqqqq","1111111","147258","hota407","anhtuan","222222","159753","11223344","anhnhoem","anh123","159357","qwertyuiop","asd123","0987654321","emyeuanh","mmmmmm","012345","666666","anhanh","123789","phuong","111222","qweasd","hanoiyeudau","nguyen","789456","1111111111","mylove","789456123","19001560","qwe123","asdfghjkl","pppppp","anhhung","1234560","abc123","maiyeu","123456a","zzzzzz","quangninh","987654","555555","tuananh","asasas","asdfgh","zxcvbn","321321","tinhyeu","147852369","456123","matkhau","147852","12345678910","thienthan","anhyeu","111111111","toilatoi","10cham0","0147258369","456456","khongbiet","789789","a123456","333333","888888","123654789","truong","maimaiyeuem","hhhhhh","12345","zxczxc","yankee","741852963","maimai","properties","loveyou","thanhtung","hoanganh","0000000000","01230123","778899","anhdung","010203","123456987","abcd@1234","234567","anhmaiyeuem","handoi","222333","yeuanh","9876543210","anhday","999999999","123456123","12341234","thanh123","0902166970","321654","147147","ngocanh","nhoemnhieu","090909","phuoclapmx","\"      \"","nolove","thanhbinh","anhduc","concac","qazwsx","777777","hahaha","hung123","asdasdasd","101010","0000000","anhnam","tttttt","thuong","00000000","huy123","mnbvcxz","anhcuong","123456q","ssssss","anhyeuem123","098765","lalala","llllll","nnnnnn","anhthanh","yeuemnhieu","aaaaaaa","7777777","010101","huyhuy","kkkkkk","444444","11111111111111111111111111111111","hoilamgi","anhthang","bbbbbb","chandoi","0147852369","tuan123","123asd","toiyeuem","anhhai","vietnam","hoailam","tinhlagi","113113","qwertyu","741852","maiyeuanh","1234566","thanhtam","thanhlong","anhthu","123465","forever","12344321","nam123","anhduy","thuylinh","lovely","ANHYEUEM","88888888","123456123456","anhvaem","oooooo","thanhcong","123457","anhquan","anhiuem","123789456","142536","thanhthuy","kiepdoden","123abc","tinhban","12345679","thanhthanh","001101","long123","hanhphuc","bigbang","01234567","dat123","1234568","123456789123456789","kimngan278","1234569","963852741","123456789a","lovelove","1234561","anhson","minh123","anhminh","hoang123","anhhuy","lonmemay","hunghung","ngocanh89","minhanh","huyhoang","thang123","124578","a","aspirine","1234512345","thanhthao","ngoctan","linh123","852456","hieu123","anhnhoemnhieu","minhminh","trung123","1234554321","nuttertools","heocon","linhlinh","123456789123","thuytrang","quynhanh","thanhnhan","qwqwqw","minhtuan","321654987","111222333","anhyeuem1","trunghieu","khongco","ppppppp","comchay+","0147258","hoanglong","thuthuy","meocon","anhdat","minhduc","0123654","0123654789","zxzxzx","kimngan","aaaaaaaa","khanh123","kimanh","hunter17051990","vananh","khongnho","meoghe","anhduong","piaggio15119","nhoemyeu3101","thanhtuan","qqqqqqq","thanhdat","gggggg","12121212","chiyeuminhem","tung123","cuong123","cccccc","phuonganh","0123123","121111","anhyeuemnhieu","dddddd","hoahong","0147852","000000000","246357","zxc123","456789123","012345678","01234567890","saobang","thienlong","son123","123123q","thanhnam","vvvvvv","namnam","1230123","19001570","thuyduong","hai123","qwertyui","thutrang","anhkhoa","2222222","langtu","123456aa","23456789","abc123456","0918273645","doilathe","ducanh","1122334455","123","vietanh","phuongthao","a123456789","369258147","9999999999","lamgithe99","babylove","Fantasy88","dung123","1231234","102030","thanhtrung","thuytien","qweqweqwe","binhminh","quanghuy","1234567899","qweasdzxc","haiyen","135792468","duy123","232323","anhhoang","meomeo","concho","6677028","tinhtinh","1234","1900561252","hihihi","hoangnam","hoanghai","lananh","159159","\"Khocviai,\"","anhquang","hantinh","minhthu","thuhuong","trungkien","tuananh1080","toilaai","asdzxc","huyentrang","asdqwe","hongnhung","mmmmmmm","anhtrung","duc123","nguyenhung8892","bao123","135790","thuthao","thanhhai","753951","thanhhoa","jjjjjj","aaaaaaaaaa","minhquan","hoanglan","hoangtu","theanh","123456789987654321","poipoi","cuncon","123455","123321123","xxxxxx","lon123","sasakiE>","kakaka","minhtam","anhtai","nhoanh","thanhtu","@yahoo.com","ffffff","246810","nhuquynh","quang123","abcdef","1231231","14188985","11111111111","khanhlinh","99999999","fantasy","wwwwww","123456654321","manhhung","7654321","anhkhanh","thuydung","123123456","conmemay","conyeume","ngoclinh","321456","tien123","sakura","212121","sasasa","686868","258369","chandoiwa1","anhtruong","012345678910","manhcuong","567890","asd123456","nhan123","147896325","654123","phong123","saxsax","9999999","thanhphobuon","anhngoc","1475369","qqqqqqqq","doremon","7894561230","113114","thanhtruc","handoivodoi","qwertyuio","134679","s1s1s1","haiduong","qqwwee","thaibinh","sieunhan","sting23","binhchon","ditmemay","898989","dangkhoa","thuyetyeu","thanhson","258456","pppppppp","baongoc","fuckyou","thaonguyen","minhtri","123qweasd","1","123698745","456852","thanhphong","3456789","maianh","sang123","963852","001122","123456as","thuhien","nothing","thuhang","ccvvbb","trang123","thanhvan","123456789asd","951753","thien123","halong","anhbinh","qazwsxedc","yyyyyy","q123456","love123","252525","22222222","5555555","ngocha","1230456","haidang","Aa123456","nhi123","131313","asdfghj","12345678900","dunghoi","anhviet","minhhieu","anhvinh","aaaaaaaaa","baobao","lam123","12301230","0123456987","taolatao","33213321","quan123","tinhanh","yennhi","1234qwer","khuong","tai123","longlong","handsome","cailon","\"@zing.vn \"","toan123","hjhjhj","poiuyt","a123123","iloveu","123987","haianh","thienha","thao123","......","thinh123","linhkute","012012","minhnhat","797979","q121212","000111","2345678","anhtuyen","123123a","quangvinh","thanhluan","anhsang","congchua","huhuhu","00000000000000000000000000000000","concat","hehehe","thanhtuyen","yeuemmai","thanhhuyen","1234567891","missyou","hoangvu","014789","t123456","duyanh","123qwe123","789123","345678","nghia123","phuong123","phuc123","onlylove","dragon","hoainam","thanh1","445566","1621991","123567","fafa22","maiyeunguoi","lamlam","phithienauto","anhlaai","anhlavip","123456798","chandoiwa","456123789","minhchau","minhtien","anhvan","ngoc123","asdasd1","abcabc","maimaimottinhyeu","nguyen123","123000","uuuuuu","votinh","112211","tam123","vanhung","thuyhang","q","chocon","viethung","tiendung","dkmdkm","1231230","hoangha","duong123","alo123","1478963","909090","thanhha","a12345","visaothe","english","hoahoa","112113","ronaldo","iiiiii","shinji1410","binh123","thanchet","Abc123","201090","3333333","hhhhhhh","anhdai","thugstools","223344","234234","123456asd","maimaiyeuanh","132456","hoa123",".adgjm","1q2w3e","tan123","trondoibenem","haihai","12345a","112233445566","khang123","vinh123","majyeuem","anhlapro","giadinh","hoanghuy","q1w2e3","thanhhung","ngochan","asdf2356","duykhanh","hoangminh","87654321","11112222","thuthu","0987654","nguyet","147369","qazqaz","mnbvcx","tungtung","hungpro","minhtan","q123123","anhkiet","abc&1234","mmmmmmmm","minhngoc","anhvanyeuem","111111111111","ZXCVBNM","manchester","anhphong","1a2b3c4d","ngocmai","danchoi","5201314","879118","thienduong","369258","bin123","truong123","thuhuyen","qÆ°erty","123456qwe","2222222222","anhthuan","0147896325","tuanhung","chuong","asdasd123","khongyeu","hunganh","123456456","loc123","nhatminh","141414","thuan123","tuantuan","vodanh","nhinhi","phuonglinh","nguyenhung","0123456789a","hau123","quynhnhu","eeeeee","pokemon","xinchao1","123456789789","anhchung","dismemay","anhdeptrai","binbin","huy123456","anhdao","maiyeuminhem","tiendat","235689","ngoclan","namdinh","456321","philong","454545","12345689","5555555555","00112233","phongvan","hhhhhhhh","12369874","minhhoang","159951","hanhphucao","kukumalu0410","vippro","thu123","01233210","qÆ°ertyuiop","minhthanh","manhmanh","thanhlam","hoangyen","123123qwe","samsung","minhtrang","minhphuong","honghanh","nhockute","anhchiyeuem","121314","asdfasdf","789654","789789789","thanhduy","12345600","emnhoanh","258963","giahuy","chienthang","linhchi","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","kimdung","tuanvu","1234567890123","123123123123","asddsa","khoa123","nguoitoiyeu","deptrai","anhchiyeuminhem","abcABC@123","imissyou","adadad","cuibap","thanhsang","```111","popopo","qaz123","abcd1234","thuyan","thuythuy","123anh","987987","namanh","09090909","6543210","minhthuan","anhvuong","151515","A123456","thanhtan","ngocthanh","112112","111112","conheo","anhphuc","kimlong","hotboy","ngocson","226348","aloalo","huong123","753159","anhnghia","0123321","quanganh","anhhao","socola","tuongvy","159753456","hongngoc","ngocminh","haiphong","anhdayem","1123456","conmeo","poiuytrewq","majmaj","anhlavodich","987456","135246","giang123","anhphuong","hoangdung","minhphuc","huyhuyhuy","duythanh","202020","thanhhien","lonlon","bantoi","456456456","147896","taokhongbiet","hoanglinh","852963","duongminhtri","anhyeuemmaimai","hung123456","014702580369","minhhai","456654","nobita","toiyeuban","nhatrang","dantruong","123654987","password","thai123","anhthinh","anhhoa","``````","quangminh","minhtu","leduclong","anhcanem","nhatanh","12345676","789987","224466","nhutren","van123","nhunhu","ngochuyen","01470147","ngocdung","chelsea","123456t","anhy3u3m","thanhtoan","qwaszx","yeuemmaimai","123456h","hao123","giangcoi","lanhuong","kiemthe","ASDASD","kien123","7895123","0908182327","dethuong","shinichi","hung12","thanhxuan","14789632","haydoiday","321123","quochuy","muasaobang","rrrrrr","vantuan","369852","hungdaica","\"My Computer\"","123456789z","aimabiet","123123aa","minhquang","anhyeuem12","quangtrung","147852963","nhocquan","thangkhung","ngochung","ngocbich","cuchuoi","thiensu","159357456","thanhvu","banthan","0nimekyo","321321321","hoangson","quocanh","hainam","654321q","123456789aa","chochet","mylinh","098098","kobiet","minhnhut","honganh","01234567890123456789","trungtin","258258","naruto","hoangtuan","kentom3012","duyduy","anhtinh","anhhien","quocbao","55555555","kimchi","nguyenvu","anhnguyen","hungyen","hoangphuc","yeu123","anhthien","sasa11","yeuanhnhieu","123147","123456A","888999","zxcasd","vandung","qazxsw","foreverlove","lkjhgfdsa","haohao","AAAAAA","tuyen123","ngoctram","01020304","tuankiet","1234565","anhchinh","789852","123456abc","11111","zzzzzzz","leanhtuan","baotran","33333333","qweqwe1","ngocthuy","vip123","viet123","123451","hoangviet","123zxc","phuongthuy","17051990","anhthao","minhhang","123458","ILOVEYOU","anhyeuemnhieulam","761311","thanhan","113355","020202","thanhdung","hieuhieu","thanhmai","787878"]</script>
   <script>
-    const passwords = JSON.parse(document.querySelector('#password-list').textContent);
+    const slides = [...document.querySelectorAll('.slide')];
+    const previousSlide = document.querySelector('#prev-slide');
+    const nextSlide = document.querySelector('#next-slide');
+    const slidePosition = document.querySelector('#slide-position');
+    let slideIndex = 0;
+
+    function moveSlide(offset) {
+      const nextIndex = slideIndex + offset;
+      if (nextIndex < 0 || nextIndex >= slides.length) return;
+      slides[slideIndex].hidden = true;
+      slideIndex = nextIndex;
+      slides[slideIndex].hidden = false;
+      slidePosition.textContent = String(slideIndex + 1).padStart(2, '0') + ' / ' + slides.length;
+      previousSlide.disabled = slideIndex === 0;
+      nextSlide.disabled = slideIndex === slides.length - 1;
+    }
+
+    previousSlide.addEventListener('click', () => moveSlide(-1));
+    nextSlide.addEventListener('click', () => moveSlide(1));
+    document.querySelector('#slide-deck').addEventListener('keydown', event => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      moveSlide(event.key === 'ArrowLeft' ? -1 : 1);
+    });
+
+    const home = document.querySelector('#trang-chu');
+    const labs = document.querySelector('#labs');
+    const tabs = [...labs.querySelectorAll('[role="tab"]')];
+    const panels = tabs.map(tab => document.getElementById(tab.getAttribute('aria-controls')));
+
+    function renderPage() {
+      const selected = panels.findIndex(panel => '#' + panel.id === location.hash);
+      home.hidden = selected !== -1;
+      labs.hidden = selected === -1;
+      tabs.forEach((tab, index) => {
+        const active = index === selected;
+        tab.setAttribute('aria-selected', active);
+        tab.tabIndex = active ? 0 : -1;
+        panels[index].hidden = !active;
+      });
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => { location.hash = panels[index].id; });
+      tab.addEventListener('keydown', event => {
+        const keys = ['ArrowLeft', 'ArrowRight', 'Home', 'End'];
+        if (!keys.includes(event.key)) return;
+        event.preventDefault();
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : 1 - index;
+        tabs[next].click();
+        tabs[next].focus();
+      });
+    });
+    window.addEventListener('hashchange', () => {
+      renderPage();
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+    renderPage();
+
+    const originalPasswords = JSON.parse(document.querySelector('#password-list').textContent);
+    const originalSet = new Set(originalPasswords);
+    // Generated values are fixtures for the local exercise, not a corpus from account data.
+    const extraPasswords = [];
+    for (let number = 1; extraPasswords.length < 2000; number += 1) {
+      const sample = 'techai-lab-' + String(number).padStart(4, '0');
+      if (!originalSet.has(sample)) extraPasswords.push(sample);
+    }
+    const dictionaries = {
+      original: originalPasswords,
+      extra: extraPasswords,
+      combined: [...originalPasswords, ...extraPasswords]
+    };
+    const dictionary = document.querySelector('#dictionary');
+    const dictionaryInfo = document.querySelector('#dictionary-info');
+    const integerFormat = new Intl.NumberFormat('vi-VN');
+    const elapsedFormat = new Intl.NumberFormat('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const targetInput = document.querySelector('#target-password');
     const protection = document.querySelector('#protection');
     const start = document.querySelector('#start');
@@ -152,10 +370,29 @@
     const log = document.querySelector('#log');
     const result = document.querySelector('#result');
     const progress = document.querySelector('#progress');
+    const attemptCount = document.querySelector('#attempt-count');
+    const elapsed = document.querySelector('#elapsed');
     let timer = null;
-    progress.max = passwords.length;
-    document.querySelector('#dictionary-info').textContent =
-      'Danh sách top1k-vn-passwords.txt · ' + passwords.length.toLocaleString('vi-VN') + ' mật khẩu.';
+    let startedAt = 0;
+
+    function updateMetrics(attempts, milliseconds) {
+      progress.value = attempts;
+      attemptCount.value = integerFormat.format(attempts) + ' / ' + integerFormat.format(progress.max);
+      elapsed.value = elapsedFormat.format(milliseconds / 1000) + ' giây';
+    }
+
+    function resetResults() {
+      progress.max = dictionaries[dictionary.value].length;
+      updateMetrics(0, 0);
+      log.textContent = 'Sẵn sàng. Nhập mật khẩu thử nghiệm để bắt đầu.';
+      result.textContent = 'Chưa bắt đầu.';
+      dictionaryInfo.textContent = dictionary.value === 'original'
+        ? 'Nguồn: top1k-vn-passwords.txt. Ví dụ: 123456.'
+        : 'Danh sách bổ sung gồm 2.000 giá trị tạo riêng cho demo. Ví dụ: ' + extraPasswords[0] + '.';
+    }
+
+    dictionary.addEventListener('change', resetResults);
+    resetResults();
 
     function stop() {
       clearInterval(timer);
@@ -164,23 +401,26 @@
       cancel.disabled = true;
       targetInput.disabled = false;
       protection.disabled = false;
+      dictionary.disabled = false;
     }
 
     document.querySelector('#password-form').addEventListener('submit', event => {
       event.preventDefault();
       if (timer !== null || !targetInput.reportValidity()) return;
-      stop();
+      const passwords = dictionaries[dictionary.value];
       const target = targetInput.value;
       const lockEnabled = protection.value === 'on';
       let attempts = 0;
       const recent = [];
       log.textContent = '';
-      progress.value = 0;
+      updateMetrics(0, 0);
       start.disabled = true;
       cancel.disabled = false;
       targetInput.disabled = true;
       protection.disabled = true;
+      dictionary.disabled = true;
       result.textContent = 'Đang chạy mô phỏng…';
+      startedAt = performance.now();
       timer = setInterval(() => {
         for (let batch = 0; batch < 10 && timer !== null; batch += 1) {
           const candidate = passwords[attempts];
@@ -199,24 +439,22 @@
             stop();
           }
         }
-        progress.value = attempts;
+        updateMetrics(attempts, performance.now() - startedAt);
         log.textContent = recent.join('\n');
         log.scrollTop = log.scrollHeight;
-        if (timer !== null) result.textContent = 'Đang dò: ' + attempts + '/' + passwords.length + ' lượt.';
       }, 80);
     });
 
     cancel.addEventListener('click', () => {
+      updateMetrics(progress.value, performance.now() - startedAt);
       stop();
-      result.textContent = 'Đã dừng sau ' + progress.value + '/' + passwords.length + ' lượt. Bấm bắt đầu để dò lại từ đầu.';
+      result.textContent = 'Đã dừng sau ' + progress.value + '/' + progress.max + ' lượt. Bấm bắt đầu để dò lại từ đầu.';
     });
 
     document.querySelector('#reset').addEventListener('click', () => {
       stop();
       targetInput.value = '';
-      progress.value = 0;
-      log.textContent = 'Sẵn sàng. Nhập mật khẩu thử nghiệm để bắt đầu.';
-      result.textContent = 'Chưa bắt đầu.';
+      resetResults();
       targetInput.focus();
     });
 
