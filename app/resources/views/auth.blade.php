@@ -4,7 +4,7 @@
 <div class="auth-shell">
     <section class="auth-story">
         <a class="brand" href="{{ route('login') }}"><span class="brand-mark">❧</span> mầm<span class="brand-dot">.</span></a>
-        <div class="auth-message"><p class="eyebrow">DÀNH CHO HÀNH TRÌNH CỦA MẸ</p><h1>Từng ngày nhỏ.<br>Một hành trình<br><em>thật lớn.</em></h1><p>Những bữa ăn, lần khám và ghi chú thân thương.<br>Gom lại trong một cuốn nhật ký của riêng bạn.</p></div>
+        <div class="auth-message"><p class="eyebrow">DÀNH CHO HÀNH TRÌNH CỦA MẸ</p><h1>Từng ngày nhỏ.<br>Một hành trình<br><em>thật lớn.</em></h1><p>Những kỷ niệm, lần khám và hình ảnh thân thương.<br>Gom lại trong một cuốn nhật ký của riêng bạn.</p></div>
         <div class="botanical" aria-hidden="true"><div class="stem"></div><i></i><i></i><i></i><i></i><i></i></div>
         <p class="auth-foot">Cùng mẹ lưu giữ những điều đáng nhớ.</p>
     </section>

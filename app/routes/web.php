@@ -16,6 +16,10 @@ Route::middleware('auth')->group(function () {
     Route::view('/profile', 'profile')->name('profile');
     Route::put('/profile', [DiaryController::class, 'profile']);
     Route::get('/attachments/{id}', [DiaryController::class, 'attachment'])->whereNumber('id')->name('attachment');
+    Route::get('/diary-images/{id}/{photo}', [DiaryController::class, 'photo'])
+        ->whereNumber('id')
+        ->where('photo', '[a-zA-Z0-9]{40}\.(jpg|jpeg|png|webp)')
+        ->name('journal.photo');
     Route::prefix('/diary/{kind}')->where(['kind' => 'meals|checkups'])->group(function () {
         Route::get('/', [DiaryController::class, 'index'])->name('entries.index');
         Route::get('/create', [DiaryController::class, 'form'])->name('entries.create');

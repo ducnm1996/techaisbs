@@ -1,6 +1,10 @@
 @extends('layout')
-@section('title', $entry ? 'Chỉnh sửa nhật ký' : ($kind === 'meals' ? 'Ghi bữa ăn' : 'Thêm hồ sơ khám thai'))
+@section('title', $entry ? 'Chỉnh sửa nhật ký' : ($kind === 'meals' ? 'Viết nhật ký' : 'Thêm hồ sơ khám thai'))
 @section('content')
+@if($kind === 'meals')
+<a class="back-link" href="{{ route('entries.index', ['kind' => 'meals']) }}">← Trở về nhật ký</a>
+@include('journal-form', ['entry' => $entry])
+@else
 <a class="back-link" href="{{ route('entries.index', ['kind'=>$kind]) }}">← Trở về nhật ký</a>
 <div class="page-heading"><div><p class="eyebrow">{{ $kind === 'meals' ? 'ĂN UỐNG MỖI NGÀY' : 'MỘT LẦN GẶP BÉ' }}</p><h1>{{ $entry ? 'Chỉnh sửa nhật ký' : ($kind === 'meals' ? 'Hôm nay mẹ ăn gì?' : 'Lưu một lần khám thai') }}</h1><p>Ghi lại những điều bạn muốn nhớ.</p></div></div>
 <form class="panel editor-form" method="post" enctype="multipart/form-data" action="{{ route($entry ? 'entries.update' : 'entries.store', ['kind'=>$kind, ...($entry ? ['id'=>$entry->id] : [])]) }}">
@@ -25,4 +29,5 @@
     </div>
     <div class="form-actions"><a class="btn btn-light" href="{{ route('entries.index', ['kind'=>$kind]) }}">Hủy</a><button type="submit" class="btn btn-primary">Lưu vào nhật ký ↗</button></div>
 </form>
+@endif
 @endsection

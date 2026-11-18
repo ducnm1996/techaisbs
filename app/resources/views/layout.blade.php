@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#214e43">
     <title>@yield('title', 'Góc nhỏ của mẹ') · Mầm</title>
     <link rel="stylesheet" href="/assets/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/mam.css">
+    <link rel="stylesheet" href="/assets/mam.css?v={{ filemtime(public_path('assets/mam.css')) }}">
 </head>
 <body class="@guest auth-page @endguest">
 <a class="visually-hidden-focusable skip-link" href="#main">Đến nội dung chính</a>
@@ -21,7 +21,7 @@
     <p class="brand-caption">NHẬT KÝ THAI KỲ</p>
     <nav aria-label="Điều hướng chính">
         <a class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}"><span aria-hidden="true">◫</span> Tổng quan</a>
-        <a class="{{ request()->route('kind') === 'meals' ? 'active' : '' }}" href="{{ route('entries.index', ['kind'=>'meals']) }}"><span aria-hidden="true">♧</span> Nhật ký thực phẩm</a>
+        <a class="{{ request()->route('kind') === 'meals' ? 'active' : '' }}" href="{{ route('entries.index', ['kind'=>'meals']) }}"><span aria-hidden="true">✎</span> Nhật ký</a>
         <a class="{{ request()->route('kind') === 'checkups' ? 'active' : '' }}" href="{{ route('entries.index', ['kind'=>'checkups']) }}"><span aria-hidden="true">▤</span> Hồ sơ khám thai</a>
         <a class="{{ request()->routeIs('profile') ? 'active' : '' }}" href="{{ route('profile') }}"><span aria-hidden="true">◎</span> Hồ sơ của mẹ</a>
     </nav>
@@ -43,6 +43,6 @@
         @yield('content')
     </div>
 </main>
-<script src="/assets/mam.js" defer></script>
+<script src="/assets/mam.js?v={{ filemtime(public_path('assets/mam.js')) }}" defer></script>
 </body>
 </html>

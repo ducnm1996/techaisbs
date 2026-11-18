@@ -96,4 +96,77 @@ class DiaryTest extends TestCase
         $this->assertSame([], Storage::disk('local')->allFiles());
         fclose($file);
     }
+
+    public function test_journal_composer_and_private_timeline_photos(): void
+    {
+        Storage::fake('local');
+        $owner = $this->owner();
+        $other = $this->owner();
+        $image = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jV7kAAAAASUVORK5CYII=');
+        $this->actingAs($owner)->post('/diary/meals', [
+            'entry_date' => today()->toDateString(),
+            'title' => 'Một ngày đáng nhớ',
+            'notes' => 'Những dòng nhật ký của tôi.',
+            'photos' => [UploadedFile::fake()->createWithContent('memory.png', $image)],
+        ])->assertSessionHasNoErrors()->assertRedirect('/diary/meals');
+        $entry = $owner->meals()->firstOrFail();
+        $this->assertSame('diary', $entry->meal_type);
+        $this->assertCount(1, $entry->photos());
+        $photo = $entry->photos()[0];
+        $url = route('journal.photo', ['id' => $entry->id, 'photo' => $photo]);
+        $this->get('/diary/meals')->assertOk()
+            ->assertSee('Viết nhật ký')->assertSee('Dòng thời gian')
+            ->assertSee('Một ngày đáng nhớ')->assertSee($url, false)
+            ->assertDontSee('Nhật ký thực phẩm');
+        $this->get($url)->assertOk()->assertHeader('Content-Type', 'image/png');
+        $this->actingAs($other)->get($url)->assertNotFound();
+        $this->get('/diary/meals')->assertDontSee('Một ngày đáng nhớ');
+        $this->put('/diary/meals/'.$entry->id, [])->assertNotFound();
+        $this->actingAs($owner)->delete('/diary/meals/'.$entry->id)->assertRedirect();
+        Storage::disk('local')->assertMissing($entry->photoDirectory().'/'.$photo);
+        $this->get($url)->assertNotFound();
+    }
+
+    public function test_journal_photo_limit_and_image_replacement(): void
+    {
+        Storage::fake('local');
+        $owner = $this->owner();
+        $image = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jV7kAAAAASUVORK5CYII=');
+        $photos = [];
+        for ($i = 0; $i < 4; $i++) {
+            $photos[] = UploadedFile::fake()->createWithContent("memory-$i.png", $image);
+        }
+        $this->actingAs($owner)->post('/diary/meals', [
+            'entry_date' => today()->toDateString(), 'title' => 'Bài viết cũ', 'photos' => $photos,
+        ])->assertSessionHasNoErrors();
+        $entry = $owner->meals()->firstOrFail();
+        $oldPhoto = $entry->photos()[0];
+        $this->put('/diary/meals/'.$entry->id, [
+            'entry_date' => today()->toDateString(), 'title' => 'Chưa được lưu',
+            'photos' => [UploadedFile::fake()->createWithContent('new.png', $image)],
+        ])->assertSessionHasErrors('photos');
+        $this->assertSame('Bài viết cũ', $entry->fresh()->title);
+        $this->assertCount(4, $entry->photos());
+        $this->put('/diary/meals/'.$entry->id, [
+            'entry_date' => today()->toDateString(), 'title' => 'Bài viết đã sửa',
+            'remove_photos' => [$oldPhoto],
+            'photos' => [UploadedFile::fake()->createWithContent('new.png', $image)],
+        ])->assertSessionHasNoErrors();
+        $this->assertSame('Bài viết đã sửa', $entry->fresh()->title);
+        $this->assertCount(4, $entry->photos());
+        Storage::disk('local')->assertMissing($entry->photoDirectory().'/'.$oldPhoto);
+        $this->delete('/diary/meals/'.$entry->id);
+        $this->assertSame([], Storage::disk('local')->allFiles());
+    }
+
+    public function test_journal_rejects_non_image_uploads(): void
+    {
+        Storage::fake('local');
+        $this->actingAs($this->owner())->post('/diary/meals', [
+            'entry_date' => today()->toDateString(), 'title' => 'Ảnh không hợp lệ',
+            'photos' => [UploadedFile::fake()->createWithContent('document.pdf', "%PDF-1.4\nPDF document")],
+        ])->assertSessionHasErrors('photos.0');
+        $this->assertDatabaseCount('meals', 0);
+        $this->assertSame([], Storage::disk('local')->allFiles());
+    }
 }

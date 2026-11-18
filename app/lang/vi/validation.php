@@ -12,10 +12,13 @@ return [
     'in' => 'Giá trị :attribute chưa hợp lệ.',
     'boolean' => 'Lựa chọn :attribute chưa hợp lệ.',
     'file' => ':Attribute phải là tệp.',
+    'image' => ':Attribute phải là ảnh hợp lệ.',
+    'array' => ':Attribute phải là danh sách.',
     'mimes' => ':Attribute cần có định dạng :values.',
     'uploaded' => 'Tệp tải lên chưa thành công. Vui lòng kiểm tra dung lượng.',
     'min' => ['string' => ':Attribute cần ít nhất :min ký tự.'],
     'max' => [
+        'array' => ':Attribute tối đa :max mục.',
         'string' => ':Attribute tối đa :max ký tự.',
         'file' => ':Attribute tối đa :max KB.',
     ],
@@ -25,5 +28,6 @@ return [
         'title' => 'tiêu đề', 'notes' => 'ghi chú', 'clinic' => 'cơ sở khám',
         'next_visit' => 'ngày hẹn tiếp theo', 'attachment' => 'tệp đính kèm',
         'meal_type' => 'bữa ăn', 'stage' => 'giai đoạn', 'date' => 'ngày',
+        'photos' => 'ảnh đính kèm', 'photos.*' => 'ảnh đính kèm', 'remove_photos' => 'ảnh cần gỡ',
     ],
 ];

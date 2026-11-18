@@ -5,7 +5,7 @@
     $week = intdiv($days, 7);
     $stage = $week < 14 ? 1 : ($week < 28 ? 2 : 3);
 @endphp
-<div class="page-heading"><div><p class="eyebrow">NHẬT KÝ CỦA MẸ</p><h1>Chào {{ auth()->user()->name }} <span class="greeting-flower" aria-hidden="true">✿</span></h1><p>Một ngày mới, thêm một điều để lưu giữ.</p></div><a class="btn btn-primary" href="{{ route('entries.create', ['kind'=>'meals']) }}">+ Ghi bữa ăn</a></div>
+<div class="page-heading"><div><p class="eyebrow">NHẬT KÝ CỦA MẸ</p><h1>Chào {{ auth()->user()->name }} <span class="greeting-flower" aria-hidden="true">✿</span></h1><p>Một ngày mới, thêm một điều để lưu giữ.</p></div><a class="btn btn-primary" href="{{ route('entries.index', ['kind'=>'meals']) }}#write-diary">+ Viết nhật ký</a></div>
 <section class="journey">
     <div><p class="eyebrow">HÀNH TRÌNH HIỆN TẠI</p><h2>Tuần {{ $week }}<span> + {{ $days % 7 }} ngày</span></h2><p>Tam cá nguyệt {{ $stage }} · Tính từ ngày đầu kỳ kinh cuối</p><a href="{{ route('profile') }}">Xem hồ sơ của mẹ <span aria-hidden="true">↗</span></a></div>
     <div class="journey-flower" aria-hidden="true">✺</div>
@@ -16,17 +16,17 @@
     </div>
 </section>
 <div class="stats-grid">
-    <section class="stat"><span class="stat-icon sage" aria-hidden="true">♧</span><div><p>Bữa ăn đã ghi</p><strong>{{ $mealCount }}</strong><small>trong nhật ký của mẹ</small></div></section>
+    <section class="stat"><span class="stat-icon sage" aria-hidden="true">✎</span><div><p>Bài nhật ký</p><strong>{{ $mealCount }}</strong><small>trong hành trình của mẹ</small></div></section>
     <section class="stat"><span class="stat-icon peach" aria-hidden="true">▤</span><div><p>Hồ sơ khám thai</p><strong>{{ $checkupCount }}</strong><small>lần khám đã lưu</small></div></section>
     <section class="stat"><span class="stat-icon lavender" aria-hidden="true">▦</span><div><p>Lịch hẹn sắp tới</p><strong class="stat-date">{{ $nextVisit ? $nextVisit->next_visit->format('d/m') : 'Chưa có' }}</strong><small>{{ $nextVisit ? $nextVisit->title : 'Thêm từ hồ sơ khám thai' }}</small></div></section>
 </div>
 <div class="dashboard-columns">
     <section class="panel">
-        <div class="section-heading"><div><p class="eyebrow">ĂN UỐNG MỖI NGÀY</p><h2>Những bữa ăn gần đây</h2></div><a href="{{ route('entries.index', ['kind'=>'meals']) }}">Xem tất cả ↗</a></div>
+        <div class="section-heading"><div><p class="eyebrow">NHỮNG ĐIỀU MUỐN NHỚ</p><h2>Nhật ký gần đây</h2></div><a href="{{ route('entries.index', ['kind'=>'meals']) }}">Xem dòng thời gian ↗</a></div>
         @forelse($meals as $meal)
-        <a class="entry-preview" href="{{ route('entries.edit', ['kind'=>'meals', 'id'=>$meal->id]) }}"><span class="date-tile">{{ $meal->entry_date->format('d') }}<small>TH {{ $meal->entry_date->format('m') }}</small></span><div><span class="subtle-label">{{ App\Models\Meal::TYPES[$meal->meal_type] }}</span><h3>{{ $meal->title }}</h3><p>{{ Str::limit($meal->notes, 72) }}</p></div><span class="entry-arrow">↗</span></a>
+        <a class="entry-preview" href="{{ route('entries.edit', ['kind'=>'meals', 'id'=>$meal->id]) }}"><span class="date-tile">{{ $meal->entry_date->format('d') }}<small>TH {{ $meal->entry_date->format('m') }}</small></span><div><span class="subtle-label">{{ $meal->entry_date->format('d/m/Y') }} · {{ count($meal->photos()) }} ảnh</span><h3>{{ $meal->title }}</h3><p>{{ Str::limit($meal->notes, 72) }}</p></div><span class="entry-arrow">↗</span></a>
         @empty
-        <div class="empty-state"><span aria-hidden="true">♧</span><h3>Bữa ăn đầu tiên đang chờ mẹ</h3><p>Ghi lại món ăn và cảm nhận của bạn hôm nay.</p><a href="{{ route('entries.create', ['kind'=>'meals']) }}">Ghi bữa ăn đầu tiên ↗</a></div>
+        <div class="empty-state"><span aria-hidden="true">✿</span><h3>Một trang nhật ký đang chờ bạn</h3><p>Viết vài dòng về hôm nay và lưu lại một tấm ảnh.</p><a href="{{ route('entries.index', ['kind'=>'meals']) }}#write-diary">Viết nhật ký đầu tiên ↗</a></div>
         @endforelse
     </section>
     <section class="panel">
