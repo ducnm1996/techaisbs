@@ -15,6 +15,8 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
+    'migrate_legacy_uploads' => env('APP_ENV') === 'production',
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -32,8 +34,17 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app/private'),
+            'root' => env('PRIVATE_UPLOAD_ROOT', env('APP_ENV') === 'production'
+                ? dirname(base_path(), 2).'/mam-uploads'
+                : storage_path('app/private')),
             'serve' => true,
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'legacy_uploads' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private'),
             'throw' => false,
             'report' => false,
         ],

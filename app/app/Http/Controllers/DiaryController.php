@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meal;
+use App\Services\PrivateUploads;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,8 @@ use Throwable;
 
 class DiaryController extends Controller
 {
+    public function __construct(private readonly PrivateUploads $uploads) {}
+
     public function dashboard(Request $request)
     {
         return $this->index($request, 'meals');
@@ -93,7 +96,7 @@ class DiaryController extends Controller
             throw $error;
         }
         if ($oldFile && array_key_exists('file_path', $data) && $data['file_path'] !== $oldFile) {
-            Storage::disk('local')->delete($oldFile);
+            $this->uploads->delete($oldFile);
         }
 
         return redirect()->route('entries.index', ['kind' => $kind])->with('success', 'Đã lưu vào nhật ký của bạn.');
@@ -105,10 +108,10 @@ class DiaryController extends Controller
         $file = $kind === 'checkups' ? $entry->file_path : null;
         $entry->delete();
         if ($file) {
-            Storage::disk('local')->delete($file);
+            $this->uploads->delete($file);
         }
         if ($kind === 'meals') {
-            Storage::disk('local')->deleteDirectory($entry->photoDirectory());
+            $this->uploads->deleteDirectory($entry->photoDirectory());
         }
 
         return back()->with('success', 'Đã xóa mục nhật ký.');
@@ -117,9 +120,11 @@ class DiaryController extends Controller
     public function attachment(Request $request, int $id)
     {
         $entry = $request->user()->checkups()->findOrFail($id);
-        abort_unless($entry->file_path && Storage::disk('local')->exists($entry->file_path), 404);
+        abort_unless($entry->file_path, 404);
+        $disk = $this->uploads->diskFor($entry->file_path);
+        abort_unless($disk->exists($entry->file_path), 404);
 
-        return Storage::disk('local')->download($entry->file_path, $entry->file_name, [
+        return $disk->download($entry->file_path, $entry->file_name, [
             'X-Content-Type-Options' => 'nosniff',
             'Cache-Control' => 'private, no-store',
         ]);
@@ -129,9 +134,10 @@ class DiaryController extends Controller
     {
         $entry = $request->user()->meals()->findOrFail($id);
         $path = $entry->photoDirectory().'/'.$photo;
-        abort_unless(Storage::disk('local')->exists($path), 404);
+        $disk = $this->uploads->diskFor($path);
+        abort_unless($disk->exists($path), 404);
 
-        return Storage::disk('local')->response($path, null, [
+        return $disk->response($path, null, [
             'Cache-Control' => 'private, no-store',
             'X-Content-Type-Options' => 'nosniff',
         ]);
@@ -187,7 +193,7 @@ class DiaryController extends Controller
             Storage::disk('local')->delete($stored);
             throw $error;
         }
-        Storage::disk('local')->delete($removed);
+        $this->uploads->delete($removed);
 
         return redirect()->route('dashboard')->with('success', 'Đã lưu nhật ký của bạn.');
     }

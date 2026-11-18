@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\PrivateUploads;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['entry_date', 'meal_type', 'title', 'notes'])]
 class Meal extends Model
@@ -20,7 +20,7 @@ class Meal extends Model
 
     public function photos(): array
     {
-        return array_map('basename', Storage::disk('local')->files($this->photoDirectory()));
+        return app(PrivateUploads::class)->photosFor($this->photoDirectory());
     }
 
     protected function casts(): array

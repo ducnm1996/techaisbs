@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Services\PrivateUploads;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -175,5 +177,48 @@ class DiaryTest extends TestCase
         ])->assertSessionHasErrors('photos.0');
         $this->assertDatabaseCount('meals', 0);
         $this->assertSame([], Storage::disk('local')->allFiles());
+    }
+
+    public function test_uploads_survive_replacing_the_deployment_directory(): void
+    {
+        $root = sys_get_temp_dir().'/mam-upload-test-'.bin2hex(random_bytes(8));
+        File::ensureDirectoryExists($root.'/release-one/private', 0700, true);
+        File::ensureDirectoryExists($root.'/release-two/private', 0700, true);
+        config([
+            'filesystems.migrate_legacy_uploads' => true,
+            'filesystems.disks.local.root' => $root.'/persistent',
+            'filesystems.disks.legacy_uploads.root' => $root.'/release-one/private',
+        ]);
+        Storage::forgetDisk(['local', 'legacy_uploads']);
+        try {
+            $owner = $this->owner();
+            $entry = $owner->meals()->create([
+                'entry_date' => today()->toDateString(), 'meal_type' => 'diary', 'title' => 'Kỷ niệm của tôi',
+            ]);
+            $photo = str_repeat('a', 40).'.png';
+            $path = $entry->photoDirectory().'/'.$photo;
+            Storage::disk('legacy_uploads')->put($path, 'original-photo-bytes');
+            Storage::disk('legacy_uploads')->put('checkups/1/report.pdf', 'original-report-bytes');
+            $uploads = app(PrivateUploads::class);
+            $uploads->migrateLegacy();
+            $this->assertSame('original-photo-bytes', Storage::disk('local')->get($path));
+            $this->assertSame('original-report-bytes', Storage::disk('local')->get('checkups/1/report.pdf'));
+            Storage::disk('local')->put($path, 'updated-photo-bytes');
+            $uploads->migrateLegacy();
+            $this->assertSame('updated-photo-bytes', Storage::disk('local')->get($path));
+
+            File::deleteDirectory($root.'/release-one');
+            config(['filesystems.disks.legacy_uploads.root' => $root.'/release-two/private']);
+            Storage::forgetDisk('legacy_uploads');
+            $uploads->migrateLegacy();
+            $this->assertSame([$photo], $entry->photos());
+            $url = route('journal.photo', ['id' => $entry->id, 'photo' => $photo]);
+            $this->actingAs($owner)->get($url)->assertOk()->assertStreamedContent('updated-photo-bytes');
+            $this->delete('/diary/meals/'.$entry->id)->assertRedirect();
+            Storage::disk('local')->assertMissing($path);
+        } finally {
+            File::deleteDirectory($root);
+            Storage::forgetDisk(['local', 'legacy_uploads']);
+        }
     }
 }
