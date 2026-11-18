@@ -1,11 +1,11 @@
 @extends('layout')
-@section('title', 'Nhật ký')
+@section('title', 'Trang chủ')
 @section('content')
 <div class="journal-page">
 <div class="page-heading">
     <div>
         <p class="eyebrow">HÀNH TRÌNH QUA TỪNG NGÀY</p>
-        <h1>Nhật ký của mẹ</h1>
+        <h1>{{ config('app.name') }}</h1>
         <p>Ghi lại cảm xúc, kỷ niệm và những hình ảnh bạn muốn lưu giữ.</p>
     </div>
     <a class="btn btn-primary btn-sm" href="{{ route('entries.create', ['kind' => 'meals']) }}">+ Viết nhật ký</a>

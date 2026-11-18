@@ -693,6 +693,20 @@ button:focus-visible {
     background: var(--green);
     border-color: var(--green);
 }
+.brand .brand-name {
+    min-width: 0;
+    max-width: 155px;
+    font-size: 22px;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+}
+.brand .brand-mark {
+    flex-shrink: 0;
+}
+.auth-story .brand-name {
+    max-width: 280px;
+    font-size: 26px;
+}
 .journal-page {
     max-width: 960px;
     margin-inline: auto;

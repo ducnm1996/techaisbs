@@ -17,7 +17,7 @@
     $stage = $week < 14 ? 1 : ($week < 28 ? 2 : 3);
 @endphp
 <aside class="sidebar">
-    <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">❧</span> {{ config('app.name') }}</a>
+    <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">❧</span><span class="brand-name">{{ config('app.name') }}</span></a>
     <p class="brand-caption">NHẬT KÝ THAI KỲ</p>
     <nav aria-label="Điều hướng chính">
         <a class="{{ request()->routeIs('dashboard') || request()->route('kind') === 'meals' ? 'active' : '' }}" href="{{ route('dashboard') }}"><span aria-hidden="true">◫</span> Trang chủ</a>
