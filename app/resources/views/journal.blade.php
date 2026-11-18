@@ -11,6 +11,8 @@
     <a class="btn btn-primary btn-sm" href="{{ route('entries.create', ['kind' => 'meals']) }}">+ Viết nhật ký</a>
 </div>
 
+@include('baby-growth')
+
 <div class="journal-history-heading">
     <h2>Dòng thời gian</h2>
     <span>{{ $entries->total() }} bài nhật ký</span>

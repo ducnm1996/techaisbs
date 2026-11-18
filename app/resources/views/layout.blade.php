@@ -43,5 +43,6 @@
     </div>
 </main>
 <script src="/assets/mam.js?v={{ filemtime(public_path('assets/mam.js')) }}" defer></script>
+@stack('scripts')
 </body>
 </html>

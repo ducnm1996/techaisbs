@@ -1114,3 +1114,34 @@ button:focus-visible {
         flex-wrap: wrap;
     }
 }
+
+/* Baby Mui: illustrated stages and gentle movement. */
+.baby-growth{display:grid;grid-template-columns:minmax(240px,.9fr) 1.1fr;gap:28px;padding:26px;margin-bottom:30px;overflow:hidden}
+.baby-scene{position:relative;min-height:350px;border-radius:24px;display:grid;place-items:center;isolation:isolate;background:radial-gradient(ellipse at 50% 43%,#fff9ee 0%,#f5e6da 47%,#e8eee2 100%)}
+.baby-orbit{position:absolute;width:82%;aspect-ratio:1;border:1px solid #ffffffb0;border-radius:48% 52% 54% 46%;transform:rotate(-20deg);box-shadow:0 0 60px #fff8 inset}
+.baby-float{width:100%;max-width:360px;aspect-ratio:1;position:relative;animation:baby-float 7s ease-in-out infinite}
+.baby-sprite{position:absolute;inset:0;background-image:url('/assets/baby-growth-stages.png');background-size:200% 200%;background-repeat:no-repeat;transform:scale(var(--baby-scale,1));transition:transform .15s linear;filter:drop-shadow(0 18px 18px #725d491c)}
+.baby-scene[data-stage="0"] .baby-sprite{background-position:0 0}
+.baby-scene[data-stage="1"] .baby-sprite{background-position:100% 0}
+.baby-scene[data-stage="2"] .baby-sprite{background-position:0 100%}
+.baby-scene[data-stage="3"] .baby-sprite{background-position:100% 100%}
+.baby-seed{display:none;position:absolute;inset:40%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff4db,#edbda6);box-shadow:0 0 45px 20px #fff4df;transform:scale(var(--baby-scale,1))}
+.baby-scene[data-stage="early"] .baby-sprite{display:none}
+.baby-scene[data-stage="early"] .baby-seed{display:block}
+.baby-scene-caption{position:absolute;bottom:19px;font-size:12px;color:#756c62;letter-spacing:.04em}
+.baby-information{align-self:center;padding:8px 0}
+.baby-information h2{font-size:clamp(26px,3vw,36px);margin:0 0 6px;color:#214e43;font-weight:800}
+.baby-information .eyebrow{font-size:11px}
+.baby-information>p{font-size:14px;line-height:1.65}
+.baby-date{color:#64766c;font-weight:600}
+.baby-information .form-label{font-size:13px;margin:10px 0 6px}
+.baby-range{display:block;width:100%;accent-color:#315c4d;cursor:pointer}
+.baby-range-labels{display:flex;justify-content:space-between;font-size:11px;color:#778079;margin-top:4px}
+.baby-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:18px 0 14px}
+.baby-motion{border:0;background:transparent;color:#53685e;font-size:12px;padding:6px;text-decoration:underline;text-underline-offset:3px}
+.baby-information .baby-note{font-size:11px;color:#778079;margin:0;line-height:1.65}
+.baby-note a{color:#315c4d}
+.baby-paused .baby-float{animation-play-state:paused}
+@keyframes baby-float{0%,100%{transform:translateY(4px) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+@media(max-width:700px){.baby-growth{grid-template-columns:1fr;padding:16px;gap:16px}.baby-scene{min-height:280px;max-height:310px}.baby-float{max-width:290px}.baby-information{padding:0 4px}}
+@media(prefers-reduced-motion:reduce){.baby-float{animation:none}.baby-sprite{transition:none}}

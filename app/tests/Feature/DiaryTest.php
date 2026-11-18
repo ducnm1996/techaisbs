@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Services\PrivateUploads;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
@@ -18,6 +19,21 @@ class DiaryTest extends TestCase
     private function owner(): User
     {
         return User::factory()->create(['pregnancy_start' => today()->subWeeks(20)]);
+    }
+
+    public function test_homepage_baby_age_rolls_over_at_midnight_and_caps_only_the_preview(): void
+    {
+        $this->travelTo(CarbonImmutable::parse('2026-11-18 23:59:00', 'Asia/Ho_Chi_Minh'));
+        $user = User::factory()->create(['pregnancy_start' => '2026-07-01']);
+        $this->actingAs($user)->get('/')
+            ->assertOk()->assertSee('20 tuần 0 ngày')->assertSee('data-days="140"', false)
+            ->assertSee('data-stage="1"', false);
+        $this->travelTo(CarbonImmutable::parse('2026-11-19 00:01:00', 'Asia/Ho_Chi_Minh'));
+        $this->get('/')->assertSee('20 tuần 1 ngày')->assertSee('data-days="141"', false);
+        $user->update(['pregnancy_start' => '2020-01-01']);
+        $this->get('/')->assertOk()->assertSee('hình minh họa dừng ở tuần 42')
+            ->assertSee('value="294"', false);
+        $this->travelBack();
     }
 
     public function test_guests_cannot_read_or_write_a_diary(): void
