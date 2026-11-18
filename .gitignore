@@ -1,0 +1,7 @@
+/.runtime/
+/app/.env
+/app/vendor/
+/app/node_modules/
+/app/storage/*.key
+/app/database/*.sqlite
+/app/database/*.sqlite-*

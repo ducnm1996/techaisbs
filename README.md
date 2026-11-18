@@ -1,0 +1,51 @@
+# Mầm · Nhật ký thai kỳ
+
+Ứng dụng Laravel 13, PHP 8.4, MySQL 8.4, Blade và Bootstrap 5.3.8. Giao diện tiếng Việt, thích ứng điện thoại và máy tính.
+
+## Sử dụng local trên máy này
+
+Chạy PowerShell trong thư mục dự án và thực hiện:
+
+```powershell
+.\start-local.ps1
+```
+
+Mở http://127.0.0.1:8000 rồi tạo tài khoản. MySQL chạy ở 127.0.0.1:3307 với dữ liệu trong .runtime/mysql-data. Cấu hình kết nối và khóa ứng dụng nằm trong app/.env.
+
+## Chức năng
+
+- Đăng ký, đăng nhập, đăng xuất bằng session Laravel, mật khẩu băm, CSRF và giới hạn tần suất đăng nhập.
+- Mỗi tài khoản có một hành trình thai kỳ, lấy ngày đầu kỳ kinh cuối làm mốc. Có thể điều chỉnh ngày mốc trong hồ sơ.
+- Bữa ăn theo ngày và loại bữa, có món ăn, khẩu phần/cảm nhận dạng ghi chú, chỉnh sửa và xóa.
+- Hồ sơ khám theo ngày, cơ sở khám, ghi chú kết quả/lời dặn, ngày hẹn tiếp theo.
+- Mỗi hồ sơ khám có một tệp PDF/JPG/PNG tối đa 10 MB, có thể tải, thay thế hoặc gỡ.
+- Bộ lọc theo ngày, tam cá nguyệt 1 (tuần 0–13), 2 (14–27), 3 (từ 28).
+- Tệp lưu tại storage/app/private, tải qua route có xác thực và kiểm tra chủ sở hữu.
+
+## Cài trên máy khác
+
+Cần PHP >= 8.3 với curl, fileinfo, mbstring, openssl, pdo_mysql và zip; Composer; MySQL.
+
+```sh
+cd app
+composer install
+cp .env.example .env
+php artisan key:generate
+# Đặt DB_CONNECTION=mysql, DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD trong .env.
+php artisan migrate
+php artisan serve
+```
+
+PHP cần upload_max_filesize ít nhất 10M và post_max_size lớn hơn giới hạn đó. Phục vụ web từ thư mục app/public. Khi triển khai dùng HTTPS, APP_DEBUG=false và SESSION_SECURE_COOKIE=true.
+
+Bootstrap được lưu sẵn trong public/assets. Font Google có font hệ thống dự phòng. Chưa cấu hình gửi email xác minh địa chỉ hoặc khôi phục mật khẩu. Ứng dụng đang dùng đăng nhập email/mật khẩu.
+
+## Kiểm thử
+
+```sh
+php artisan test
+```
+
+Mặc định bộ kiểm thử dùng SQLite in-memory để tách biệt dữ liệu. Đã chạy cùng bộ kiểm thử với MySQL trên database mam_testing. Các bài kiểm thử kiểm tra auth, phân quyền tệp, CRUD, bộ lọc giai đoạn và tệp tải lên giả dạng PDF.
+
+Không đưa .runtime, app/.env, hồ sơ tải lên hoặc bản sao database lên Git. Tài khoản demo được tạo riêng bằng DemoSeeder ở môi trường local và được đánh dấu dữ liệu minh họa.
