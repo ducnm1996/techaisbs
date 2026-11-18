@@ -44,6 +44,8 @@ Bootstrap được lưu sẵn trong public/assets. Font Google có font hệ th�
 
 Giữ toàn bộ cấu trúc repository khi đồng bộ nhánh main vào public_html. Tệp .htaccess ở gốc chuyển request tới app/public; tệp app/.htaccess chặn truy cập trực tiếp vào mã nguồn, cấu hình và hồ sơ riêng. Website vẫn có thể dùng document root app/public nếu hosting hỗ trợ cấu hình đó.
 
+Composer đã đặt platform.php=8.3.0 để tạo lock file tương thích PHP 8.3 trên hosting, kể cả khi máy phát triển dùng PHP 8.4. Sau khi đồng bộ composer.lock mới, cần chạy lại composer install trên hosting để cập nhật vendor.
+
 Thiết lập lần đầu trong hPanel:
 
 1. Chọn PHP từ 8.3 trở lên, bật pdo_mysql, mbstring, fileinfo, openssl, curl, zip.
