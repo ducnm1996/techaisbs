@@ -1,4 +1,4 @@
-# bé Mùi · Nhật ký thai kỳ
+# Nhật ký của bé Mùi
 
 Ứng dụng Laravel 13, PHP 8.4, MySQL 8.4, Blade và Bootstrap 5.3.8. Giao diện tiếng Việt, thích ứng điện thoại và máy tính.
 
