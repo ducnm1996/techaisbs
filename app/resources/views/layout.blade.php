@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#214e43">
-    <title>@yield('title', 'Góc nhỏ của mẹ') · Mầm</title>
+    <title>@yield('title', 'Góc nhỏ của mẹ') · {{ config('app.name') }}</title>
     <link rel="stylesheet" href="/assets/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/mam.css?v={{ filemtime(public_path('assets/mam.css')) }}">
 </head>
@@ -17,7 +17,7 @@
     $stage = $week < 14 ? 1 : ($week < 28 ? 2 : 3);
 @endphp
 <aside class="sidebar">
-    <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">❧</span> mầm<span class="brand-dot">.</span></a>
+    <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">❧</span> {{ config('app.name') }}</a>
     <p class="brand-caption">NHẬT KÝ THAI KỲ</p>
     <nav aria-label="Điều hướng chính">
         <a class="{{ request()->routeIs('dashboard') || request()->route('kind') === 'meals' ? 'active' : '' }}" href="{{ route('dashboard') }}"><span aria-hidden="true">◫</span> Trang chủ</a>

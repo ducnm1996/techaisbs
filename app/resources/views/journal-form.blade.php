@@ -20,7 +20,7 @@
             <div class="col-md-4">
                 <label class="form-label" for="entry_date">Ngày nhật ký</label>
                 <input class="form-control" type="date" id="entry_date" name="entry_date"
-                       min="{{ auth()->user()->pregnancy_start->toDateString() }}"
+                       min="1900-01-01"
                        max="{{ today()->toDateString() }}"
                        value="{{ old('entry_date', $entry?->entry_date?->toDateString() ?? today()->toDateString()) }}" required>
             </div>

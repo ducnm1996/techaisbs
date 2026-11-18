@@ -10,11 +10,16 @@
 <div class="entries-list">
 @forelse($entries as $entry)
 @php
-    $entryWeek = intdiv(max(0, (int) auth()->user()->pregnancy_start->diffInDays($entry->entry_date, false)), 7);
-    $entryStage = $entryWeek < 14 ? 1 : ($entryWeek < 28 ? 2 : 3);
+    $entryDays = (int) auth()->user()->pregnancy_start->diffInDays($entry->entry_date, false);
+    $entryWeek = $entryDays >= 0 ? intdiv($entryDays, 7) : null;
+    $entryStage = $entryWeek === null ? null : ($entryWeek < 14 ? 1 : ($entryWeek < 28 ? 2 : 3));
 @endphp
 <article class="panel diary-card">
-    <div class="entry-top"><span class="subtle-label">{{ $entry->entry_date->format('d/m/Y') }} · Tuần {{ $entryWeek }} · Tam cá nguyệt {{ $entryStage }}</span>@if($kind === 'meals')<span class="tag">{{ App\Models\Meal::TYPES[$entry->meal_type] }}</span>@endif</div>
+    <div class="entry-top">
+        <span class="subtle-label">{{ $entry->entry_date->format('d/m/Y') }} ·
+            @if($entryWeek === null) Trước mốc thai kỳ @else Tuần {{ $entryWeek }} · Tam cá nguyệt {{ $entryStage }} @endif
+        </span>
+    </div>
     <h2>{{ $entry->title }}</h2>
     @if($kind === 'checkups' && $entry->clinic)<p class="text-muted">{{ $entry->clinic }}</p>@endif
     @if($entry->notes)<p class="entry-notes">{{ $entry->notes }}</p>@endif

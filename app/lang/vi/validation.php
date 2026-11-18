@@ -6,6 +6,7 @@ return [
     'email' => 'Vui lòng nhập địa chỉ email hợp lệ.',
     'unique' => ':Attribute này đã được sử dụng.',
     'confirmed' => 'Hai lần nhập :attribute chưa khớp.',
+    'current_password' => 'Mật khẩu hiện tại chưa đúng.',
     'date_format' => ':Attribute cần là ngày hợp lệ.',
     'before_or_equal' => ':Attribute phải trước hoặc cùng ngày :date.',
     'after_or_equal' => ':Attribute phải sau hoặc cùng ngày :date.',
@@ -24,6 +25,7 @@ return [
     ],
     'attributes' => [
         'name' => 'tên', 'email' => 'email', 'password' => 'mật khẩu',
+        'current_password' => 'mật khẩu hiện tại',
         'pregnancy_start' => 'ngày đầu kỳ kinh cuối', 'entry_date' => 'ngày ghi',
         'title' => 'tiêu đề', 'notes' => 'ghi chú', 'clinic' => 'cơ sở khám',
         'next_visit' => 'ngày hẹn tiếp theo', 'attachment' => 'tệp đính kèm',

@@ -1,4 +1,4 @@
-# Mầm · Nhật ký thai kỳ
+# bé Mùi · Nhật ký thai kỳ
 
 Ứng dụng Laravel 13, PHP 8.4, MySQL 8.4, Blade và Bootstrap 5.3.8. Giao diện tiếng Việt, thích ứng điện thoại và máy tính.
 
@@ -22,6 +22,8 @@ Mở http://127.0.0.1:8000 rồi tạo tài khoản. MySQL chạy ở 127.0.0.1:
 - Hồ sơ khám theo ngày, cơ sở khám, ghi chú kết quả/lời dặn, ngày hẹn tiếp theo.
 - Mỗi hồ sơ khám có một tệp PDF/JPG/PNG tối đa 10 MB, có thể tải, thay thế hoặc gỡ.
 - Nút “Lọc” mở bộ lọc theo ngày và tam cá nguyệt 1 (tuần 0–13), 2 (14–27), 3 (từ 28). Bộ lọc tự mở khi có điều kiện đang áp dụng.
+- Có thể ghi các ngày cũ trước mốc thai kỳ; những mục này được hiển thị và lọc ở nhóm “Trước mốc thai kỳ”.
+- Trong Hồ sơ của mẹ, có thể sửa tên hiển thị, email đăng nhập, mốc thai kỳ và mật khẩu. Thay đổi email/mật khẩu yêu cầu mật khẩu hiện tại.
 - Tệp lưu tại storage/app/private, tải qua route có xác thực và kiểm tra chủ sở hữu.
 
 ## Cài trên máy khác

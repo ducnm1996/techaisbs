@@ -22,6 +22,7 @@
         <label class="form-label" for="stage">Giai đoạn</label>
         <select class="form-select" id="stage" name="stage">
             <option value="">Tất cả giai đoạn</option>
+            <option value="before" @selected(request('stage') === 'before')>Trước mốc thai kỳ</option>
             <option value="1" @selected(request('stage') === '1')>Tam cá nguyệt 1 · tuần 0–13</option>
             <option value="2" @selected(request('stage') === '2')>Tam cá nguyệt 2 · tuần 14–27</option>
             <option value="3" @selected(request('stage') === '3')>Tam cá nguyệt 3 · từ tuần 28</option>
@@ -45,12 +46,13 @@
             </div>
             @foreach($dayEntries as $entry)
                 @php
-                    $entryWeek = intdiv(max(0, (int) auth()->user()->pregnancy_start->diffInDays($entry->entry_date, false)), 7);
+                    $entryDays = (int) auth()->user()->pregnancy_start->diffInDays($entry->entry_date, false);
+                    $entryWeek = $entryDays >= 0 ? intdiv($entryDays, 7) : null;
                     $photos = $entry->photos();
                 @endphp
                 <article class="panel timeline-card">
                     <div class="timeline-card-top">
-                        <span class="subtle-label">Tuần {{ $entryWeek }} · {{ auth()->user()->name }}</span>
+                        <span class="subtle-label">{{ $entryWeek === null ? 'Trước mốc thai kỳ' : 'Tuần '.$entryWeek }} · {{ auth()->user()->name }}</span>
                         <a href="{{ route('entries.edit', ['kind' => 'meals', 'id' => $entry->id]) }}" class="timeline-edit">Chỉnh sửa</a>
                     </div>
                     <h3>{{ $entry->title }}</h3>

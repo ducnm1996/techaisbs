@@ -7,6 +7,7 @@ use App\Services\PrivateUploads;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -233,5 +234,77 @@ class DiaryTest extends TestCase
         $filtered = $this->get('/?stage=2')->assertOk()->getContent();
         preg_match('/<details class="journal-filters"[^>]*>/', $filtered, $open);
         $this->assertStringContainsString(' open', $open[0]);
+    }
+
+    public function test_dates_before_pregnancy_start_are_allowed_and_classified(): void
+    {
+        $owner = $this->owner();
+        $date = $owner->pregnancy_start->copy()->subDays(10)->toDateString();
+        $this->actingAs($owner)->post('/diary/meals', [
+            'entry_date' => $date, 'title' => 'Kỷ niệm trước thai kỳ',
+        ])->assertSessionHasNoErrors()->assertRedirect('/');
+        $this->post('/diary/checkups', [
+            'entry_date' => $date, 'title' => 'Lần khám trước mốc',
+        ])->assertSessionHasNoErrors();
+        $this->get('/?stage=before')->assertOk()->assertSee('Kỷ niệm trước thai kỳ')->assertSee('Trước mốc thai kỳ');
+        $this->get('/?stage=1')->assertDontSee('Kỷ niệm trước thai kỳ');
+        $this->get('/diary/checkups?stage=before')->assertSee('Lần khám trước mốc');
+        $this->post('/diary/meals', [
+            'entry_date' => today()->addDay()->toDateString(), 'title' => 'Ngày chưa đến',
+        ])->assertSessionHasErrors('entry_date');
+        $this->assertDatabaseMissing('meals', ['title' => 'Ngày chưa đến']);
+        $this->get('/diary/meals/create')->assertSee('min="1900-01-01"', false);
+    }
+
+    public function test_profile_updates_name_and_pregnancy_date_with_existing_older_entries(): void
+    {
+        $owner = $this->owner();
+        $hash = $owner->password;
+        $owner->meals()->create([
+            'entry_date' => today()->subDays(8)->toDateString(), 'meal_type' => 'diary', 'title' => 'Bài nhật ký cũ',
+        ]);
+        $this->actingAs($owner)->put('/profile', [
+            'name' => 'Tên hiển thị mới', 'email' => $owner->email, 'pregnancy_start' => today()->toDateString(),
+        ])->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertSame('Tên hiển thị mới', $owner->fresh()->name);
+        $this->assertSame($hash, $owner->fresh()->password);
+        $this->assertSame(today()->toDateString(), $owner->fresh()->pregnancy_start->toDateString());
+        $this->get('/?stage=before')->assertSee('Bài nhật ký cũ');
+        $this->get('/profile')->assertSee('name="email"', false)->assertSee('name="current_password"', false);
+    }
+
+    public function test_profile_credentials_can_be_changed_with_current_password(): void
+    {
+        $owner = $this->owner();
+        $owner->update(['password' => 'InitialSecret2026']);
+        $oldEmail = $owner->email;
+        $this->actingAs($owner)->put('/profile', [
+            'name' => $owner->name,
+            'email' => 'updated@example.com',
+            'pregnancy_start' => $owner->pregnancy_start->toDateString(),
+            'current_password' => 'InitialSecret2026',
+            'password' => 'NewPrivatePassword2026',
+            'password_confirmation' => 'NewPrivatePassword2026',
+        ])->assertSessionHasNoErrors();
+        $this->assertSame('updated@example.com', $owner->fresh()->email);
+        $this->assertNull($owner->fresh()->email_verified_at);
+        $this->assertTrue(Hash::check('NewPrivatePassword2026', $owner->fresh()->password));
+        $this->post('/logout');
+        $this->post('/login', ['email' => $oldEmail, 'password' => 'InitialSecret2026'])->assertSessionHasErrors('email');
+        $this->post('/login', ['email' => 'updated@example.com', 'password' => 'NewPrivatePassword2026'])->assertRedirect('/');
+        $this->assertAuthenticated();
+    }
+
+    public function test_profile_rejects_wrong_current_password_and_duplicate_email(): void
+    {
+        $owner = $this->owner();
+        $owner->update(['password' => 'InitialSecret2026']);
+        $other = $this->owner();
+        $fields = ['name' => $owner->name, 'email' => 'other-new@example.com', 'pregnancy_start' => $owner->pregnancy_start->toDateString()];
+        $this->actingAs($owner)->put('/profile', $fields)->assertSessionHasErrors('current_password');
+        $this->put('/profile', [...$fields, 'current_password' => 'wrong-password'])->assertSessionHasErrors('current_password');
+        $this->put('/profile', [...$fields, 'email' => $other->email, 'current_password' => 'InitialSecret2026'])->assertSessionHasErrors('email');
+        $this->assertSame($owner->email, $owner->fresh()->email);
+        $this->assertTrue(Hash::check('InitialSecret2026', $owner->fresh()->password));
     }
 }

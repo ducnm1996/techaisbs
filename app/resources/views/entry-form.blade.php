@@ -10,7 +10,7 @@
 <form class="panel editor-form" method="post" enctype="multipart/form-data" action="{{ route($entry ? 'entries.update' : 'entries.store', ['kind'=>$kind, ...($entry ? ['id'=>$entry->id] : [])]) }}">
     @csrf @if($entry) @method('PUT') @endif
     <div class="row g-4">
-        <div class="col-md-6"><label class="form-label" for="entry_date">Ngày {{ $kind === 'meals' ? 'ghi nhật ký' : 'khám' }} <span aria-hidden="true">*</span></label><input class="form-control" type="date" id="entry_date" name="entry_date" min="{{ auth()->user()->pregnancy_start->toDateString() }}" max="{{ today()->toDateString() }}" value="{{ old('entry_date', $entry?->entry_date?->toDateString() ?? today()->toDateString()) }}" required></div>
+        <div class="col-md-6"><label class="form-label" for="entry_date">Ngày {{ $kind === 'meals' ? 'ghi nhật ký' : 'khám' }} <span aria-hidden="true">*</span></label><input class="form-control" type="date" id="entry_date" name="entry_date" min="1900-01-01" max="{{ today()->toDateString() }}" value="{{ old('entry_date', $entry?->entry_date?->toDateString() ?? today()->toDateString()) }}" required></div>
         @if($kind === 'meals')
         <div class="col-md-6"><label class="form-label" for="meal_type">Bữa ăn <span aria-hidden="true">*</span></label><select class="form-select" id="meal_type" name="meal_type">@foreach(App\Models\Meal::TYPES as $value=>$label)<option value="{{ $value }}" @selected(old('meal_type', $entry?->meal_type) === $value)>{{ $label }}</option>@endforeach</select></div>
         @else

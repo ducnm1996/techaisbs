@@ -9,7 +9,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -25,7 +27,7 @@ class DiaryController extends Controller
     public function index(Request $request, string $kind)
     {
         $filter = $request->validate([
-            'stage' => ['nullable', Rule::in(['1', '2', '3'])],
+            'stage' => ['nullable', Rule::in(['before', '1', '2', '3'])],
             'date' => 'nullable|date_format:Y-m-d',
         ]);
         $query = $request->user()->{$kind}();
@@ -34,10 +36,14 @@ class DiaryController extends Controller
         }
         if (! empty($filter['stage'])) {
             $start = CarbonImmutable::parse($request->user()->pregnancy_start);
-            $bounds = ['1' => [0, 97], '2' => [98, 195], '3' => [196, null]][$filter['stage']];
-            $query->whereDate('entry_date', '>=', $start->addDays($bounds[0]));
-            if ($bounds[1] !== null) {
-                $query->whereDate('entry_date', '<=', $start->addDays($bounds[1]));
+            if ($filter['stage'] === 'before') {
+                $query->whereDate('entry_date', '<', $start);
+            } else {
+                $bounds = ['1' => [0, 97], '2' => [98, 195], '3' => [196, null]][$filter['stage']];
+                $query->whereDate('entry_date', '>=', $start->addDays($bounds[0]));
+                if ($bounds[1] !== null) {
+                    $query->whereDate('entry_date', '<=', $start->addDays($bounds[1]));
+                }
             }
         }
 
@@ -61,7 +67,7 @@ class DiaryController extends Controller
         }
         $entry = $id ? $request->user()->{$kind}()->findOrFail($id) : null;
         $rules = [
-            'entry_date' => 'required|date_format:Y-m-d|before_or_equal:today|after_or_equal:'.$request->user()->pregnancy_start->toDateString(),
+            'entry_date' => 'required|date_format:Y-m-d|before_or_equal:today|after_or_equal:1900-01-01',
             'title' => 'required|string|max:160',
             'notes' => 'nullable|string|max:10000',
         ];
@@ -149,7 +155,7 @@ class DiaryController extends Controller
             $request->user()->meals()->findOrFail($id);
         }
         $data = $request->validate([
-            'entry_date' => 'required|date_format:Y-m-d|before_or_equal:today|after_or_equal:'.$request->user()->pregnancy_start->toDateString(),
+            'entry_date' => 'required|date_format:Y-m-d|before_or_equal:today|after_or_equal:1900-01-01',
             'title' => 'required|string|max:160',
             'notes' => 'nullable|string|max:10000',
             'meal_type' => ['nullable', Rule::in([...array_keys(Meal::TYPES), 'diary'])],
@@ -200,18 +206,32 @@ class DiaryController extends Controller
 
     public function profile(Request $request)
     {
+        $user = $request->user();
+        if (is_string($request->input('email'))) {
+            $request->merge(['email' => mb_strtolower($request->input('email'))]);
+        }
+        $credentialsChanged = $request->input('email') !== $user->email || $request->filled('password');
         $data = $request->validate([
             'name' => 'required|string|max:80',
+            'email' => ['required', 'email', 'max:254', Rule::unique('users', 'email')->ignore($user->id)],
             'pregnancy_start' => 'required|date_format:Y-m-d|before_or_equal:today|after_or_equal:1900-01-01',
+            'password' => ['nullable', 'confirmed', 'max:200', Password::min(12)],
+            'current_password' => ['nullable', Rule::requiredIf($credentialsChanged), 'current_password:web'],
         ]);
-        $earliestMeal = $request->user()->meals()->min('entry_date');
-        $earliestCheckup = $request->user()->checkups()->min('entry_date');
-        foreach (array_filter([$earliestMeal, $earliestCheckup]) as $date) {
-            if ($data['pregnancy_start'] > $date) {
-                return back()->withErrors(['pregnancy_start' => 'Ngày bắt đầu phải trước hoặc cùng ngày với mục nhật ký sớm nhất.'])->withInput();
-            }
+        unset($data['current_password']);
+        if (empty($data['password'])) {
+            unset($data['password']);
+        } else {
+            $user->setRememberToken(Str::random(60));
         }
-        $request->user()->update($data);
+        if ($data['email'] !== $user->email) {
+            $user->email_verified_at = null;
+        }
+        $user->fill($data)->save();
+        if ($credentialsChanged) {
+            $request->session()->regenerate();
+            $request->session()->regenerateToken();
+        }
 
         return back()->with('success', 'Đã cập nhật hồ sơ.');
     }
