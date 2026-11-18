@@ -1,6 +1,5 @@
 /.runtime/
-/app/.env
-/app/vendor/
+/app/.env.local
 /app/node_modules/
 /app/storage/*.key
 /app/database/*.sqlite

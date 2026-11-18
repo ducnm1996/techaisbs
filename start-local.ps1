@@ -19,5 +19,5 @@ if (!(Get-NetTCPConnection -State Listen -LocalPort 3307 -ErrorAction SilentlyCo
 }
 $env:Path = (Split-Path $php) + ';' + $env:Path
 Push-Location (Join-Path $projectRoot 'app')
-try { & $php artisan serve --host=127.0.0.1 --port=8000 --no-reload }
+try { & $php artisan serve --env=local --host=127.0.0.1 --port=8000 --no-reload }
 finally { Pop-Location }

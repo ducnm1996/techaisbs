@@ -10,7 +10,7 @@ Chạy PowerShell trong thư mục dự án và thực hiện:
 .\start-local.ps1
 ```
 
-Mở http://127.0.0.1:8000 rồi tạo tài khoản. MySQL chạy ở 127.0.0.1:3307 với dữ liệu trong .runtime/mysql-data. Cấu hình kết nối và khóa ứng dụng nằm trong app/.env.
+Mở http://127.0.0.1:8000 rồi tạo tài khoản. MySQL chạy ở 127.0.0.1:3307 với dữ liệu trong .runtime/mysql-data. Cấu hình local và khóa ứng dụng nằm trong app/.env.local. Khi chạy Artisan trên máy này, thêm --env=local để dùng database local.
 
 ## Chức năng
 
@@ -44,6 +44,8 @@ Bootstrap được lưu sẵn trong public/assets. Font Google có font hệ th�
 
 Giữ toàn bộ cấu trúc repository khi đồng bộ nhánh main vào public_html. Tệp .htaccess ở gốc chuyển request tới app/public; tệp app/.htaccess chặn truy cập trực tiếp vào mã nguồn, cấu hình và hồ sơ riêng. Website vẫn có thể dùng document root app/public nếu hosting hỗ trợ cấu hình đó.
 
+Theo lựa chọn của chủ dự án, repository hiện chứa app/vendor production và app/.env của Hostinger. Cấu hình app/.env.local dành cho máy phát triển được loại khỏi Git. Những người có quyền đọc repository và lịch sử Git có thể đọc thông tin kết nối và khóa ứng dụng trong app/.env.
+
 Composer đã đặt platform.php=8.3.0 để tạo lock file tương thích PHP 8.3 trên hosting, kể cả khi máy phát triển dùng PHP 8.4. Sau khi đồng bộ composer.lock mới, cần chạy lại composer install trên hosting để cập nhật vendor.
 
 Thiết lập lần đầu trong hPanel:
@@ -64,4 +66,4 @@ php artisan test
 
 Mặc định bộ kiểm thử dùng SQLite in-memory để tách biệt dữ liệu. Đã chạy cùng bộ kiểm thử với MySQL trên database mam_testing. Các bài kiểm thử kiểm tra auth, phân quyền tệp, CRUD, bộ lọc giai đoạn và tệp tải lên giả dạng PDF.
 
-Không đưa .runtime, app/.env, hồ sơ tải lên hoặc bản sao database lên Git. Tài khoản demo được tạo riêng bằng DemoSeeder ở môi trường local và được đánh dấu dữ liệu minh họa.
+Thư mục .runtime, app/.env.local, hồ sơ tải lên và bản sao database được loại khỏi Git. Tài khoản demo được tạo riêng bằng DemoSeeder ở môi trường local và được đánh dấu dữ liệu minh họa.
