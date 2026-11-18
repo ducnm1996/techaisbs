@@ -21,7 +21,7 @@ class DiaryTest extends TestCase
         return User::factory()->create(['pregnancy_start' => today()->subWeeks(20)]);
     }
 
-    public function test_homepage_baby_age_rolls_over_at_midnight_and_caps_only_the_preview(): void
+    public function test_homepage_baby_age_rolls_over_at_midnight_and_includes_childhood(): void
     {
         $this->travelTo(CarbonImmutable::parse('2026-11-18 23:59:00', 'Asia/Ho_Chi_Minh'));
         $user = User::factory()->create(['pregnancy_start' => '2026-07-01']);
@@ -31,9 +31,29 @@ class DiaryTest extends TestCase
         $this->travelTo(CarbonImmutable::parse('2026-11-19 00:01:00', 'Asia/Ho_Chi_Minh'));
         $this->get('/')->assertSee('20 tuần 1 ngày')->assertSee('data-days="141"', false);
         $user->update(['pregnancy_start' => '2020-01-01']);
-        $this->get('/')->assertOk()->assertSee('hình minh họa dừng ở tuần 42')
-            ->assertSee('value="294"', false);
+        $this->get('/')->assertOk()->assertSee('Hình dừng ở tuổi 18.')
+            ->assertSee('18 tuổi')->assertSee('Bé gái')->assertSee('data-birth="2020-10-07"', false);
         $this->travelBack();
+    }
+
+    public function test_growth_preferences_are_private_persistent_and_validated(): void
+    {
+        Storage::fake('local');
+        $owner = $this->owner();
+        $birth = today()->subDays(2)->toDateString();
+        $this->actingAs($owner)->put('/baby-growth', ['baby_gender' => 'girl', 'birth_date' => $birth])
+            ->assertRedirect('/');
+        Storage::disk('local')->assertExists('growth/'.$owner->id.'.json');
+        $this->get('/')->assertOk()->assertSee('data-gender="girl"', false)
+            ->assertSee('data-birth="'.$birth.'"', false)->assertSee('data-estimated="false"', false);
+        $this->actingAs($this->owner())->get('/')->assertSee('data-gender="boy"', false)
+            ->assertSee('data-estimated="true"', false);
+        $this->actingAs($owner)->put('/baby-growth', ['baby_gender' => 'invalid', 'birth_date' => today()->addDay()->toDateString()])
+            ->assertSessionHasErrors(['baby_gender', 'birth_date']);
+        $this->put('/baby-growth', ['baby_gender' => 'boy', 'birth_date' => $owner->pregnancy_start->subDay()->toDateString()])
+            ->assertSessionHasErrors('birth_date');
+        $this->post('/logout');
+        $this->put('/baby-growth', ['baby_gender' => 'boy'])->assertRedirect('/login');
     }
 
     public function test_guests_cannot_read_or_write_a_diary(): void

@@ -49,6 +49,7 @@ class DiaryController extends Controller
 
         return view($kind === 'meals' ? 'journal' : 'entries', [
             'kind' => $kind,
+            'babyGrowth' => json_decode(Storage::disk('local')->get('growth/'.$request->user()->id.'.json') ?? '{}', true) ?: [],
             'entries' => $query->latest('entry_date')->latest('id')->paginate(10)->withQueryString(),
         ]);
     }
@@ -202,6 +203,19 @@ class DiaryController extends Controller
         $this->uploads->delete($removed);
 
         return redirect()->route('dashboard')->with('success', 'Đã lưu nhật ký của bạn.');
+    }
+
+    public function growth(Request $request)
+    {
+        $data = $request->validate([
+            'baby_gender' => ['required', Rule::in(['boy', 'girl'])],
+            'birth_date' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:today', 'after:'.$request->user()->pregnancy_start->toDateString()],
+        ]);
+        if (! Storage::disk('local')->put('growth/'.$request->user()->id.'.json', json_encode($data, JSON_THROW_ON_ERROR))) {
+            throw ValidationException::withMessages(['birth_date' => 'Chưa lưu được thông tin của bé. Bạn thử lại nhé.']);
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Đã lưu thông tin minh họa của bé.');
     }
 
     public function profile(Request $request)

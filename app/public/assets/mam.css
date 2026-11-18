@@ -1145,3 +1145,14 @@ button:focus-visible {
 @keyframes baby-float{0%,100%{transform:translateY(4px) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
 @media(max-width:700px){.baby-growth{grid-template-columns:1fr;padding:16px;gap:16px}.baby-scene{min-height:280px;max-height:310px}.baby-float{max-width:290px}.baby-information{padding:0 4px}}
 @media(prefers-reduced-motion:reduce){.baby-float{animation:none}.baby-sprite{transition:none}}
+.child-sprite{display:none;position:absolute;inset:0 16.667%;background-image:url('/assets/child-growth-stages.png');background-size:600% 200%;background-position:var(--child-x,0%) var(--child-y,0%);background-repeat:no-repeat;transform:scale(var(--baby-scale,1));transition:transform .15s linear;mix-blend-mode:multiply}
+.baby-scene[data-stage="child"]{background:radial-gradient(ellipse at 50% 43%,#fffdf8,#eef2e9)}
+.baby-scene[data-stage="child"] .baby-sprite{display:none}
+.baby-scene[data-stage="child"] .child-sprite{display:block}
+.baby-settings{margin:14px 0}
+.baby-settings-fields{display:flex;flex-wrap:wrap;align-items:end;gap:8px;margin-bottom:6px}
+.baby-settings-fields>div{flex:1;min-width:125px}
+.baby-milestones{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.baby-milestones button{border:1px solid #dce5dc;background:#f7faf5;border-radius:16px;font-size:11px;color:#315c4d;padding:5px 9px}
+.baby-milestones button:hover,.baby-milestones button:focus-visible{background:#e4eddf}
+@media(prefers-reduced-motion:reduce){.child-sprite{transition:none}}

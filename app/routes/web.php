@@ -15,6 +15,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::view('/profile', 'profile')->name('profile');
     Route::put('/profile', [DiaryController::class, 'profile']);
+    Route::put('/baby-growth', [DiaryController::class, 'growth'])->name('baby.growth');
     Route::get('/attachments/{id}', [DiaryController::class, 'attachment'])->whereNumber('id')->name('attachment');
     Route::get('/diary-images/{id}/{photo}', [DiaryController::class, 'photo'])
         ->whereNumber('id')
