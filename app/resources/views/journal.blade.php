@@ -15,6 +15,8 @@
     <h2>Dòng thời gian</h2>
     <span>{{ $entries->total() }} bài nhật ký</span>
 </div>
+<details class="journal-filters" @if(request()->filled('stage') || request()->filled('date')) open @endif>
+<summary class="btn btn-light btn-sm">Lọc</summary>
 <form class="panel filter-bar" method="get">
     <div>
         <label class="form-label" for="stage">Giai đoạn</label>
@@ -32,6 +34,7 @@
     <button class="btn btn-primary" type="submit">Lọc nhật ký</button>
     <a class="btn btn-light" href="{{ route('dashboard') }}">Bỏ lọc</a>
 </form>
+</details>
 
 <div class="journal-timeline {{ $entries->count() ? 'has-entries' : '' }}">
     @forelse($entries->groupBy(fn ($entry) => $entry->entry_date->toDateString()) as $date => $dayEntries)

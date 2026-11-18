@@ -221,4 +221,17 @@ class DiaryTest extends TestCase
             Storage::forgetDisk(['local', 'legacy_uploads']);
         }
     }
+
+    public function test_home_filters_are_collapsed_until_opened_or_applied(): void
+    {
+        $this->actingAs($this->owner());
+        $html = $this->get('/')->assertOk()->getContent();
+        preg_match('/<details class="journal-filters"[^>]*>/', $html, $closed);
+        $this->assertNotEmpty($closed);
+        $this->assertStringNotContainsString(' open', $closed[0]);
+        $this->assertStringContainsString('>Lọc</summary>', $html);
+        $filtered = $this->get('/?stage=2')->assertOk()->getContent();
+        preg_match('/<details class="journal-filters"[^>]*>/', $filtered, $open);
+        $this->assertStringContainsString(' open', $open[0]);
+    }
 }

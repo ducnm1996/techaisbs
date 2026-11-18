@@ -17,11 +17,11 @@ Mở http://127.0.0.1:8000 rồi tạo tài khoản. MySQL chạy ở 127.0.0.1:
 - Đăng ký, đăng nhập, đăng xuất bằng session Laravel, mật khẩu băm, CSRF và giới hạn tần suất đăng nhập.
 - Mỗi tài khoản có một hành trình thai kỳ, lấy ngày đầu kỳ kinh cuối làm mốc. Có thể điều chỉnh ngày mốc trong hồ sơ.
 - Trang chủ sau đăng nhập hiển thị nhật ký thành dòng thời gian theo ngày, mới nhất trước. Nút “Viết nhật ký” mở trang viết riêng; lưu xong trở về trang chủ.
-- Mỗi bài có tối đa 4 ảnh JPG/PNG/WebP, 2 MB mỗi ảnh. Có xem trước, gỡ ảnh khi sửa và mở ảnh đầy đủ. Ảnh được lưu riêng theo chủ tài khoản trong storage/app/private.
+- Mỗi bài có tối đa 4 ảnh JPG/PNG/WebP, 2 MB mỗi ảnh. Có xem trước, gỡ ảnh khi sửa và mở ảnh đầy đủ. Ảnh được phục vụ qua đường dẫn xác thực theo chủ tài khoản.
 - Trên production, tệp riêng được lưu mặc định trong mam-uploads ở cùng cấp với public_html, nằm ngoài thư mục đồng bộ Git. Có thể đặt PRIVATE_UPLOAD_ROOT thành đường dẫn tuyệt đối khác trong .env. Ứng dụng tự sao chép các tệp cũ còn tồn tại từ storage/app/private; các tệp đã bị hosting xóa cần khôi phục từ bản sao lưu vào thư mục mam-uploads.
 - Hồ sơ khám theo ngày, cơ sở khám, ghi chú kết quả/lời dặn, ngày hẹn tiếp theo.
 - Mỗi hồ sơ khám có một tệp PDF/JPG/PNG tối đa 10 MB, có thể tải, thay thế hoặc gỡ.
-- Bộ lọc theo ngày, tam cá nguyệt 1 (tuần 0–13), 2 (14–27), 3 (từ 28).
+- Nút “Lọc” mở bộ lọc theo ngày và tam cá nguyệt 1 (tuần 0–13), 2 (14–27), 3 (từ 28). Bộ lọc tự mở khi có điều kiện đang áp dụng.
 - Tệp lưu tại storage/app/private, tải qua route có xác thực và kiểm tra chủ sở hữu.
 
 ## Cài trên máy khác

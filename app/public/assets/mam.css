@@ -734,6 +734,29 @@ button:focus-visible {
     position: relative;
     margin-top: 28px;
 }
+.journal-filters {
+    margin-bottom: 20px;
+}
+.journal-filters > summary {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    list-style: none;
+    border: 1px solid var(--line);
+}
+.journal-filters > summary::-webkit-details-marker {
+    display: none;
+}
+.journal-filters > summary:focus-visible {
+    outline: 3px solid #b7b56d;
+    outline-offset: 4px;
+}
+.journal-filters[open] > summary {
+    margin-bottom: 12px;
+}
+.journal-filters .filter-bar {
+    margin-bottom: 0;
+}
 .journal-timeline.has-entries::before {
     content: "";
     position: absolute;
