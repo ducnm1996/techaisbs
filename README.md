@@ -40,7 +40,21 @@ PHP cần upload_max_filesize ít nhất 10M và post_max_size lớn hơn giới
 
 Bootstrap được lưu sẵn trong public/assets. Font Google có font hệ thống dự phòng. Chưa cấu hình gửi email xác minh địa chỉ hoặc khôi phục mật khẩu. Ứng dụng đang dùng đăng nhập email/mật khẩu.
 
-## Kiểm thử
+## Hostinger đồng bộ Git vào public_html
+
+Giữ toàn bộ cấu trúc repository khi đồng bộ nhánh main vào public_html. Tệp .htaccess ở gốc chuyển request tới app/public; tệp app/.htaccess chặn truy cập trực tiếp vào mã nguồn, cấu hình và hồ sơ riêng. Website vẫn có thể dùng document root app/public nếu hosting hỗ trợ cấu hình đó.
+
+Thiết lập lần đầu trong hPanel:
+
+1. Chọn PHP từ 8.3 trở lên, bật pdo_mysql, mbstring, fileinfo, openssl, curl, zip.
+2. Tạo MySQL database/user. Tạo app/.env trên hosting từ app/.env.example và điền thông tin MySQL của hosting.
+3. Đặt APP_ENV=production, APP_DEBUG=false, APP_URL=https://techai.sbs và SESSION_SECURE_COOKIE=true.
+4. Trong terminal hosting, đi đến thư mục repository rồi chạy `bash deploy-hostinger.sh`. Lệnh cài thư viện production, chỉ tạo APP_KEY khi chưa có, chạy migration và làm mới cache.
+5. Cấu hình bước này trong quy trình deploy sau mỗi lần đồng bộ Git nếu hosting có hỗ trợ hook. Đồng bộ mã nguồn qua Git chưa thay thế bước cài thư viện và cập nhật database.
+
+Nếu / trả 403 nhưng /app/public/assets/mam.css trả 200, cần kiểm tra .htaccess ở gốc đã được đồng bộ. Nếu /login trả 500 sau đó, xem PHP error log và app/storage/logs/laravel.log; kiểm tra vendor, .env, APP_KEY, MySQL và quyền ghi storage/bootstrap/cache.
+
+## Kiểm thử ứng dụng
 
 ```sh
 php artisan test

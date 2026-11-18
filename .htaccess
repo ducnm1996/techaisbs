@@ -1,0 +1,17 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Keep hidden files out of HTTP responses, except certificate validation.
+    RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,L,NC]
+
+    # Only the Laravel public directory may be served from this checkout.
+    RewriteRule ^app/public(?:/|$) - [L]
+    RewriteRule ^$ app/public/index.php [L]
+    RewriteRule ^(.*)$ app/public/$1 [L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>
