@@ -16,15 +16,7 @@ class DiaryController extends Controller
 {
     public function dashboard(Request $request)
     {
-        $user = $request->user();
-
-        return view('dashboard', [
-            'mealCount' => $user->meals()->count(),
-            'checkupCount' => $user->checkups()->count(),
-            'meals' => $user->meals()->latest('entry_date')->latest('id')->limit(4)->get(),
-            'checkups' => $user->checkups()->latest('entry_date')->latest('id')->limit(3)->get(),
-            'nextVisit' => $user->checkups()->whereDate('next_visit', '>=', today())->orderBy('next_visit')->first(),
-        ]);
+        return $this->index($request, 'meals');
     }
 
     public function index(Request $request, string $kind)
@@ -197,7 +189,7 @@ class DiaryController extends Controller
         }
         Storage::disk('local')->delete($removed);
 
-        return redirect()->route('entries.index', ['kind' => 'meals'])->with('success', 'Đã lưu nhật ký của bạn.');
+        return redirect()->route('dashboard')->with('success', 'Đã lưu nhật ký của bạn.');
     }
 
     public function profile(Request $request)

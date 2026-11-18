@@ -20,8 +20,7 @@
     <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">❧</span> mầm<span class="brand-dot">.</span></a>
     <p class="brand-caption">NHẬT KÝ THAI KỲ</p>
     <nav aria-label="Điều hướng chính">
-        <a class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}"><span aria-hidden="true">◫</span> Tổng quan</a>
-        <a class="{{ request()->route('kind') === 'meals' ? 'active' : '' }}" href="{{ route('entries.index', ['kind'=>'meals']) }}"><span aria-hidden="true">✎</span> Nhật ký</a>
+        <a class="{{ request()->routeIs('dashboard') || request()->route('kind') === 'meals' ? 'active' : '' }}" href="{{ route('dashboard') }}"><span aria-hidden="true">◫</span> Trang chủ</a>
         <a class="{{ request()->route('kind') === 'checkups' ? 'active' : '' }}" href="{{ route('entries.index', ['kind'=>'checkups']) }}"><span aria-hidden="true">▤</span> Hồ sơ khám thai</a>
         <a class="{{ request()->routeIs('profile') ? 'active' : '' }}" href="{{ route('profile') }}"><span aria-hidden="true">◎</span> Hồ sơ của mẹ</a>
     </nav>

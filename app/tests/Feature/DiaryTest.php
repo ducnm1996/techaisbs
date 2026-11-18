@@ -97,7 +97,7 @@ class DiaryTest extends TestCase
         fclose($file);
     }
 
-    public function test_journal_composer_and_private_timeline_photos(): void
+    public function test_home_timeline_private_photos_and_separate_composer(): void
     {
         Storage::fake('local');
         $owner = $this->owner();
@@ -108,16 +108,23 @@ class DiaryTest extends TestCase
             'title' => 'Một ngày đáng nhớ',
             'notes' => 'Những dòng nhật ký của tôi.',
             'photos' => [UploadedFile::fake()->createWithContent('memory.png', $image)],
-        ])->assertSessionHasNoErrors()->assertRedirect('/diary/meals');
+        ])->assertSessionHasNoErrors()->assertRedirect('/');
         $entry = $owner->meals()->firstOrFail();
         $this->assertSame('diary', $entry->meal_type);
         $this->assertCount(1, $entry->photos());
         $photo = $entry->photos()[0];
         $url = route('journal.photo', ['id' => $entry->id, 'photo' => $photo]);
-        $this->get('/diary/meals')->assertOk()
+        $this->get('/')->assertOk()
             ->assertSee('Viết nhật ký')->assertSee('Dòng thời gian')
             ->assertSee('Một ngày đáng nhớ')->assertSee($url, false)
-            ->assertDontSee('Nhật ký thực phẩm');
+            ->assertDontSee('Nhật ký thực phẩm')
+            ->assertDontSee('id="write-diary"', false)
+            ->assertDontSee('name="notes"', false)
+            ->assertSee(route('entries.create', ['kind' => 'meals']), false);
+        $this->get('/diary/meals/create')->assertOk()
+            ->assertSee('id="write-diary"', false)
+            ->assertSee('name="notes"', false)
+            ->assertSee('name="photos[]"', false);
         $this->get($url)->assertOk()->assertHeader('Content-Type', 'image/png');
         $this->actingAs($other)->get($url)->assertNotFound();
         $this->get('/diary/meals')->assertDontSee('Một ngày đáng nhớ');

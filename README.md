@@ -16,7 +16,7 @@ Mở http://127.0.0.1:8000 rồi tạo tài khoản. MySQL chạy ở 127.0.0.1:
 
 - Đăng ký, đăng nhập, đăng xuất bằng session Laravel, mật khẩu băm, CSRF và giới hạn tần suất đăng nhập.
 - Mỗi tài khoản có một hành trình thai kỳ, lấy ngày đầu kỳ kinh cuối làm mốc. Có thể điều chỉnh ngày mốc trong hồ sơ.
-- Nhật ký theo ngày, có tiêu đề và nội dung. Khung viết ở đầu trang, bài viết được xếp thành dòng thời gian theo ngày, mới nhất trước.
+- Trang chủ sau đăng nhập hiển thị nhật ký thành dòng thời gian theo ngày, mới nhất trước. Nút “Viết nhật ký” mở trang viết riêng; lưu xong trở về trang chủ.
 - Mỗi bài có tối đa 4 ảnh JPG/PNG/WebP, 2 MB mỗi ảnh. Có xem trước, gỡ ảnh khi sửa và mở ảnh đầy đủ. Ảnh được lưu riêng theo chủ tài khoản trong storage/app/private.
 - Hồ sơ khám theo ngày, cơ sở khám, ghi chú kết quả/lời dặn, ngày hẹn tiếp theo.
 - Mỗi hồ sơ khám có một tệp PDF/JPG/PNG tối đa 10 MB, có thể tải, thay thế hoặc gỡ.

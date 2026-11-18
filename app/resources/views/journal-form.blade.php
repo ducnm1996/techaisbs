@@ -57,7 +57,7 @@
         </div>
         <div class="journal-compose-actions">
             @if($entry)
-                <a class="btn btn-light" href="{{ route('entries.index', ['kind' => 'meals']) }}">Hủy</a>
+                <a class="btn btn-light" href="{{ route('dashboard') }}">Hủy</a>
             @endif
             <button class="btn btn-primary" type="submit">{{ $entry ? 'Lưu thay đổi' : 'Lưu nhật ký' }} <span aria-hidden="true">↗</span></button>
         </div>

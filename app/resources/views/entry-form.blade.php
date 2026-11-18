@@ -2,7 +2,7 @@
 @section('title', $entry ? 'Chỉnh sửa nhật ký' : ($kind === 'meals' ? 'Viết nhật ký' : 'Thêm hồ sơ khám thai'))
 @section('content')
 @if($kind === 'meals')
-<a class="back-link" href="{{ route('entries.index', ['kind' => 'meals']) }}">← Trở về nhật ký</a>
+<a class="back-link" href="{{ route('dashboard') }}">← Trở về trang chủ</a>
 @include('journal-form', ['entry' => $entry])
 @else
 <a class="back-link" href="{{ route('entries.index', ['kind'=>$kind]) }}">← Trở về nhật ký</a>

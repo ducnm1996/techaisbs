@@ -8,9 +8,8 @@
         <h1>Nhật ký của mẹ</h1>
         <p>Ghi lại cảm xúc, kỷ niệm và những hình ảnh bạn muốn lưu giữ.</p>
     </div>
+    <a class="btn btn-primary btn-sm" href="{{ route('entries.create', ['kind' => 'meals']) }}">+ Viết nhật ký</a>
 </div>
-
-@include('journal-form', ['entry' => null])
 
 <div class="journal-history-heading">
     <h2>Dòng thời gian</h2>
@@ -31,7 +30,7 @@
         <input class="form-control" type="date" id="filter_date" name="date" value="{{ request('date') }}">
     </div>
     <button class="btn btn-primary" type="submit">Lọc nhật ký</button>
-    <a class="btn btn-light" href="{{ route('entries.index', ['kind' => 'meals']) }}">Bỏ lọc</a>
+    <a class="btn btn-light" href="{{ route('dashboard') }}">Bỏ lọc</a>
 </form>
 
 <div class="journal-timeline {{ $entries->count() ? 'has-entries' : '' }}">
@@ -79,7 +78,7 @@
         <div class="panel empty-state">
             <span aria-hidden="true">✿</span>
             <h2>{{ request()->filled('stage') || request()->filled('date') ? 'Chưa có bài nhật ký phù hợp' : 'Trang đầu tiên dành cho bạn' }}</h2>
-            <p>{{ request()->filled('stage') || request()->filled('date') ? 'Thử chọn ngày hoặc giai đoạn khác.' : 'Viết vài dòng và thêm một tấm ảnh ở khung phía trên để bắt đầu.' }}</p>
+            <p>{{ request()->filled('stage') || request()->filled('date') ? 'Thử chọn ngày hoặc giai đoạn khác.' : 'Bấm “Viết nhật ký” để lưu những dòng đầu tiên và ảnh kỷ niệm của bạn.' }}</p>
         </div>
     @endforelse
 </div>
