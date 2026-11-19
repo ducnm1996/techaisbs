@@ -21,7 +21,9 @@ class DiaryController extends Controller
 
     public function dashboard(Request $request)
     {
-        return $this->index($request, 'meals');
+        return view('home', [
+            'babyGrowth' => json_decode(Storage::disk('local')->get('growth/'.$request->user()->id.'.json') ?? '{}', true) ?: [],
+        ]);
     }
 
     public function index(Request $request, string $kind)
@@ -49,7 +51,6 @@ class DiaryController extends Controller
 
         return view($kind === 'meals' ? 'journal' : 'entries', [
             'kind' => $kind,
-            'babyGrowth' => json_decode(Storage::disk('local')->get('growth/'.$request->user()->id.'.json') ?? '{}', true) ?: [],
             'entries' => $query->latest('entry_date')->latest('id')->paginate(10)->withQueryString(),
         ]);
     }
@@ -202,7 +203,7 @@ class DiaryController extends Controller
         }
         $this->uploads->delete($removed);
 
-        return redirect()->route('dashboard')->with('success', 'Đã lưu nhật ký của bạn.');
+        return redirect()->route('entries.index', ['kind' => 'meals'])->with('success', 'Đã lưu nhật ký của bạn.');
     }
 
     public function growth(Request $request)

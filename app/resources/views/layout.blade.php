@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/assets/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/mam.css?v={{ filemtime(public_path('assets/mam.css')) }}">
 </head>
-<body class="@guest auth-page @endguest">
+<body class="@guest auth-page @endguest @if(request()->routeIs('dashboard')) home-page @endif">
 <a class="visually-hidden-focusable skip-link" href="#main">Đến nội dung chính</a>
 @auth
 @php
@@ -20,7 +20,8 @@
     <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">❧</span><span class="brand-name">{{ config('app.name') }}</span></a>
     <p class="brand-caption">NHẬT KÝ THAI KỲ</p>
     <nav aria-label="Điều hướng chính">
-        <a class="{{ request()->routeIs('dashboard') || request()->route('kind') === 'meals' ? 'active' : '' }}" href="{{ route('dashboard') }}"><span aria-hidden="true">◫</span> Trang chủ</a>
+        <a class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}"><span aria-hidden="true">◫</span> Trang chủ</a>
+        <a class="{{ request()->route('kind') === 'meals' ? 'active' : '' }}" href="{{ route('entries.index', ['kind'=>'meals']) }}"><span aria-hidden="true">✎</span> Nhật ký</a>
         <a class="{{ request()->route('kind') === 'checkups' ? 'active' : '' }}" href="{{ route('entries.index', ['kind'=>'checkups']) }}"><span aria-hidden="true">▤</span> Hồ sơ khám thai</a>
         <a class="{{ request()->routeIs('profile') ? 'active' : '' }}" href="{{ route('profile') }}"><span aria-hidden="true">◎</span> Hồ sơ của mẹ</a>
     </nav>

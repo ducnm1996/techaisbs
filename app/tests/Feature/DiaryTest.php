@@ -21,6 +21,19 @@ class DiaryTest extends TestCase
         return User::factory()->create(['pregnancy_start' => today()->subWeeks(20)]);
     }
 
+    public function test_homepage_and_journal_are_separate_pages(): void
+    {
+        $owner = $this->owner();
+        $owner->meals()->create(['entry_date' => today(), 'title' => 'Kỷ niệm trong timeline', 'meal_type' => 'diary']);
+        $this->actingAs($owner)->get('/')->assertOk()->assertViewIs('home')
+            ->assertSee('data-home-stage', false)->assertSee('data-baby-growth', false)
+            ->assertDontSee('Kỷ niệm trong timeline')->assertDontSee('Dòng thời gian');
+        $this->get('/diary/meals')->assertOk()->assertViewIs('journal')
+            ->assertSee('Kỷ niệm trong timeline')->assertSee('Dòng thời gian')
+            ->assertDontSee('data-home-stage', false)->assertDontSee('data-baby-growth', false);
+        $this->get('/diary/checkups')->assertOk()->assertDontSee('data-home-stage', false);
+    }
+
     public function test_homepage_baby_age_rolls_over_at_midnight_and_includes_childhood(): void
     {
         $this->travelTo(CarbonImmutable::parse('2026-11-18 23:59:00', 'Asia/Ho_Chi_Minh'));
@@ -147,13 +160,13 @@ class DiaryTest extends TestCase
             'title' => 'Một ngày đáng nhớ',
             'notes' => 'Những dòng nhật ký của tôi.',
             'photos' => [UploadedFile::fake()->createWithContent('memory.png', $image)],
-        ])->assertSessionHasNoErrors()->assertRedirect('/');
+        ])->assertSessionHasNoErrors()->assertRedirect('/diary/meals');
         $entry = $owner->meals()->firstOrFail();
         $this->assertSame('diary', $entry->meal_type);
         $this->assertCount(1, $entry->photos());
         $photo = $entry->photos()[0];
         $url = route('journal.photo', ['id' => $entry->id, 'photo' => $photo]);
-        $this->get('/')->assertOk()
+        $this->get('/diary/meals')->assertOk()
             ->assertSee('Viết nhật ký')->assertSee('Dòng thời gian')
             ->assertSee('Một ngày đáng nhớ')->assertSee($url, false)
             ->assertDontSee('Nhật ký thực phẩm')
@@ -259,15 +272,15 @@ class DiaryTest extends TestCase
         }
     }
 
-    public function test_home_filters_are_collapsed_until_opened_or_applied(): void
+    public function test_journal_filters_are_collapsed_until_opened_or_applied(): void
     {
         $this->actingAs($this->owner());
-        $html = $this->get('/')->assertOk()->getContent();
+        $html = $this->get('/diary/meals')->assertOk()->getContent();
         preg_match('/<details class="journal-filters"[^>]*>/', $html, $closed);
         $this->assertNotEmpty($closed);
         $this->assertStringNotContainsString(' open', $closed[0]);
         $this->assertStringContainsString('>Lọc</summary>', $html);
-        $filtered = $this->get('/?stage=2')->assertOk()->getContent();
+        $filtered = $this->get('/diary/meals?stage=2')->assertOk()->getContent();
         preg_match('/<details class="journal-filters"[^>]*>/', $filtered, $open);
         $this->assertStringContainsString(' open', $open[0]);
     }
@@ -278,12 +291,12 @@ class DiaryTest extends TestCase
         $date = $owner->pregnancy_start->copy()->subDays(10)->toDateString();
         $this->actingAs($owner)->post('/diary/meals', [
             'entry_date' => $date, 'title' => 'Kỷ niệm trước thai kỳ',
-        ])->assertSessionHasNoErrors()->assertRedirect('/');
+        ])->assertSessionHasNoErrors()->assertRedirect('/diary/meals');
         $this->post('/diary/checkups', [
             'entry_date' => $date, 'title' => 'Lần khám trước mốc',
         ])->assertSessionHasNoErrors();
-        $this->get('/?stage=before')->assertOk()->assertSee('Kỷ niệm trước thai kỳ')->assertSee('Trước mốc thai kỳ');
-        $this->get('/?stage=1')->assertDontSee('Kỷ niệm trước thai kỳ');
+        $this->get('/diary/meals?stage=before')->assertOk()->assertSee('Kỷ niệm trước thai kỳ')->assertSee('Trước mốc thai kỳ');
+        $this->get('/diary/meals?stage=1')->assertDontSee('Kỷ niệm trước thai kỳ');
         $this->get('/diary/checkups?stage=before')->assertSee('Lần khám trước mốc');
         $this->post('/diary/meals', [
             'entry_date' => today()->addDay()->toDateString(), 'title' => 'Ngày chưa đến',
@@ -305,7 +318,7 @@ class DiaryTest extends TestCase
         $this->assertSame('Tên hiển thị mới', $owner->fresh()->name);
         $this->assertSame($hash, $owner->fresh()->password);
         $this->assertSame(today()->toDateString(), $owner->fresh()->pregnancy_start->toDateString());
-        $this->get('/?stage=before')->assertSee('Bài nhật ký cũ');
+        $this->get('/diary/meals?stage=before')->assertSee('Bài nhật ký cũ');
         $this->get('/profile')->assertSee('name="email"', false)->assertSee('name="current_password"', false);
     }
 

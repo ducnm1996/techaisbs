@@ -1156,3 +1156,48 @@ button:focus-visible {
 .baby-milestones button{border:1px solid #dce5dc;background:#f7faf5;border-radius:16px;font-size:11px;color:#315c4d;padding:5px 9px}
 .baby-milestones button:hover,.baby-milestones button:focus-visible{background:#e4eddf}
 @media(prefers-reduced-motion:reduce){.child-sprite{transition:none}}
+/* The homepage is one fitted scene; document pages retain natural scrolling. */
+body.home-page{height:100dvh;overflow:hidden}
+.home-page .app-main{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.home-page .topbar{flex-shrink:0}
+.home-page .page-content{display:flex;flex-direction:column;flex:1;min-height:0;width:100%;margin:0 auto;padding:18px 28px;overflow:hidden}
+.home-page .page-content>.alert{flex-shrink:0;margin-bottom:10px;padding:8px 12px}
+.home-stage{position:relative;flex:1;min-height:0;width:100%;overflow:hidden}
+.home-canvas{position:absolute;left:50%;top:0;transform-origin:top center}
+.home-canvas .page-heading{margin-bottom:14px;align-items:center}
+.home-canvas h1{font-size:28px;margin-bottom:0}
+.home-canvas .eyebrow{margin-bottom:5px}
+.home-canvas .baby-growth{margin-bottom:0;padding:20px;gap:24px}
+.home-canvas .baby-scene{min-height:300px}
+.home-canvas .baby-information{padding:0}
+.home-canvas .baby-information h2{font-size:28px}
+.home-canvas .baby-information>p{margin-bottom:8px;font-size:13px}
+.home-canvas .baby-settings{margin:10px 0}
+.home-canvas .baby-settings-fields .form-control,.home-canvas .baby-settings-fields .form-select{padding:7px 9px;font-size:12px}
+.home-canvas .baby-actions{margin:12px 0 10px}
+.home-canvas .btn{padding:8px 12px}
+.home-canvas .baby-information .baby-note{font-size:11px;margin:0}
+@media(max-width:760px){
+ body.home-page{display:flex;flex-direction:column}
+ .home-page .sidebar{flex-shrink:0;padding:10px 16px}
+ .home-page .sidebar .brand-name{font-size:18px;max-width:none}
+ .home-page .sidebar nav{margin-top:6px;flex-wrap:nowrap}
+ .home-page .sidebar nav a{padding:7px 6px;font-size:10px}
+ .home-page .sidebar-user{display:none}
+ .home-page .app-main{flex:1;height:auto}
+ .home-page .topbar{height:30px;padding:0 16px}
+ .home-page .page-content{padding:10px 12px}
+ .home-canvas .page-heading{gap:8px;flex-wrap:nowrap}
+ .home-canvas h1{font-size:22px}
+ .home-canvas .baby-growth{padding:12px;gap:10px}
+ .home-canvas .baby-scene{min-height:180px;height:180px;max-height:none}
+ .home-canvas .baby-float{max-width:180px}
+ .home-canvas .baby-scene-caption{bottom:5px;font-size:10px}
+ .home-canvas .baby-information h2{font-size:24px}
+ .home-canvas .baby-information>p{font-size:12px}
+ .home-canvas .baby-information .form-label{margin-top:4px}
+ .home-canvas .baby-settings-fields{flex-wrap:nowrap}
+ .home-canvas .baby-settings-fields>div{min-width:0}
+ .home-canvas .baby-milestones{gap:4px;margin-top:8px}
+ .home-canvas .baby-actions{gap:5px}
+}
