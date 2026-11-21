@@ -1,63 +1,55 @@
 # Báo cáo kiểm tra · 21/11/2026
 
-## Phạm vi bàn giao
+## Kết quả hiện tại trên Hostinger
 
-Theo lựa chọn cuối của người dùng: **hoàn thiện mã nguồn và hướng dẫn trước**. Chưa cấu hình hoặc bật ứng dụng mới trên hosting. Không coi kết quả local hay trạng thái hosting cũ là xác minh triển khai production của portal mới.
+Portal đã được đưa lên **https://techai.sbs/login**. Lỗi 403 của trang chủ và lỗi 500 của Laravel đã được xử lý. Đây là kết quả sau triển khai, không phải kết quả suy ra từ localhost.
 
-## Đã chạy
+- SSH được xác minh bằng fingerprint ECDSA khớp ảnh người dùng cung cấp; dùng credential SSH đã được người dùng cấp trực tiếp. Tải cấu hình riêng qua SFTP sau khi người dùng đồng ý cụ thể. Không dùng credential truy xuất từ lịch sử Git để đăng nhập SSH.
+- PHP web **8.5.13**, PHP CLI **8.3.37**. Composer xác nhận lock file cài được trên CLI và dependencies production đã cài, không có dev dependencies.
+- Database thực tế là **MariaDB 11.8.9**, truy cập bằng driver MySQL của Laravel. Đây không phải Oracle MySQL; nếu yêu cầu bắt buộc đúng engine Oracle MySQL thì cần thay môi trường database trước khi dùng dữ liệu thật.
+- Đã kiểm tra 14 bảng `portal_`, 4 migration đã import và không có migration cần chạy thêm. Không thay đổi bảng/dữ liệu cũ. Trước khi tạo khóa mới đã kiểm tra namespace lịch sử mới chưa có sự kiện.
+- Checkout được giữ ở thư mục riêng `<domain>/portal-app`; `public_html` là symlink tới `portal-app/public`. Git khi chạy từ `public_html` nhận đúng worktree riêng. Không mở toàn bộ repository bằng rewrite.
+- `.env` và storage nằm tại `<domain>/portal-shared`, ngoài vùng web và ngoài Git. Khóa ứng dụng/HMAC được tạo trên máy chủ, không in ra hoặc đưa về Git. APP_DEBUG=false; cấu hình phiên Secure/HttpOnly/Lax và mã hóa phiên.
+- `portal:preflight`, package discovery, migrate/status, config/route/view cache trên hosting đã chạy thành công. Composer bị giới hạn proc_open nên dùng --no-scripts và chạy Artisan trực tiếp.
+- `composer audit --locked --no-dev --format=json` trên hosting: advisories=[], abandoned=[].
 
-- PHP CLI **8.4.27**, Laravel **13.43.0**, MySQL Community **8.4.13**, InnoDB, Windows local.
-- Toàn bộ PHPUnit ở lần bàn giao đầu: **21 tests, 21 passed, 136 assertions**, bao gồm hai bài kiểm tra đồng thời bằng hai tiến trình PHP dùng cùng MySQL database riêng. Không bỏ qua test MySQL trong lượt này. Kết quả cập nhật cho yêu cầu dùng lại database cũ ghi ở cuối báo cáo.
-- `composer validate --no-check-publish`: hợp lệ. `composer audit --locked --format=json`: advisories=[], abandoned=[]. Kết quả tại thời điểm chạy, cần chạy lại khi triển khai hoặc cập nhật dependency.
-- Pint đã chạy và sửa định dạng. Blade view cache thành công. JavaScript kiểm tra cú pháp thành công.
-- Git ignore chặn `.env`, runtime, vendor, SQLite/SQL, log và archive; `.env.example` chỉ chứa giá trị mẫu, khóa production để trống. Khóa trong phpunit.xml là fixture công khai chỉ dành cho test, không dùng ở môi trường thật.
-- App local chạy trên 127.0.0.1:8000, dùng database riêng và user MySQL runtime chỉ SELECT/INSERT/UPDATE/DELETE. User migration/test có quyền cao hơn chỉ trong database local. HTTP local: login 200, register 404, .env 404, storage/logs/laravel.log bị chặn. CSP xuất hiện trên phản hồi.
+## Kiểm tra HTTP từ bên ngoài
 
-## Phạm vi test bảo mật
-
-| Nhóm | Kết quả |
+| Kiểm tra | Kết quả |
 |---|---|
-| Khách chưa đăng nhập / tắt đăng ký | Web redirect đăng nhập; register GET/POST 404 |
-| Hai tài khoản, hai thiết bị | Tài khoản A không đọc/lọc/tìm số/xóa sự kiện B; sửa ID URL/payload bị chặn; thống kê chỉ tính tài khoản hiện tại |
-| Quản trị | Không đọc/xóa lịch sử B mặc dù là admin; người thường không vào quản trị; tạo tài khoản gửi notification và ghi audit |
-| Phân tách auth | Bearer thiết bị không vào admin; phiên web đơn thuần không gửi được sự kiện API |
-| 2FA | Admin chưa xác nhận không vào portal hoặc tạo mã ghép; TOTP đúng cho phép truy cập; tái sử dụng cùng mã bị từ chối; secret mã hóa khi lưu |
-| Mã ghép | Có hạn ngắn, chỉ lưu hash, không dùng lại; hai yêu cầu đồng thời trả 201 và 422, chỉ tạo một thiết bị/token |
-| Token | Quyền tối thiểu, expiry bắt buộc; sai ability, token hết hạn, token thu hồi, thiết bị thu hồi, tài khoản vô hiệu hóa bị từ chối |
-| Idempotency | Gửi lại cùng event_id chỉ tạo một hàng trên cùng thiết bị; hai thiết bị dùng cùng UUID vẫn là hai sự kiện độc lập; hai yêu cầu đồng thời cùng sự kiện trả 200/201 và chỉ tạo một hàng |
-| Dữ liệu | Từ chối content/body và trường lạ, nguồn chưa cho phép, vị trí chưa cho phép, thời gian sai định dạng/tương lai, tên quá dài; số/tên/IP/vị trí/máy chủ được mã hóa khi lưu; chỉ mục số là HMAC riêng |
-| Hiển thị | Tên chứa script hiển thị dưới dạng văn bản escape; các trang Blade chính render thành công |
-| Giới hạn | Login, password link, TOTP, pairing và ingest theo thiết bị đều có test 429; lô >50 hoặc >64 KiB bị từ chối |
-| Phiên | CSRF thiếu token bị 419; test cookie Secure/HttpOnly/Lax; code đăng nhập và xác nhận 2FA tạo lại phiên |
-| Mật khẩu | Token thiết lập/đặt lại hết hạn và không dùng lại; setup_pending được gỡ khi hoàn tất; liên kết email dùng fragment cho token |
-| Retention | Lệnh purge xóa lịch sử quá thời hạn cấu hình |
+| HTTP /login | 301 sang HTTPS |
+| HTTPS / | 302 tới /login |
+| HTTPS /login | 200, đúng nội dung trang đăng nhập TechAI |
+| CSS portal | 200 |
+| Cookie phiên | Secure=true, HttpOnly=true, SameSite=Lax |
+| Header bảo vệ | CSP và HSTS có trong phản hồi |
+| POST đăng nhập thiếu CSRF | 419 |
+| POST API events chưa xác thực | 401 |
+| /register | 404 |
+| /admin chưa đăng nhập | 302 tới /login |
+| /.env, /.git/config, /storage/logs/laravel.log | 403 |
+| /composer.json | 404 |
+| /backup.sql, /exports/techai-portal-schema.sql | 403 |
 
-## Hiện trạng tên miền, không phải app mới
+Nội dung phản hồi đã kiểm tra không chứa APP_KEY, DB_PASSWORD, khóa riêng, SQL CREATE TABLE hoặc Git config. Chưa khẳng định an toàn cho những đường dẫn backup tùy chỉnh chưa được cung cấp.
 
-Trước khi push ứng dụng mới, HTTPS tại techai.sbs đã trả lời qua TLS được Node fetch xác minh mặc định; HTTP `/login` chuyển 301 sang HTTPS. HTTPS `/login` trả 404 (ứng dụng cũ đã bị xóa). Các đường dẫn đã thử: `/.env` 403, `/portal/.env` 403, `/storage/logs/laravel.log` 404, `/portal/storage/logs/laravel.log` 404, `/backup.sql` 403, `/backup.zip` 404, `/.git/config` 403. Không thấy dấu hiệu APP_KEY, DB_PASSWORD, khóa riêng, SQL CREATE TABLE hoặc Git config trong nội dung trả về. Đây chỉ là baseline của hosting hiện có. Không xác nhận các thư mục/path backup khác chưa được cung cấp.
+## Kiểm thử local đã chạy
 
-## Chưa xác minh / phải làm trước production
+PHP 8.4.27, Laravel 13.43.0, MySQL Community 8.4.13 InnoDB: **22/22 tests đạt, 144 assertions**, gồm hai tiến trình gửi đồng thời trên cùng database và test giữ nguyên bảng/dữ liệu legacy khi tạo namespace portal_. Không bỏ qua test MySQL trong lượt bàn giao. Chốt chặn chỉ cho phép test phá hủy schema trên database disposable có tên kết thúc `_testing`.
 
-- Phiên bản PHP **web và CLI chính xác** trên hosting. Người dùng xác nhận 8.4 hoặc 8.5; chưa có truy cập SSH đã đối chiếu khóa để tự đọc. PHP 8.5 được thêm vào CI nhưng chưa chạy local trong phiên này.
-- CI GitHub chưa được quan sát hoàn tất. Không ghi kết quả CI là đã đạt.
-- Document root `public`; cấu hình MySQL hiện có với namespace bảng `portal_` cùng quyền runtime/migration thực tế; `.env`, storage và các khóa ngoài Git; chạy migrations/preflight/config cache trên hosting.
-- SMTP thật và nhận thư mời; tài khoản quản trị đầu tiên, thiết lập mật khẩu và 2FA trên hosting.
-- HTTPS redirect, cookie, CSP và auth/API end-to-end của **bản mới**, kiểm tra bên ngoài các URL nhạy cảm sau triển khai. `.htaccess` gốc từ chối truy cập nếu hosting còn trỏ vào repository root; 403 tại đây không phải portal đã hoạt động.
-- Cron thực tế và theo dõi lỗi purge. `BACKUP_RETENTION_DAYS` không tự chỉnh chính sách backup Hostinger. Script backup chưa chạy trên hosting; chưa cài/kiểm tra age và chưa thử restore. Cần xác minh thời hạn giữ, khóa giải mã, quyền truy cập và quy trình khôi phục/xóa với nhà cung cấp.
-- Cấu hình access log, WAF, APM, crash reporting thực tế: không ghi token/mật khẩu/mã ghép/số đầy đủ/body. Chưa kiểm tra hệ thống log của Hostinger.
-- Android: có hợp đồng API, lớp Keystore mẫu và quy tắc loại token khỏi backup. Chưa có APK/bộ thu thập metadata hoàn chỉnh; chưa biên dịch với Android SDK, chưa test Keystore/backup/quyền trên thiết bị thật.
+Các ca test bao gồm: hai tài khoản/hai thiết bị; không đọc, lọc, tìm số hoặc xóa dữ liệu chéo tài khoản; admin không đọc lịch sử riêng của B; tách bearer thiết bị khỏi phiên web; mã ghép một lần và race; token hết hạn/thu hồi/tài khoản vô hiệu hóa; idempotency theo thiết bị; TOTP chống replay; mã hóa trường nhạy cảm/HMAC; escape Blade; giới hạn lô/rate; CSRF/cookie; token mật khẩu có hạn và không dùng lại; purge lịch sử quá hạn.
 
-Hướng dẫn thao tác: [DEPLOYMENT.md](DEPLOYMENT.md). Hợp đồng Android và giới hạn dữ liệu: [ANDROID-API.md](ANDROID-API.md).
+Pint, composer validate, Blade cache, cú pháp JavaScript và script shell đạt. Composer audit local không có advisory/abandoned tại thời điểm chạy. `.env`, `.env.hostinger`, vendor, runtime, SQL dữ liệu và log được Git bỏ qua; chỉ file SQL schema không chứa dữ liệu người dùng được đưa vào exports/.
 
-## Cập nhật: dùng lại database hiện có
+## Phần còn chờ trước khi sử dụng đầy đủ
 
-- Tiền tố mặc định `portal_` cho SQLite/MySQL/MariaDB; migrations repository, user, phiên, cache, token và dữ liệu mới tách khỏi bảng cũ. Production preflight từ chối tiền tố khác `portal_`.
-- Đã chuẩn bị `.env.hostinger` riêng ngoài Git với tên database/tài khoản hiện có. Mật khẩu và khóa production để trống, chưa kết nối hay thay đổi database hosting. Không tự nhập tài khoản cũ vào portal mới.
-- Thêm test MySQL có bảng `users`, `meals`, `migrations` cũ, trong đó tên migration trùng bản mới; sau `migrate`, dữ liệu và lịch sử migrations cũ vẫn nguyên, bảng portal mới được tạo riêng. Các thao tác wipe trong test chỉ được phép với database disposable có tên kết thúc `_testing`; không dùng chúng trên hosting.
-- Bộ test sau thay đổi: **22/22 đạt, 144 assertions** trên PHP 8.4.27/MySQL 8.4.13, gồm các bài kiểm tra đồng thời. Backup script được giới hạn trong các bảng `portal_*`, kiểm tra cú pháp shell đạt; chưa chạy backup/restore thực tế.
+- **Email quản trị và SMTP thật:** chưa được cung cấp. Chưa tạo tài khoản quản trị đầu tiên, chưa gửi thư mời hoặc thử đăng nhập/2FA dương tính trên hosting. Các luồng này đã được test local; không ghi là đã test thành công trên hosting.
+- **Cron:** tài khoản SSH không có crontab; chưa cài được scheduler. Cần thêm cron trong hPanel: mỗi phút chạy `cd <domain>/portal-app && php artisan schedule:run`. Chưa xác nhận purge chạy định kỳ thật.
+- **Quyền MySQL runtime:** user hiện có vẫn được cấp quyền DDL. Cần thu hẹp về DML trên các bảng portal_ và tách tài khoản migrations, không cấp quyền đọc bảng cũ nếu không cần. Chưa tự thay quyền database qua hPanel.
+- **Engine database:** MariaDB tương thích driver MySQL hiện chạy được; cần xác nhận nếu chỉ chấp nhận Oracle MySQL.
+- **Backup:** script chỉ xuất portal_ và mã hóa bằng age; chưa cài/kiểm tra age, chưa chạy backup/restore thực tế hoặc xác minh thời hạn giữ backup Hostinger. BACKUP_RETENTION_DAYS không tự chỉnh chính sách hPanel.
+- Chưa kiểm tra cấu hình access log/WAF/APM/crash reporting của nhà cung cấp. App không ghi body/token/mật khẩu/mã ghép/số đầy đủ vào log.
+- Chưa quan sát CI GitHub hoàn tất; không tính CI là đã đạt.
+- Android hiện có hợp đồng API, lớp Keystore mẫu và quy tắc backup, chưa có APK/bộ thu thập hoàn chỉnh hoặc test thiết bị thật.
 
-## Cập nhật: chuyển ứng dụng ra gốc repository
-
-- Đã bỏ thư mục bọc `portal/`; ứng dụng Laravel, `.env` local và dependencies hiện ở gốc. `.env`, `.env.hostinger` và vendor tiếp tục nằm ngoài Git.
-- Đã cập nhật CI, script triển khai và tài liệu. Document root cần là `<release>/public`, tương ứng `public_html/public` nếu checkout nằm trong public_html. Chưa thay đổi cấu hình document root trên Hostinger.
-- Kiểm thử lại tại vị trí mới: **22/22 đạt, 144 assertions** trên MySQL; composer validate, Blade cache, Pint và cú pháp script shell đều đạt.
+Hướng dẫn: [DEPLOYMENT.md](DEPLOYMENT.md). Hợp đồng Android: [ANDROID-API.md](ANDROID-API.md).

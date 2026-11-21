@@ -34,3 +34,11 @@ Repository này có lịch sử từ dự án trước; phiên bản cũ từng 
 ## Checklist bên ngoài
 
 Kiểm tra TLS certificate, HTTP redirect HTTPS, `/login` 200, đăng ký 404, cookie phiên, 2FA, SMTP và API thật. Kiểm tra `/.env`, `/portal/.env`, `/storage/logs/laravel.log`, `/portal/storage/logs/laravel.log`, `/backup.sql`, `/backup.zip`, `/.git/config` đều 403/404, không chỉ xem status mà còn xác nhận không có nội dung nhạy cảm. Tắt capture body/header của request trong WAF/APM/crash reporter; không log Authorization, pairing code, password, token, số đầy đủ hoặc request body. Ghi nhận thời điểm, phiên bản và deployment ID trong báo cáo. Xem `SECURITY-VERIFICATION.md` cho phần đã làm và còn chờ.
+
+## Trạng thái site techai.sbs sau triển khai
+
+Bố cục đã áp dụng: `<domain>/portal-app` chứa checkout và vendor production; `<domain>/portal-shared/.env` cùng storage là dữ liệu riêng; `<domain>/public_html` trỏ tới `portal-app/public`. Không cần đưa .env/vendor vào Git. Hooks Git trên hosting gọi script triển khai sau merge/checkout; khi đổi cách auto-deploy phải kiểm tra lại worktree và trang đăng nhập sau push.
+
+PHP web thực tế 8.5.13, CLI 8.3.37. Database của gói Hostinger hiện là MariaDB 11.8.9 (kết nối MySQL-compatible), không phải Oracle MySQL. Namespace portal_ đã được kiểm tra khớp file SQL import.
+
+Còn cần thao tác trong hPanel: tạo cron mỗi phút cho scheduler (SSH không có crontab), thu hẹp quyền runtime database đang còn DDL và xác minh chính sách backup. SMTP và email quản trị còn chờ người dùng cung cấp. Không coi portal là đã hoàn tất mọi tiêu chí production chỉ vì trang đăng nhập trả 200; xem báo cáo kiểm tra mới nhất.
