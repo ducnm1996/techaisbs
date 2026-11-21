@@ -101,6 +101,9 @@ CREATE TABLE `portal_history_events` (
   `phone_index` char(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
+  `app_package` text COLLATE utf8mb4_unicode_ci,
+  `call_direction` text COLLATE utf8mb4_unicode_ci,
+  `duration_seconds` text COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `portal_history_events_device_id_event_id_unique` (`device_id`,`event_id`),
   KEY `portal_history_events_user_id_occurred_at_index` (`user_id`,`occurred_at`),
@@ -247,4 +250,5 @@ INSERT INTO `portal_migrations` (`migration`, `batch`) VALUES
 ('0001_01_01_000000_create_users_table', 1),
 ('0001_01_01_000001_create_cache_table', 1),
 ('0001_01_01_000002_create_jobs_table', 1),
-('2026_11_21_073617_create_device_portal_tables', 1);
+('2026_11_21_073617_create_device_portal_tables', 1),
+('2026_11_21_100540_add_android_metadata_to_history_events', 2);

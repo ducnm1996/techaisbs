@@ -15,3 +15,7 @@ Cấu hình `.env` riêng, `composer install`, chạy migrations, rồi `php art
 Kiểm thử MySQL: dùng một database **riêng, có thể xóa, tên kết thúc `_testing`**, đặt DB_CONNECTION=mysql, DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD rồi chạy `php vendor/phpunit/phpunit/phpunit`. Bộ test có thao tác migrate:fresh/db:wipe; tuyệt đối không dùng database hosting hoặc dữ liệu thật.
 
 Có thể chạy nhanh bằng SQLite với cùng lệnh; ba test MySQL sẽ bị bỏ qua, không thay thế kiểm thử khóa đồng thời trên MySQL. Các khóa trong phpunit.xml chỉ là fixture công khai dành cho test.
+
+## Android
+
+App cài thử nằm trong [android/](android/) với hướng dẫn [cài trên Samsung A34 và build APK](docs/ANDROID-APP.md). Mỗi nguồn mặc định tắt; ghép bằng mã một lần rồi người dùng chọn quyền và bật đồng bộ. Zalo/Viber/email chỉ có metadata thông báo, không truy cập nội dung. APK và khóa ký không đưa lên Git.

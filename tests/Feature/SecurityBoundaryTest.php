@@ -159,12 +159,37 @@ class SecurityBoundaryTest extends TestCase
         $code = session('pair_code');
         $this->assertNotEmpty($code);
         $this->assertDatabaseHas('pairing_codes', ['user_id' => $owner->id, 'code_hash' => hash('sha256', $code)]);
-        $this->postJson('/api/v1/pair', ['code' => $code, 'device_name' => 'Android'])->assertCreated()->assertJsonStructure(['token', 'device_id', 'expires_at']);
+        $this->postJson('/api/v1/pair', ['code' => $code, 'device_name' => 'Android'])->assertCreated()->assertJsonStructure(['token', 'device_id', 'expires_at', 'sources', 'allow_ip', 'allow_location'])->assertJson(['sources' => ['sms'], 'allow_ip' => false, 'allow_location' => false]);
         $this->postJson('/api/v1/pair', ['code' => $code, 'device_name' => 'Replay'])->assertUnprocessable();
         $this->assertDatabaseCount('devices', 1);
         $this->assertSame($owner->id, Device::first()->user_id);
         PairingCode::create(['user_id' => $owner->id, 'code_hash' => hash('sha256', '0123456789ABCDEF'), 'sources' => ['sms'], 'expires_at' => now()->subSecond()]);
         $this->postJson('/api/v1/pair', ['code' => '0123456789ABCDEF', 'device_name' => 'Expired'])->assertUnprocessable();
+    }
+
+    public function test_android_call_metadata_is_encrypted_idempotent_and_scoped(): void
+    {
+        $owner = $this->member();
+        $other = $this->member();
+        $device = $this->device($owner);
+        $token = $this->token($device);
+        $event = $this->event(['source' => 'call', 'app_package' => 'com.samsung.android.dialer', 'call_direction' => 'outgoing', 'duration_seconds' => 125]);
+        $this->api($token, ['events' => [$event]])->assertCreated();
+        $this->api($token, ['events' => [$event]])->assertOk()->assertJson(['created' => 0, 'duplicates' => 1]);
+        $saved = HistoryEvent::firstOrFail();
+        $this->assertSame('125', $saved->duration_seconds);
+        $this->assertSame('outgoing', $saved->call_direction);
+        $this->assertSame('com.samsung.android.dialer', $saved->app_package);
+        $raw = DB::table('history_events')->first();
+        $this->assertStringNotContainsString('com.samsung', $raw->app_package);
+        $this->assertStringNotContainsString('outgoing', $raw->call_direction);
+        $this->assertNotSame('125', $raw->duration_seconds);
+        $this->actingAs($other, 'web')->get('/history/'.$saved->id)->assertForbidden();
+        $this->actingAs($owner, 'web')->get('/history/'.$saved->id)->assertOk()->assertSee('com.samsung.android.dialer')->assertSee('125');
+        $this->api($token, ['events' => [$this->event(['source' => 'email', 'duration_seconds' => 1])]])->assertUnprocessable();
+        $this->api($token, ['events' => [$this->event(['app_package' => '<script>'])]])->assertUnprocessable();
+        $this->api($token, ['events' => [$this->event(['source' => 'call', 'duration_seconds' => 604801])]])->assertUnprocessable();
+        $this->assertDatabaseCount('history_events', 1);
     }
 
     public function test_admin_logs_in_directly_and_legacy_mfa_page_redirects_home(): void

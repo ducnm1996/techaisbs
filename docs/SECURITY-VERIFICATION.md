@@ -51,7 +51,7 @@ Pint, composer validate, Blade cache, cú pháp JavaScript và script shell đ�
 - Chưa kiểm tra cấu hình access log/WAF/APM/crash reporting của nhà cung cấp. App không ghi body/token/mật khẩu/mã ghép/số đầy đủ vào log.
 - Chưa quan sát CI GitHub hoàn tất; không tính CI là đã đạt.
 - **Đồng bộ Git cũ:** đã phát hiện hPanel chép lại toàn bộ repo vào vùng public sau push, làm 403 tái phát. Đã khôi phục public sạch và kiểm tra login 200/CSRF 419/API 401. Người dùng xác nhận đã tắt auto-deploy cũ trong hPanel; các lần cập nhật chuyển sang SSH vào checkout riêng, xem update-hostinger.sh. Không coi việc Git nhận commit mới là đủ để xác nhận portal vẫn chạy.
-- Android hiện có hợp đồng API, lớp Keystore mẫu và quy tắc backup, chưa có APK/bộ thu thập hoàn chỉnh hoặc test thiết bị thật.
+- Android đã có APK cài thử và mã nguồn trong android/; kiểm thử thiết bị A34 thật còn chờ. Xem mục bản Android 0.1.0 bên dưới.
 
 Hướng dẫn: [DEPLOYMENT.md](DEPLOYMENT.md). Hợp đồng Android: [ANDROID-API.md](ANDROID-API.md).
 
@@ -60,3 +60,9 @@ Hướng dẫn: [DEPLOYMENT.md](DEPLOYMENT.md). Hợp đồng Android: [ANDROID-
 Chủ website yêu cầu bỏ bước 2FA. Đăng nhập quản trị chuyển thẳng tới portal bằng email/mật khẩu; URL GET /2fa cũ chuyển về trang chủ, không còn endpoint xác nhận mã hoặc giao diện/CLI thiết lập 2FA. Các cột MFA cũ giữ để tương thích schema nhưng không tham gia xác thực; không cần import lại SQL. Tiêu chí bắt buộc 2FA ban đầu đã được thay đổi theo yêu cầu này. Phân quyền tài khoản, scope dữ liệu, CSRF, cookie và rate limit đăng nhập vẫn được kiểm tra.
 
 Kiểm thử sau khi bỏ 2FA: 23/23 đạt, 153 assertions trên MySQL local; đăng nhập trực tiếp quản trị và điều hướng URL 2FA cũ đã được kiểm tra.
+
+## Bản Android 0.1.0
+
+Đã build release Android minSdk 26 / targetSdk 36, chạy 3 JUnit tests (0 lỗi) và lintRelease (0 errors, 15 warnings về i18n, commit SharedPreferences và phiên bản dependency). APK không debuggable; apksigner xác minh chữ ký v2/v3, zipalign thành công. Composer audit không có advisory ở lần chạy này. Laravel MySQL: 24/24 tests, 174 assertions, gồm capabilities trả về khi ghép, mã hóa metadata mới và cách ly dữ liệu.
+
+APK có chữ ký cài thử, không có secret production; khóa ký riêng được giữ trong runtime local bị ignore. Không có A34 hoặc emulator nối với môi trường này: chưa kiểm thử cài đặt, Android Keystore, quyền bị hạn chế, NotificationListener và đồng bộ nền trên máy thật. Cần hoàn tất bước này khi người dùng cài APK. Không đánh đồng build/lint/unit test với kiểm thử thiết bị.

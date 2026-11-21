@@ -1,0 +1,44 @@
+package sbs.techai.metadata;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import org.json.JSONArray;
+import org.json.JSONException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+final class AppState {
+ static final String[] SOURCES={"zalo","viber","sms","call","email"};
+ private final SharedPreferences prefs;
+ AppState(Context context) { prefs=context.getSharedPreferences("settings",Context.MODE_PRIVATE); }
+ boolean enabled() { return prefs.getBoolean("enabled",false); }
+ void enabled(boolean value) { prefs.edit().putBoolean("enabled",value).apply(); }
+ boolean selected(String source) { return prefs.getBoolean("source_"+source,false); }
+ void selected(String source, boolean value) { prefs.edit().putBoolean("source_"+source,value).putLong("since_"+source,System.currentTimeMillis()).commit(); }
+ long since(String source) { return Math.max(started(),prefs.getLong("since_"+source,0)); }
+ Set<String> grants() { return new HashSet<>(prefs.getStringSet("grants",new HashSet<>())); }
+ boolean accepts(String source) { return enabled() && selected(source) && grants().contains(source); }
+ String installId() {
+  String id=prefs.getString("install_id",null);
+  if(id==null) { id=UUID.randomUUID().toString(); prefs.edit().putString("install_id",id).commit(); }
+  return id;
+ }
+ void paired(JSONArray grants, String expiry) throws JSONException {
+  Set<String> set=new HashSet<>();for(int i=0;i<grants.length();i++)set.add(grants.getString(i));
+  SharedPreferences.Editor editor=prefs.edit().putStringSet("grants",set).putString("expires",expiry).putBoolean("enabled",false).putLong("started",0).putLong("call_cursor",-1);
+  for(String source:SOURCES) editor.putBoolean("source_"+source,false);
+  editor.commit();
+ }
+ String expiry() { return prefs.getString("expires",""); }
+ long started() { return prefs.getLong("started",0); }
+ void start() { prefs.edit().putLong("started",System.currentTimeMillis()).putLong("call_cursor",0).commit(); enabled(true); }
+ long callCursor() { return prefs.getLong("call_cursor",-1); }
+ void callCursor(long id) { prefs.edit().putLong("call_cursor",id).commit(); }
+ void resetCallCursor() { prefs.edit().putLong("call_cursor",0).commit(); }
+ String status() { return prefs.getString("status","Chưa ghép thiết bị."); }
+ void status(String message) { prefs.edit().putString("status",message).apply(); }
+ void synced() { prefs.edit().putLong("last_sync",System.currentTimeMillis()).apply(); }
+ long lastSync() { return prefs.getLong("last_sync",0); }
+ void clearPair() { enabled(false); prefs.edit().remove("grants").remove("expires").putLong("started",0).putLong("call_cursor",-1).apply(); }
+}
