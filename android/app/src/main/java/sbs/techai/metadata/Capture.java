@@ -17,6 +17,7 @@ final class Capture {
  static boolean record(Context app,String source,String identity,long time,String pkg,String phone,String direction,Long duration) {
    try {
     AppState state=new AppState(app);
+    String session=state.sessionId();
     if(!state.accepts(source)||!new SecureStore(app).paired()||time<state.since(source))return false;
     if(!StatusNotice.permitted(app)){SyncControl.pause(app);state.status("Đã dừng: thông báo trạng thái không được phép.");return false;}
     JSONObject event=new JSONObject().put("event_id",MetadataRules.eventId(state.installId(),source,identity,time)).put("source",source).put("occurred_at",Instant.ofEpochMilli(time).toString());
@@ -24,7 +25,7 @@ final class Capture {
     String canonical=MetadataRules.canonicalPhone(phone);if(canonical!=null)event.put("sender_phone",canonical);
     if("call".equals(source)&&direction!=null)event.put("call_direction",direction);
     if("call".equals(source)&&duration!=null)event.put("duration_seconds",Math.max(0,Math.min(604800,duration)));
-    queue(app).enqueue(event);SyncControl.sync(app);return true;
+    if(!queue(app).enqueue(event,session))return false;SyncControl.sync(app);return true;
    } catch(Exception ignored){new AppState(app).status("Chưa lưu được metadata vào hàng đợi bảo vệ. Mở app để kiểm tra.");return false;}
  }
 }

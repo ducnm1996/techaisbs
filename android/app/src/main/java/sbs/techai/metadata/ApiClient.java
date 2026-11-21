@@ -18,7 +18,7 @@ final class ApiClient {
   HttpsURLConnection connection=(HttpsURLConnection)new URL(BASE+path).openConnection();
   try {
    connection.setInstanceFollowRedirects(false);connection.setRequestMethod("POST");connection.setConnectTimeout(15000);connection.setReadTimeout(20000);connection.setDoOutput(true);
-   connection.setRequestProperty("Content-Type","application/json; charset=utf-8");connection.setRequestProperty("Accept","application/json");connection.setRequestProperty("User-Agent","TechAI-Agent/0.2 Android");
+   connection.setRequestProperty("Content-Type","application/json; charset=utf-8");connection.setRequestProperty("Accept","application/json");connection.setRequestProperty("User-Agent","TechAI-Agent/"+BuildConfig.VERSION_NAME+" Android");
    if(token!=null)connection.setRequestProperty("Authorization","Bearer "+token);
    connection.setFixedLengthStreamingMode(bytes.length);
    try(java.io.OutputStream output=connection.getOutputStream()){output.write(bytes);}

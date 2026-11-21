@@ -19,6 +19,7 @@ import org.json.JSONObject;
 final class DeviceTelemetry {
  static synchronized void capture(Context context) throws Exception {
   AppState state=new AppState(context);long now=System.currentTimeMillis();
+  String session=state.sessionId();
   if(!state.accepts("device")||!StatusNotice.permitted(context)||!AgentRules.snapshotDue(state.lastTelemetry(),now))return;
   JSONObject data=new JSONObject();
   data.put("manufacturer",Build.MANUFACTURER).put("model",Build.MODEL).put("android_release",Build.VERSION.RELEASE).put("sdk",Build.VERSION.SDK_INT).put("app_version",BuildConfig.VERSION_NAME);
@@ -39,6 +40,6 @@ final class DeviceTelemetry {
   // Recheck after collecting; a concurrent pause must prevent any new enqueue.
   if(!state.accepts("device"))return;
   if(!state.locationSharing()||!state.locationAllowed()){event.remove("latitude");event.remove("longitude");event.remove("accuracy_m");}
-  Capture.queue(context).enqueue(event);state.lastTelemetry(now);
+  if(Capture.queue(context).enqueue(event,session)&&session.equals(state.sessionId()))state.lastTelemetry(now);
  }
 }

@@ -29,3 +29,11 @@ App Android hoàn chỉnh nằm trong `android/`; xem [hướng dẫn cài thử
 Nguồn device cần được cấp trong mã ghép và được chọn riêng trên app. Một sự kiện device bắt buộc có device_metadata, một object có danh sách trường cho phép cố định trong EventBatchRequest. Trường ngoài schema (ví dụ imei, installed_apps, body) bị từ chối. Device_metadata chỉ nhận với source=device, được lưu bằng cast encrypted:array trong TEXT; Blade thoát dữ liệu và chỉ hiển thị các nhãn cố định. Các cột vị trí vẫn là latitude/longitude/accuracy_m ở cấp event; backend bắt buộc allow_location. Token hiện có không được tự thêm nguồn device.
 
 Ví dụ không có vị trí: {"events":[{"event_id":"019c1122-1234-7123-8123-123456789abc","source":"device","occurred_at":"2026-11-21T09:15:00+07:00","device_metadata":{"manufacturer":"Samsung","model":"SM-A346","sdk":36,"android_release":"16","battery_percent":80,"charging":false,"network_type":"wifi"}}]}. Thông tin do client khai báo, không xác thực phần cứng. Thời gian lấy mẫu và nhận trên portal là hai giá trị khác nhau; không dùng mẫu cũ để khẳng định đang online.
+
+## IP đích qua VPN (0.3.0)
+
+Nguồn network yêu cầu mã ghép mới cấp cả network và app_source tương ứng (zalo/viber/email). Portal từ chối ghép chỉ có network. Không mở rộng quyền thiết bị cũ. app_package phải thuộc whitelist history.network_packages cho app_source. allow_ip chỉ áp dụng IP kết nối của thiết bị, không phải IP đích; quyền IP đích nằm ở nguồn network.
+
+Ví dụ sự kiện: {"events":[{"event_id":"019c1122-1234-7123-8123-123456789abc","source":"network","occurred_at":"2026-11-21T09:15:00+07:00","app_package":"com.zing.zalo","network_metadata":{"app_source":"zalo","destination_ip":"203.0.113.10","destination_port":443,"protocol":"tcp"}}]}.
+
+network_metadata bắt buộc khi source=network và không được dùng với nguồn khác; chỉ bốn khóa trên, IP literal v4/v6, cổng 1–65535 và tcp/udp. Không nhận hostname, payload hay trường khác. Backend không kết nối/resolve IP này. Lưu encrypted:array; mã ghép, token, scope owner và UUID idempotency giữ nguyên. Một lô lỗi bị từ chối toàn bộ. Backend kiểm tra lại quyền nguồn và app_source bên trong transaction khóa device khi ghi. IP quan sát chỉ thể hiện đích của kết nối ở client, không chứng minh máy chủ nhận, IP người nhận hoặc liên hệ với SMS/cuộc gọi. Các giới hạn/rate/lô chung vẫn áp dụng.

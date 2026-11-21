@@ -26,5 +26,5 @@ final class SyncControl {
   OneTimeWorkRequest request=new OneTimeWorkRequest.Builder(SyncWorker.class).setConstraints(constraints()).setInitialDelay(ThreadLocalRandom.current().nextInt(0,4),TimeUnit.SECONDS).setBackoffCriteria(BackoffPolicy.EXPONENTIAL,30,TimeUnit.SECONDS).addTag(TAG).build();
   WorkManager.getInstance(context).enqueueUniqueWork("techai_immediate",ExistingWorkPolicy.KEEP,request);
  }
- static void pause(Context context){new AppState(context).enabled(false);LocationCaptureService.stop(context);WorkManager.getInstance(context).cancelAllWorkByTag(TAG);StatusNotice.update(context);}
+ static void pause(Context context){new AppState(context).enabled(false);NetworkVpnService.stop(context);LocationCaptureService.stop(context);WorkManager.getInstance(context).cancelAllWorkByTag(TAG);StatusNotice.update(context);}
 }

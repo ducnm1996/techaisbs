@@ -1,6 +1,6 @@
 # App Android TechAI Metadata
 
-Mã nguồn: `android/` (Java, minSdk 26, target/compileSdk 36). Kết nối cố định HTTPS đến techai.sbs. Không có đăng nhập web bên trong app; token thiết bị chỉ có quyền gửi sự kiện.
+Mã nguồn: `android/` (Java, minSdk 29, target/compileSdk 36). Kết nối cố định HTTPS đến techai.sbs. Không có đăng nhập web bên trong app; token thiết bị chỉ có quyền gửi sự kiện.
 
 ## Cài thử trên Samsung A34
 
@@ -40,7 +40,7 @@ Dùng JDK 17, Android SDK Platform 36, Build Tools 35/36, Gradle wrapper 8.13 v�
 ./gradlew assembleRelease testDebugUnitTest lintRelease
 ```
 
-APK release chưa ký nằm trong app/build/outputs/apk/release/. Dùng zipalign/apksigner của SDK để ký với khóa riêng nằm ngoài Git; không bật debuggable. Bản cài thử được xuất vào exports/TechAI-Agent-0.2.0.apk (không commit APK/keystore). Giữ nguyên khóa ký để cài bản cập nhật; mất khóa phải gỡ app và ghép lại. Khóa ký APK khác khóa Android Keystore trên điện thoại. Không có secret production trong source.
+APK release chưa ký nằm trong app/build/outputs/apk/release/. Dùng zipalign/apksigner của SDK để ký với khóa riêng nằm ngoài Git; không bật debuggable. Bản cài thử được xuất vào exports/TechAI-Agent-0.3.0.apk (không commit APK/keystore). Giữ nguyên khóa ký để cài bản cập nhật; mất khóa phải gỡ app và ghép lại. Khóa ký APK khác khóa Android Keystore trên điện thoại. Không có secret production trong source.
 
 Tài liệu nền tảng: [NotificationListenerService](https://developer.android.com/reference/android/service/notification/NotificationListenerService), [quyền Android](https://developer.android.com/reference/android/Manifest.permission), [WorkManager](https://developer.android.com/develop/background-work/background-tasks/persistent-work).
 
@@ -64,3 +64,39 @@ Bấm Dừng vị trí, Dừng đồng bộ, bỏ chọn Agent hoặc ngắt li�
 Bản 0.1.0 đã bị Play Protect chặn trên máy người dùng. Bản agent vẫn có RECEIVE_SMS, READ_CALL_LOG và NotificationListener nên không khẳng định việc nâng phiên bản sẽ hết chặn. Cần kiểm tra chính sách/quyền tối thiểu và dùng quy trình xem xét của Google khi bị phân loại nhầm; không có mã lách bảo vệ hay xin quyền ngầm trong app. Việc build thành công không chứng minh APK được Play Protect chấp nhận. Chưa có A34 hoặc emulator kết nối để xác nhận chạy thực tế, GPS, Keystore hay chạy nền.
 
 Nền tảng: [foreground service vị trí](https://developer.android.com/develop/background-work/services/fgs/service-types), [hạn chế khởi động service](https://developer.android.com/develop/background-work/services/fgs/restrictions-bg-start), [Play Protect cho nhà phát triển](https://developers.google.com/android/play-protect/warning-dev-guidance).
+
+## VPN cục bộ 0.3.0: IP đích Zalo/Viber/email
+
+Bản 0.3.0 yêu cầu Android 10+ (minSdk 29), phù hợp Samsung A34. Cùng applicationId/chứng thư với bản trước; có thể cập nhật tại chỗ nếu Android cho phép cài. APK: exports/TechAI-Agent-0.3.0.apk. Đây là build cài thử, không tuyên bố Play Protect đã chấp nhận.
+
+### Bật/tắt và quyền
+
+1. Thu hồi liên kết cũ trên portal nếu cần, tạo mã mới có nguồn **VPN / IP ĐÍCH ZALO, VIBER, EMAIL** (`network`) và chọn thêm từng nguồn Zalo, Viber, email muốn quan sát. Quyền IP kết nối điện thoại là lựa chọn riêng; không nhầm với quyền network/IP đích.
+2. Ghép app bằng mã mới. Chọn VPN và từng nguồn tương ứng, xác nhận đồng ý rồi Bật đồng bộ.
+3. Bấm **Bật VPN cục bộ lấy IP đích**, đọc xác nhận riêng về phạm vi app và ảnh hưởng mạng, sau đó chấp thuận hộp thoại VPN chính thức của Android. Android chỉ cho một VPN trên mỗi hồ sơ; phiên này có thể thay thế VPN đang dùng.
+4. Mở Zalo/Viber/email để tạo kết nối mới, rồi xem Lịch sử → nguồn VPN / IP đích. IP mới không được bổ sung ngược cho SMS, cuộc gọi hay thông báo cũ.
+5. Bấm **Tắt VPN** trong app hoặc thông báo thường trực. Việc tắt ngừng quan sát mới; metadata đã ghi vẫn được đồng bộ nếu nguồn còn được chọn. Bỏ chọn VPN/nguồn tương ứng sẽ xóa các sự kiện đang chờ của nguồn đó (các nguồn phụ của network cũng được lọc lại khi gửi). Có nút xóa toàn bộ hàng đợi. Dữ liệu đã lên portal có thể xóa riêng và theo retention.
+
+VPN không bật tự động sau reboot/kill, không hỗ trợ always-on. Đổi lựa chọn Zalo/Viber/email khi VPN đang chạy sẽ dừng phiên để người dùng chủ động bật lại với danh sách mới. Dừng đồng bộ, token hết hạn/401/403, mất thông báo trạng thái, thu hồi quyền VPN hoặc vuốt tắt task sẽ dừng phiên. Các lỗi native/chuyển tiếp được watchdog phát hiện và đóng TUN để khôi phục định tuyến thông thường. Không có cơ chế cấp quyền ngầm hoặc tắt Play Protect.
+
+### Metadata và giới hạn diễn giải
+
+Chỉ gửi `source=network`, app_package, app_source, destination_ip (IPv4/IPv6 literal), destination_port (1–65535), protocol (tcp/udp), thời gian và event_id. Backend bắt buộc cả quyền network lẫn app_source tương ứng và tên gói trong whitelist. IP, cổng, giao thức được lưu dưới network_metadata mã hóa. Không có URL, DNS query, SNI, hostname suy đoán, packet payload, chứng thư, mật khẩu, nội dung ứng dụng, số điện thoại đối tác hoặc tài khoản email trong event VPN.
+
+Header parser chỉ đọc IP/TCP/UDP. Gói tin được chuyển tiếp trong RAM qua engine Hev/lwIP đến SOCKS5 server trên 127.0.0.1 có mật khẩu ngẫu nhiên theo phiên; socket ra Internet được VpnService.protect để tránh vòng lặp. Không có máy chủ VPN bên ngoài, không cài CA, không MITM hoặc giải mã TLS. Payload vẫn phải đi qua bộ chuyển tiếp trong RAM để mạng hoạt động, nhưng không được phân tích ở cấp ứng dụng, lưu file/log hay tải lên portal. Native log đi /dev/null, các buffer chuyển tiếp được xóa khi kết thúc.
+
+Chỉ whitelist com.zing.zalo, com.viber.voip, Gmail, Outlook, Samsung/Android Email. Không yêu cầu QUERY_ALL_PACKAGES. App chưa cài/bị ẩn hoặc có UID dùng chung với gói khác sẽ không được thêm vào VPN. getConnectionOwnerUid xác định ứng dụng sở hữu tuple; nếu không xác định được thì không ghi, không đoán. TCP chỉ quan sát SYN mở kết nối; UDP dùng cache tuple tối đa một phút. Không bảo đảm thấy mọi kết nối, đặc biệt shared/isolated UID, kết nối trước khi bật, hoặc gói phân mảnh/extension không hỗ trợ. Các gói không phân tích được vẫn được chuyển tiếp qua engine; không suy đoán metadata thiếu.
+
+Một endpoint (app/IP/cổng/giao thức) được gộp mỗi phút, tối đa 120 endpoint mới/phút, cache giới hạn 2.048, hàng đợi xử lý header 128 và hàng đợi sự kiện chung 1.000/7 ngày. VPN tối đa 250 sự kiện đang chờ và bị loại trước các nguồn khác khi hàng đợi đầy, để hạn chế lấn chỗ SMS/cuộc gọi. Khi quá tải, metadata được bỏ thay vì chặn việc chuyển tiếp. Proxy/native giới hạn 64 session, timeout TCP nhàn rỗi 5 phút và UDP 2 phút; có thể gây ngắt/kết nối lại, cần thử thực tế trước khi dùng lâu dài. DNS dùng các DNS server của mạng hiện tại, không tự chuyển sang DNS bên thứ ba. Không đọc DNS query. Có thể cần tắt/bật lại VPN khi đổi mạng hoặc DNS.
+
+IP đích có thể là CDN, máy chủ trung gian, telemetry hoặc peer của ứng dụng. Không chứng minh một người cụ thể dùng IP đó, máy chủ đã nhận gói hay IP thuộc một tin nhắn. Không xác định IP người nhận bằng cách ghép với số điện thoại. VPN làm thay đổi đường đi qua một bộ chuyển tiếp local; dữ liệu đo phản ánh phiên này, không phải bản ghi nguyên trạng của hệ điều hành.
+
+### Kiểm thử còn chờ trên A34
+
+Chưa có thiết bị/emulator trong adb devices tại lúc build. Cần kiểm tra: cấp/từ chối/thu hồi VPN; bật/tắt khôi phục Internet; Zalo/Viber/email giữ kết nối TCP/UDP/IPv6; attribution app; DNS/Private DNS/QUIC; chuyển Wi-Fi/di động; tiết kiệm pin, kill/reboot; xóa nguồn/token; không có payload trong queue/log; chạy chung với cài đặt VPN khác. Pure Java relay tests và backend tests không thay thế các bước này. Không gọi bản cài thử là VPN production hoặc đã xác nhận hoạt động trên A34.
+
+Nguồn: [Android VPN](https://developer.android.com/develop/connectivity/vpn), [getConnectionOwnerUid](https://developer.android.com/reference/android/net/ConnectivityManager#getConnectionOwnerUid(int,%20java.net.InetSocketAddress,%20java.net.InetSocketAddress)), [dependency pin và license](../android/third-party/README.md).
+
+## Phiên ghép và xử lý phản hồi muộn
+
+App 0.3 tạo marker phiên mới mỗi lần ghép. Ghép/ngắt liên kết, đọc token và lấy lô cùng dùng khóa hàng đợi; producer ghi với marker đã chụp và bị từ chối nếu marker đổi. Worker cũ không lấy lô mới, không acknowledge dữ liệu mới hoặc xóa token mới khi phản hồi cũ về muộn. Marker là UUID local, không phải token, không gửi lên portal. Chưa có kiểm thử instrumentation chạy race ghép lại trên máy thật; cần thử trong danh sách bàn giao Android. Dừng đồng bộ giữ dữ liệu đang chờ, không tự xóa do batch đọc đồng thời.

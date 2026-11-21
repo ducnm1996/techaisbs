@@ -18,12 +18,17 @@ class EventBatchRequest extends FormRequest
     {
         return [
             'events' => ['required', 'array', 'min:1', 'max:50'],
-            'events.*' => ['required', 'array:event_id,source,occurred_at,sender_phone,sender_name,server_domain,latitude,longitude,accuracy_m,app_package,call_direction,duration_seconds,device_metadata'],
+            'events.*' => ['required', 'array:event_id,source,occurred_at,sender_phone,sender_name,server_domain,latitude,longitude,accuracy_m,app_package,call_direction,duration_seconds,device_metadata,network_metadata'],
             'events.*.event_id' => ['required', 'uuid', 'distinct'],
             'events.*.source' => ['required', Rule::in(config('history.sources'))],
             'events.*.app_package' => ['nullable', 'string', 'max:160', 'regex:/^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+$/'],
             'events.*.call_direction' => ['nullable', Rule::in(['incoming', 'outgoing', 'missed', 'rejected', 'blocked', 'unknown'])],
             'events.*.duration_seconds' => ['nullable', 'integer', 'between:0,604800'],
+            'events.*.network_metadata' => ['sometimes', 'required', 'array:app_source,destination_ip,destination_port,protocol'],
+            'events.*.network_metadata.app_source' => ['required_with:events.*.network_metadata', Rule::in(['zalo', 'viber', 'email'])],
+            'events.*.network_metadata.destination_ip' => ['required_with:events.*.network_metadata', 'ip'],
+            'events.*.network_metadata.destination_port' => ['required_with:events.*.network_metadata', 'integer', 'between:1,65535'],
+            'events.*.network_metadata.protocol' => ['required_with:events.*.network_metadata', Rule::in(['tcp', 'udp'])],
             'events.*.device_metadata' => ['sometimes', 'required', 'array:manufacturer,model,android_release,sdk,security_patch,app_version,battery_percent,charging,power_save,ram_total_bytes,ram_available_bytes,storage_total_bytes,storage_available_bytes,network_type,network_metered,internet_validated,timezone,locale,uptime_seconds'],
             'events.*.device_metadata.manufacturer' => ['sometimes', 'string', 'max:80'],
             'events.*.device_metadata.model' => ['sometimes', 'string', 'max:120'],
@@ -61,6 +66,15 @@ class EventBatchRequest extends FormRequest
                 return;
             }
             foreach ($this->input('events') as $index => $event) {
+                if ($event['source'] === 'network') {
+                    $network = $event['network_metadata'] ?? [];
+                    $app = $network['app_source'] ?? '';
+                    if (! $network || ! in_array($app, $this->user()->sources, true) || ! in_array($event['app_package'] ?? '', config('history.network_packages.'.$app, []), true)) {
+                        $validator->errors()->add("events.$index.network_metadata", 'Cần quyền VPN và nguồn ứng dụng tương ứng, với gói ứng dụng được hỗ trợ.');
+                    }
+                } elseif (isset($event['network_metadata'])) {
+                    $validator->errors()->add("events.$index.network_metadata", 'IP đích chỉ được dùng cho nguồn network.');
+                }
                 if (isset($event['device_metadata']) && $event['source'] !== 'device') {
                     $validator->errors()->add("events.$index.device_metadata", 'Thông tin thiết bị chỉ được dùng cho nguồn device.');
                 }

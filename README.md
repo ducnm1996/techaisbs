@@ -21,3 +21,5 @@ Có thể chạy nhanh bằng SQLite với cùng lệnh; ba test MySQL sẽ bị
 App cài thử nằm trong [android/](android/) với hướng dẫn [cài trên Samsung A34 và build APK](docs/ANDROID-APP.md). Mỗi nguồn mặc định tắt; ghép bằng mã một lần rồi người dùng chọn quyền và bật đồng bộ. Zalo/Viber/email chỉ có metadata thông báo, không truy cập nội dung. APK và khóa ký không đưa lên Git.
 
 Agent Android 0.2 bổ sung trạng thái thiết bị/pin/bộ nhớ/mạng và phiên chia sẻ vị trí tùy chọn có thông báo thường trực. Portal có nguồn device riêng và thẻ mẫu cuối trên trang Thiết bị. Thiết bị ghép cũ cần mã mới để có quyền nguồn mới; không tự mở rộng quyền.
+
+VPN cục bộ 0.3 (Android 10+) bổ sung nguồn network để ghi IP đích/cổng/TCP-UDP của Zalo, Viber và email khi người dùng bật và xác nhận VPN. Dữ liệu không có payload/DNS/TLS, chỉ gắn ứng dụng khi xác định được UID; xem [phạm vi và cách thử trên A34](docs/ANDROID-APP.md). Thư viện native được pin và có [license/provenance](android/third-party/README.md).

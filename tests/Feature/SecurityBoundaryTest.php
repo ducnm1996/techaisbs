@@ -231,11 +231,57 @@ class SecurityBoundaryTest extends TestCase
         $this->assertDatabaseCount('history_events', 1);
     }
 
-    public function test_pairing_can_grant_all_six_sources_for_agent(): void
+    public function test_pairing_can_grant_all_supported_sources_and_network_requires_an_app(): void
     {
         $owner = $this->member();
+        $this->actingAs($owner)->post('/devices/pair', ['sources' => ['network']])->assertSessionHasErrors('sources');
         $this->actingAs($owner)->post('/devices/pair', ['sources' => config('history.sources'), 'allow_location' => '1'])->assertRedirect('/devices');
         $this->postJson('/api/v1/pair', ['code' => session('pair_code'), 'device_name' => 'A34 Agent'])->assertCreated()->assertJson(['sources' => config('history.sources'), 'allow_location' => true]);
+    }
+
+    public function test_network_metadata_requires_both_grants_and_is_encrypted_scoped_and_idempotent(): void
+    {
+        $owner = $this->member();
+        $other = $this->member();
+        $device = $this->device($owner, ['sources' => ['network', 'zalo', 'email']]);
+        $token = $this->token($device);
+        $event = ['event_id' => (string) Str::uuid(), 'source' => 'network', 'occurred_at' => now()->toIso8601String(), 'app_package' => 'com.zing.zalo', 'network_metadata' => ['app_source' => 'zalo', 'destination_ip' => '203.0.113.10', 'destination_port' => 443, 'protocol' => 'tcp']];
+        $this->api($token, ['events' => [$event]])->assertCreated();
+        $this->api($token, ['events' => [$event]])->assertOk()->assertJson(['duplicates' => 1]);
+        $saved = HistoryEvent::firstOrFail();
+        $this->assertSame(443, $saved->network_metadata['destination_port']);
+        $raw = DB::table('history_events')->first();
+        $this->assertStringNotContainsString('203.0.113.10', $raw->network_metadata);
+        $this->assertNull($raw->device_ip);
+        $this->actingAs($owner, 'web')->get('/history')->assertOk()->assertSee('IP đích: 203.0.113.10')->assertSee('Cổng 443');
+        $this->get('/history/'.$saved->id)->assertOk()->assertSee('IP đích quan sát')->assertSee('203.0.113.10');
+        $this->actingAs($other, 'web')->get('/history?source=network')->assertOk()->assertDontSee('203.0.113.10');
+        $this->get('/history/'.$saved->id)->assertForbidden();
+        $this->delete('/history/'.$saved->id)->assertForbidden();
+        foreach ([['network'], ['zalo']] as $grants) {
+            $blocked = $this->device($other, ['sources' => $grants]);
+            $this->api($this->token($blocked), ['events' => [$event]])->assertUnprocessable();
+        }
+        foreach ([['destination_ip' => 'example.com'], ['destination_port' => 0], ['destination_port' => 65536], ['protocol' => 'icmp'], ['payload' => 'not-allowed']] as $invalid) {
+            $bad = $event;
+            $bad['network_metadata'] = array_replace($event['network_metadata'], $invalid);
+            $this->api($token, ['events' => [$bad]])->assertUnprocessable();
+        }
+        $bad = $event;
+        $bad['app_package'] = 'com.google.android.gm';
+        $this->api($token, ['events' => [$bad]])->assertUnprocessable();
+        $bad = $event;
+        $bad['source'] = 'zalo';
+        $this->api($token, ['events' => [$bad]])->assertUnprocessable();
+        unset($bad['network_metadata']);
+        $bad['source'] = 'network';
+        $this->api($token, ['events' => [$bad]])->assertUnprocessable();
+        $ipv6 = $event;
+        $ipv6['event_id'] = (string) Str::uuid();
+        $ipv6['network_metadata']['destination_ip'] = '2001:db8::20';
+        $ipv6['network_metadata']['protocol'] = 'udp';
+        $this->api($token, ['events' => [$ipv6]])->assertCreated();
+        $this->assertDatabaseCount('history_events', 2);
     }
 
     public function test_admin_logs_in_directly_and_legacy_mfa_page_redirects_home(): void

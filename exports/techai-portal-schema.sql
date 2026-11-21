@@ -105,6 +105,7 @@ CREATE TABLE `portal_history_events` (
   `call_direction` text COLLATE utf8mb4_unicode_ci,
   `duration_seconds` text COLLATE utf8mb4_unicode_ci,
   `device_metadata` text COLLATE utf8mb4_unicode_ci,
+  `network_metadata` text COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `portal_history_events_device_id_event_id_unique` (`device_id`,`event_id`),
   KEY `portal_history_events_user_id_occurred_at_index` (`user_id`,`occurred_at`),
@@ -253,4 +254,5 @@ INSERT INTO `portal_migrations` (`migration`, `batch`) VALUES
 ('0001_01_01_000002_create_jobs_table', 1),
 ('2026_11_21_073617_create_device_portal_tables', 1),
 ('2026_11_21_100540_add_android_metadata_to_history_events', 2),
-('2026_11_21_104415_add_device_telemetry_to_history_events', 3);
+('2026_11_21_104415_add_device_telemetry_to_history_events', 3),
+('2026_11_21_114754_add_network_metadata_to_history_events', 4);

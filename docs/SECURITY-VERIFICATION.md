@@ -84,3 +84,15 @@ Người dùng cung cấp ảnh cho thấy 0.1.0 bị Play Protect chặn. 0.2.0
 ## Hiển thị metadata trong lịch sử
 
 Bảng lịch sử hiển thị chiều gọi tiếng Việt, thời lượng, thiết bị sở hữu, app_package, IP/vị trí/sai số nếu đã lưu, máy chủ khai báo nếu có, mẫu agent và thời điểm máy chủ nhận. Nút Chi tiết dẫn đến toàn bộ metadata. Không xin thêm quyền, không thay APK, không bổ sung ngược trường chưa thu thập. Quan hệ event/device được eager-load và lọc theo tài khoản, policy vẫn kiểm tra trang chi tiết. Blade tiếp tục thoát tên, gói ứng dụng và metadata. Laravel MySQL: 26/26 tests, 212 assertions đạt; Pint đạt.
+
+## VPN cục bộ 0.3.0
+
+Laravel MySQL local: 27/27 tests đạt, 242 assertions. Ca mới kiểm tra IP v4/v6, quyền kép network + app_source, package whitelist, literal IP/cổng/protocol, từ chối payload/hostname và nguồn không được phép, mã hóa JSON, idempotency và không đọc/xóa/xem dữ liệu chéo tài khoản. Mã ghép chỉ có network bị từ chối. SQL schema sạch đã được import kiểm chứng trên database disposable: 14 bảng portal_, 7 migration records, không có application data; legacy được giữ. Pint và Composer audit đạt (không advisory).
+
+Android: assembleRelease, testDebugUnitTest (14 tests, 0 failures/skips) và lintRelease (0 errors, 22 warnings) đạt. Test bao gồm relay TCP/UDP thực qua loopback cho IPv4/IPv6, byte giữ nguyên, xác thực SOCKS theo phiên và không kết nối nếu bảo vệ socket thất bại; header parser bỏ gói lỗi/phân mảnh, đọc IPv4/IPv6, không phụ thuộc payload; dedup/rate/cache bounded. Đây là kiểm thử Java trên JDK, không phải TUN/Android kernel hay app Zalo/Viber/email thật. Marker phiên/khóa hàng đợi được bổ sung để chặn producer/worker cũ gửi hoặc acknowledge hàng đợi mới khi ghép lại; instrumentation race trên A34 còn chờ.
+
+Native AAR upstream 2.20.0 được pin commit/asset SHA-256, kèm license/provenance trong android/third-party và app assets. Không rebuild/audit đầy đủ native C ở lần này; checksum chứng minh artifact khớp release, không chứng minh không có lỗi. ELF arm64-v8a/x86_64 được kiểm tra load alignment tối thiểu 16KB. APK release versionCode 3, minSdk 29 / targetSdk 36, không debuggable; ký cùng chứng thư cài thử và verify cho SDK 29–36, zipalign 16KB đạt. APK và khóa riêng ngoài Git.
+
+adb devices không có thiết bị. Chưa xác minh VPN khởi động/khôi phục mạng, UID attribution, native bridge qua Unix datagram, DNS/Private DNS, QUIC, switching network, foreground permission, stop/revoke/kill/reboot hoặc chạy dài trên A34. Không tuyên bố APK đã được Play Protect chấp nhận hoặc VPN đã sẵn sàng sản xuất. Các bước thử còn chờ trong ANDROID-APP.md. Không giải mã TLS, cài CA, ghi payload/PCAP, URL, DNS/SNI, hoặc liên kết IP đích với người nhận cụ thể; VPN chỉ quan sát các package được chọn. Lỗi chuyển tiếp/native đóng TUN và kết thúc phiên, cần xác minh hành vi này trên máy thật.
+
+APK VPN 0.3.0: 6.668.583 byte, SHA-256 b4df755bc164d27b6cf80b26d2925e7390bfc196d0c04d3d0f22b5f4c37e3c4b; apksigner xác minh chữ ký v3 cho API 29–36, cùng chứng thư 6231f91e4ce9bef3b587bd8036bc16fcad64e5291e9430474df1fb4d8513bf77.
