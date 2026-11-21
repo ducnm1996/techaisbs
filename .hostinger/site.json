@@ -1,0 +1,9 @@
+{
+  "domain": "techai.sbs",
+  "username": "u666675361",
+  "type": "php",
+  "application_directory": "portal-app",
+  "public_directory": "portal-app/public",
+  "web_root": "public_html",
+  "shared_directory": "portal-shared"
+}

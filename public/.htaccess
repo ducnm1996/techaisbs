@@ -9,6 +9,9 @@ Require all granted
 
     RewriteEngine On
 
+    # Hide Git metadata and all dot paths, including nested path segments.
+    RewriteRule (^|/)\. - [F,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
