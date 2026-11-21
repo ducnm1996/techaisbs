@@ -10,7 +10,12 @@ test -d "$SHARED_DIR/storage"
 cd "$APP_DIR"
 if test -e .env && ! test -L .env; then echo 'Move .env into SHARED_DIR before deployment' >&2; exit 1; fi
 if test -d storage && ! test -L storage; then
-  if find storage -type f ! -name '.gitignore' -print -quit | grep -q .; then echo 'Move existing private storage to SHARED_DIR first' >&2; exit 1; fi
+  # Preserve an existing checkout's runtime files; never overwrite shared data.
+  if command -v rsync >/dev/null; then
+    rsync -a --ignore-existing storage/ "$SHARED_DIR/storage/"
+  else
+    cp -an storage/. "$SHARED_DIR/storage/"
+  fi
   mv storage "$SHARED_DIR/storage-scaffold-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 fi
 ln -sfn "$SHARED_DIR/.env" .env
