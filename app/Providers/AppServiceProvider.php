@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
             ->line('Bạn nhận được liên kết thiết lập hoặc đặt lại mật khẩu cho tài khoản TechAI.')
             ->action('Thiết lập mật khẩu', $resetUrl($user, $token))
             ->line('Liên kết dùng một lần và hết hạn sau 60 phút. Nếu bạn không yêu cầu, hãy bỏ qua email này.'));
-        RateLimiter::for('login', fn (Request $r) => [Limit::perMinute(10)->by('login-ip:'.$r->ip()), Limit::perMinute(5)->by('login:'.hash('sha256', strtolower((string) $r->input('email'))))]);
+        RateLimiter::for('login', fn (Request $r) => [Limit::perMinute(10)->by('login-ip:'.$r->ip()), Limit::perMinute(5)->by('login:'.hash('sha256', mb_strtolower(trim((string) $r->input('email')))))]);
         RateLimiter::for('password', fn (Request $r) => [Limit::perMinute(3)->by('password-ip:'.$r->ip()), Limit::perMinute(1)->by('password:'.hash('sha256', strtolower((string) $r->input('email'))))]);
         RateLimiter::for('pair', fn (Request $r) => Limit::perMinute(5)->by('pair:'.$r->ip()));
         RateLimiter::for('mfa', fn (Request $r) => Limit::perMinute(5)->by('mfa:'.$r->user('web')?->id));

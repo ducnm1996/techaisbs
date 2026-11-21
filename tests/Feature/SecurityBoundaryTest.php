@@ -30,6 +30,17 @@ class SecurityBoundaryTest extends TestCase
         return User::factory()->create($attributes + ['is_active' => true, 'setup_pending' => false, 'role' => 'member']);
     }
 
+    public function test_login_normalizes_email_and_keeps_it_after_failed_attempt(): void
+    {
+        $user = $this->member(['email' => 'member@example.com', 'password' => 'ExamplePassword123']);
+        $this->post('/login', ['email' => '  MEMBER@EXAMPLE.COM  ', 'password' => 'ExamplePassword123'])->assertRedirect('/');
+        $this->assertAuthenticatedAs($user);
+        $this->post('/logout');
+        $this->post('/login', ['email' => ' MEMBER@EXAMPLE.COM ', 'password' => 'wrong'])->assertSessionHasErrors('email');
+        $this->get('/login')->assertOk()->assertSee('value="MEMBER@EXAMPLE.COM"', false)
+            ->assertSee('data-password-toggle', false)->assertDontSee('value="wrong"', false);
+    }
+
     private function device(User $owner, array $attributes = []): Device
     {
         return Device::create($attributes + ['user_id' => $owner->id, 'name' => 'Pixel', 'sources' => config('history.sources'), 'allow_ip' => false, 'allow_location' => false]);
