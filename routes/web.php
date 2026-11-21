@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PortalController;
 use App\Http\Controllers\SessionController;
+use Illuminate\Routing\RedirectController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest:web')->group(function (): void {
@@ -15,8 +16,7 @@ Route::middleware('guest:web')->group(function (): void {
 });
 Route::middleware(['auth:web', 'portal'])->group(function (): void {
     Route::post('/logout', [SessionController::class, 'logout'])->name('logout');
-    Route::get('/2fa', [SessionController::class, 'mfa'])->name('mfa.show');
-    Route::post('/2fa', [SessionController::class, 'confirmMfa'])->middleware('throttle:mfa')->name('mfa.confirm');
+    Route::get('/2fa', RedirectController::class)->defaults('destination', '/')->defaults('status', 302);
     Route::get('/', [PortalController::class, 'home'])->name('home');
     Route::get('/history', [PortalController::class, 'history'])->name('history');
     Route::post('/history/search', [PortalController::class, 'search'])->name('history.search');

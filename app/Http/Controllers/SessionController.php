@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Http\Requests\MfaRequest;
 use App\Http\Requests\PasswordLinkRequest;
 use App\Http\Requests\SetPasswordRequest;
 use App\Models\Device;
@@ -17,8 +16,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
-use PragmaRX\Google2FA\Google2FA;
 
 class SessionController extends Controller
 {
@@ -30,7 +27,7 @@ class SessionController extends Controller
         $request->session()->regenerate();
         $request->session()->forget('mfa_user');
 
-        return redirect()->route($request->user('web')->role === 'admin' ? 'mfa.show' : 'home');
+        return redirect()->route('home');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -40,44 +37,6 @@ class SessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
-    }
-
-    public function mfa(Request $request, Google2FA $totp): View
-    {
-        $user = $request->user('web');
-        abort_unless($user->role === 'admin', 403);
-        DB::transaction(function () use ($user, $totp): void {
-            $locked = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
-            if (! $locked->mfa_secret) {
-                $locked->update(['mfa_secret' => $totp->generateSecretKey(32)]);
-            }
-        });
-        $user->refresh();
-
-        return view('mfa', ['secret' => $user->mfa_confirmed_at ? null : $user->mfa_secret]);
-    }
-
-    public function confirmMfa(MfaRequest $request, Google2FA $totp): RedirectResponse
-    {
-        $user = $request->user('web');
-        abort_unless($user->role === 'admin', 403);
-        DB::transaction(function () use ($user, $request, $totp): void {
-            $locked = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
-            $step = $locked->mfa_secret ? $totp->verifyKeyNewer($locked->mfa_secret, $request->validated('code'), $locked->mfa_last_step, 1) : false;
-            if ($step === false) {
-                throw ValidationException::withMessages(['code' => 'Mã không đúng, đã dùng hoặc đã hết hạn.']);
-            }
-            $enrolling = ! $locked->mfa_confirmed_at;
-            $locked->update(['mfa_confirmed_at' => $locked->mfa_confirmed_at ?? now(), 'mfa_last_step' => $step === true ? $totp->getTimestamp() : $step]);
-            if ($enrolling) {
-                Audit::record($locked, 'mfa.enrolled', 'user', $locked->id);
-            }
-        });
-        $user->refresh();
-        $request->session()->regenerate();
-        $request->session()->put('mfa_user', $user->id);
-
-        return redirect()->route('home');
     }
 
     public function sendLink(PasswordLinkRequest $request): RedirectResponse

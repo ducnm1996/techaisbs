@@ -19,9 +19,6 @@ class PortalSession
 
             return redirect()->route('login');
         }
-        if ($user->role === 'admin' && ! $request->routeIs('mfa.*', 'logout') && (! $user->mfa_confirmed_at || $request->session()->get('mfa_user') !== $user->id)) {
-            return redirect()->route('mfa.show');
-        }
 
         return $next($request);
     }

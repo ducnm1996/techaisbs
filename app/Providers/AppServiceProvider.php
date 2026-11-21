@@ -33,7 +33,6 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('login', fn (Request $r) => [Limit::perMinute(10)->by('login-ip:'.$r->ip()), Limit::perMinute(5)->by('login:'.hash('sha256', mb_strtolower(trim((string) $r->input('email')))))]);
         RateLimiter::for('password', fn (Request $r) => [Limit::perMinute(3)->by('password-ip:'.$r->ip()), Limit::perMinute(1)->by('password:'.hash('sha256', strtolower((string) $r->input('email'))))]);
         RateLimiter::for('pair', fn (Request $r) => Limit::perMinute(5)->by('pair:'.$r->ip()));
-        RateLimiter::for('mfa', fn (Request $r) => Limit::perMinute(5)->by('mfa:'.$r->user('web')?->id));
         RateLimiter::for('device-events', fn (Request $r) => Limit::perMinute(60)->by('device:'.$r->user()?->id));
         RateLimiter::for('pair-create', fn (Request $r) => Limit::perMinute(3)->by('pair-create:'.$r->user('web')?->id));
     }

@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
-use PragmaRX\Google2FA\Google2FA;
 use Tests\TestCase;
 
 class SecurityBoundaryTest extends TestCase
@@ -92,8 +91,8 @@ class SecurityBoundaryTest extends TestCase
         $this->delete('/devices/'.$db->id)->assertForbidden();
         $this->assertDatabaseHas('history_events', ['id' => $event->id]);
         $this->get('/')->assertViewHas('eventCount', 0)->assertViewHas('deviceCount', 1);
-        $admin = $this->member(['role' => 'admin', 'mfa_confirmed_at' => now()]);
-        $this->actingAs($admin)->withSession(['mfa_user' => $admin->id])->get('/history/'.$event->id)->assertForbidden();
+        $admin = $this->member(['role' => 'admin']);
+        $this->actingAs($admin)->get('/history/'.$event->id)->assertForbidden();
         $this->get('/history')->assertDontSee('SECRET-B');
         $this->delete('/history/'.$event->id)->assertForbidden();
     }
@@ -168,29 +167,24 @@ class SecurityBoundaryTest extends TestCase
         $this->postJson('/api/v1/pair', ['code' => '0123456789ABCDEF', 'device_name' => 'Expired'])->assertUnprocessable();
     }
 
-    public function test_admin_requires_mfa_and_totp_cannot_be_replayed(): void
+    public function test_admin_logs_in_directly_and_legacy_mfa_page_redirects_home(): void
     {
-        $admin = $this->member(['role' => 'admin']);
-        $this->actingAs($admin);
-        $this->get('/admin')->assertRedirect('/2fa');
-        $this->post('/devices/pair', ['sources' => ['sms']])->assertRedirect('/2fa');
-        $this->get('/2fa')->assertOk();
-        $admin->refresh();
-        $this->assertNotEmpty($admin->mfa_secret);
-        $code = app(Google2FA::class)->getCurrentOtp($admin->mfa_secret);
-        $this->post('/2fa', ['code' => $code])->assertRedirect('/');
-        $this->get('/admin')->assertOk();
-        $this->post('/2fa', ['code' => $code])->assertSessionHasErrors('code');
-        $this->assertNotSame($admin->mfa_secret, DB::table('users')->where('id', $admin->id)->value('mfa_secret'));
+        $admin = $this->member(['role' => 'admin', 'password' => 'ExamplePassword123']);
+        $this->post('/login', ['email' => $admin->email, 'password' => 'ExamplePassword123'])->assertRedirect('/');
+        $this->assertAuthenticatedAs($admin);
+        $this->get('/admin')->assertOk()->assertDontSee('2FA');
+        $this->get('/')->assertOk();
+        $this->get('/2fa')->assertRedirect('/');
+        $this->post('/2fa', ['code' => '000000'])->assertStatus(405);
     }
 
     public function test_admin_changes_are_audited_and_disabling_revokes_access(): void
     {
-        $admin = $this->member(['role' => 'admin', 'mfa_confirmed_at' => now()]);
+        $admin = $this->member(['role' => 'admin']);
         $target = $this->member();
         $device = $this->device($target);
         $token = $this->token($device);
-        $this->actingAs($admin)->withSession(['mfa_user' => $admin->id])->put('/admin/accounts/'.$target->id, ['role' => 'member', 'is_active' => false])->assertRedirect();
+        $this->actingAs($admin)->put('/admin/accounts/'.$target->id, ['role' => 'member', 'is_active' => false])->assertRedirect();
         $this->assertDatabaseHas('audit_logs', ['actor_id' => $admin->id, 'target_id' => $target->id, 'action' => 'account.updated']);
         $this->api($token, ['events' => [$this->event()]])->assertUnauthorized();
     }
@@ -211,7 +205,7 @@ class SecurityBoundaryTest extends TestCase
         $this->post('/password/setup', array_replace($body, ['token' => $token]))->assertSessionHasErrors('email');
     }
 
-    public function test_login_pairing_and_mfa_attempts_are_rate_limited(): void
+    public function test_login_and_pairing_attempts_are_rate_limited(): void
     {
         for ($i = 0; $i < 5; $i++) {
             $this->post('/login', ['email' => 'test@example.com', 'password' => 'wrong']);
@@ -251,8 +245,8 @@ class SecurityBoundaryTest extends TestCase
     public function test_admin_can_invite_but_members_cannot_manage_accounts(): void
     {
         Notification::fake();
-        $admin = $this->member(['role' => 'admin', 'mfa_confirmed_at' => now()]);
-        $this->actingAs($admin)->withSession(['mfa_user' => $admin->id])->post('/admin/accounts', ['name' => 'New user', 'email' => 'new@example.com', 'role' => 'member'])->assertRedirect();
+        $admin = $this->member(['role' => 'admin']);
+        $this->actingAs($admin)->post('/admin/accounts', ['name' => 'New user', 'email' => 'new@example.com', 'role' => 'member'])->assertRedirect();
         $new = User::where('email', 'new@example.com')->firstOrFail();
         $this->assertTrue($new->setup_pending);
         Notification::assertSentTo($new, ResetPassword::class, function ($notification) use ($new): bool {
@@ -277,17 +271,11 @@ class SecurityBoundaryTest extends TestCase
         $this->post('/login', ['email' => 'test@example.com', 'password' => 'wrong'])->assertStatus(419);
     }
 
-    public function test_mfa_password_and_device_event_rate_limits(): void
+    public function test_password_and_device_event_rate_limits(): void
     {
         Notification::fake();
         $this->post('/password/forgot', ['email' => 'missing@example.com'])->assertRedirect();
         $this->post('/password/forgot', ['email' => 'missing@example.com'])->assertTooManyRequests();
-        $admin = $this->member(['role' => 'admin', 'mfa_secret' => app(Google2FA::class)->generateSecretKey(32)]);
-        $this->actingAs($admin);
-        for ($i = 0; $i < 5; $i++) {
-            $this->post('/2fa', ['code' => '000000']);
-        }
-        $this->post('/2fa', ['code' => '000000'])->assertTooManyRequests();
         $token = $this->token($this->device($this->member()));
         $event = $this->event();
         for ($i = 0; $i < 60; $i++) {

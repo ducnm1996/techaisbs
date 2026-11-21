@@ -35,20 +35,6 @@ Artisan::command('portal:bootstrap-admin {email} {name}', function (): int {
 
     return 0;
 });
-Artisan::command('portal:reset-mfa {email} {--force}', function (): int {
-    if (! $this->option('force')) {
-        $this->error('Requires explicit --force from the server operator.');
-
-        return 1;
-    }
-    $user = User::where('email', $this->argument('email'))->where('role', 'admin')->firstOrFail();
-    $user->update(['mfa_secret' => null, 'mfa_confirmed_at' => null, 'mfa_last_step' => null]);
-    DB::table('sessions')->where('user_id', $user->id)->delete();
-    Audit::record(null, 'mfa.operator_reset', 'user', $user->id);
-    $this->info('MFA reset; portal access requires enrollment again.');
-
-    return 0;
-});
 Artisan::command('history:purge', function (): int {
     $days = (int) config('history.retention_days');
     if ($days < 1 || $days > 3650) {

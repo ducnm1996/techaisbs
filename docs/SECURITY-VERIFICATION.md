@@ -35,15 +35,15 @@ Nội dung phản hồi đã kiểm tra không chứa APP_KEY, DB_PASSWORD, khó
 
 ## Kiểm thử local đã chạy
 
-PHP 8.4.27, Laravel 13.43.0, MySQL Community 8.4.13 InnoDB: **22/22 tests đạt, 144 assertions**, gồm hai tiến trình gửi đồng thời trên cùng database và test giữ nguyên bảng/dữ liệu legacy khi tạo namespace portal_. Không bỏ qua test MySQL trong lượt bàn giao. Chốt chặn chỉ cho phép test phá hủy schema trên database disposable có tên kết thúc `_testing`.
+PHP 8.4.27, Laravel 13.43.0, MySQL Community 8.4.13 InnoDB: **23/23 tests đạt, 153 assertions**, gồm hai tiến trình gửi đồng thời trên cùng database và test giữ nguyên bảng/dữ liệu legacy khi tạo namespace portal_. Không bỏ qua test MySQL trong lượt bàn giao. Chốt chặn chỉ cho phép test phá hủy schema trên database disposable có tên kết thúc `_testing`.
 
-Các ca test bao gồm: hai tài khoản/hai thiết bị; không đọc, lọc, tìm số hoặc xóa dữ liệu chéo tài khoản; admin không đọc lịch sử riêng của B; tách bearer thiết bị khỏi phiên web; mã ghép một lần và race; token hết hạn/thu hồi/tài khoản vô hiệu hóa; idempotency theo thiết bị; TOTP chống replay; mã hóa trường nhạy cảm/HMAC; escape Blade; giới hạn lô/rate; CSRF/cookie; token mật khẩu có hạn và không dùng lại; purge lịch sử quá hạn.
+Các ca test bao gồm: hai tài khoản/hai thiết bị; không đọc, lọc, tìm số hoặc xóa dữ liệu chéo tài khoản; admin không đọc lịch sử riêng của B; tách bearer thiết bị khỏi phiên web; mã ghép một lần và race; token hết hạn/thu hồi/tài khoản vô hiệu hóa; idempotency theo thiết bị; đăng nhập quản trị trực tiếp bằng mật khẩu; mã hóa trường nhạy cảm/HMAC; escape Blade; giới hạn lô/rate; CSRF/cookie; token mật khẩu có hạn và không dùng lại; purge lịch sử quá hạn.
 
 Pint, composer validate, Blade cache, cú pháp JavaScript và script shell đạt. Composer audit local không có advisory/abandoned tại thời điểm chạy. `.env`, `.env.hostinger`, vendor, runtime, SQL dữ liệu và log được Git bỏ qua; chỉ file SQL schema không chứa dữ liệu người dùng được đưa vào exports/.
 
 ## Phần còn chờ trước khi sử dụng đầy đủ
 
-- **Email quản trị và SMTP thật:** chưa được cung cấp. Chưa tạo tài khoản quản trị đầu tiên, chưa gửi thư mời hoặc thử đăng nhập/2FA dương tính trên hosting. Các luồng này đã được test local; không ghi là đã test thành công trên hosting.
+- **SMTP thật:** chưa được cấu hình. Tài khoản quản trị ban đầu đã được cấp trực tiếp theo yêu cầu chủ website; chưa thử gửi thư mời qua SMTP trên hosting.
 - **Cron:** tài khoản SSH không có crontab; chưa cài được scheduler. Cần thêm cron trong hPanel: mỗi phút chạy `cd <domain>/portal-app && php artisan schedule:run`. Chưa xác nhận purge chạy định kỳ thật.
 - **Quyền MySQL runtime:** user hiện có vẫn được cấp quyền DDL. Cần thu hẹp về DML trên các bảng portal_ và tách tài khoản migrations, không cấp quyền đọc bảng cũ nếu không cần. Chưa tự thay quyền database qua hPanel.
 - **Engine database:** MariaDB tương thích driver MySQL hiện chạy được; cần xác nhận nếu chỉ chấp nhận Oracle MySQL.
@@ -54,3 +54,9 @@ Pint, composer validate, Blade cache, cú pháp JavaScript và script shell đ�
 - Android hiện có hợp đồng API, lớp Keystore mẫu và quy tắc backup, chưa có APK/bộ thu thập hoàn chỉnh hoặc test thiết bị thật.
 
 Hướng dẫn: [DEPLOYMENT.md](DEPLOYMENT.md). Hợp đồng Android: [ANDROID-API.md](ANDROID-API.md).
+
+## Thay đổi yêu cầu: bỏ xác thực hai lớp
+
+Chủ website yêu cầu bỏ bước 2FA. Đăng nhập quản trị chuyển thẳng tới portal bằng email/mật khẩu; URL GET /2fa cũ chuyển về trang chủ, không còn endpoint xác nhận mã hoặc giao diện/CLI thiết lập 2FA. Các cột MFA cũ giữ để tương thích schema nhưng không tham gia xác thực; không cần import lại SQL. Tiêu chí bắt buộc 2FA ban đầu đã được thay đổi theo yêu cầu này. Phân quyền tài khoản, scope dữ liệu, CSRF, cookie và rate limit đăng nhập vẫn được kiểm tra.
+
+Kiểm thử sau khi bỏ 2FA: 23/23 đạt, 153 assertions trên MySQL local; đăng nhập trực tiếp quản trị và điều hướng URL 2FA cũ đã được kiểm tra.
