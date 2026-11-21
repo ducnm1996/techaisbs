@@ -186,6 +186,7 @@ class SecurityBoundaryTest extends TestCase
         $this->assertNotSame('125', $raw->duration_seconds);
         $this->actingAs($other, 'web')->get('/history/'.$saved->id)->assertForbidden();
         $this->actingAs($owner, 'web')->get('/history/'.$saved->id)->assertOk()->assertSee('com.samsung.android.dialer')->assertSee('125');
+        $this->get('/history')->assertOk()->assertSee('Gọi đi')->assertSee('125 giây')->assertSee('Pixel')->assertSee('com.samsung.android.dialer')->assertSee('Chi tiết');
         $this->api($token, ['events' => [$this->event(['source' => 'email', 'duration_seconds' => 1])]])->assertUnprocessable();
         $this->api($token, ['events' => [$this->event(['app_package' => '<script>'])]])->assertUnprocessable();
         $this->api($token, ['events' => [$this->event(['source' => 'call', 'duration_seconds' => 604801])]])->assertUnprocessable();

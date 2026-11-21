@@ -30,7 +30,8 @@ class PortalController extends Controller
     public function history(HistoryFilterRequest $request): View
     {
         Gate::authorize('viewAny', HistoryEvent::class);
-        $query = HistoryEvent::where('user_id', $request->user('web')->id);
+        $owner = $request->user('web')->id;
+        $query = HistoryEvent::where('user_id', $owner)->with(['device' => fn ($query) => $query->where('user_id', $owner)]);
         foreach (['source' => 'source', 'device' => 'device_id'] as $input => $column) {
             if ($request->filled($input)) {
                 $query->where($column, $request->validated($input));
@@ -62,6 +63,7 @@ class PortalController extends Controller
     public function show(HistoryEvent $event): View
     {
         Gate::authorize('view', $event);
+        $event->load(['device' => fn ($query) => $query->where('user_id', $event->user_id)]);
 
         return view('event', compact('event'));
     }

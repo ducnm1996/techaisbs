@@ -80,3 +80,7 @@ Android: assembleRelease, testDebugUnitTest (5 tests, 0 failures) và lintReleas
 APK 0.2.0 minSdk 26 / targetSdk 36, versionCode 2; release không debuggable, chữ ký v2/v3 được apksigner xác minh và cùng chứng thư 0.1.0. File 1.887.798 byte; SHA-256 `71f62d918473f4607d59e57e90dd1de3734975a8ab03e515b4d81d2a847a7e28`. APK và khóa ký bị ignore, mã nguồn có trên Git.
 
 Người dùng cung cấp ảnh cho thấy 0.1.0 bị Play Protect chặn. 0.2.0 chưa được kiểm tra cài đặt trên A34 hoặc được Google xem xét; không tuyên bố đã hết chặn. Agent không có lệnh điều khiển từ xa, không dùng Accessibility/đọc màn hình, không tự cấp quyền/tắt bảo vệ. Vị trí chỉ khởi động từ Activity theo thao tác và xác nhận riêng; foreground service không exported, START_NOT_STICKY, không tự khởi động lại sau reboot/kill. Dừng chia sẻ xóa tọa độ RAM/mẫu device đang chờ; batch bỏ tọa độ khi phiên/quyền đã tắt. Yêu cầu đã truyền đi có thể hoàn tất sau khi dừng. Cần kiểm tra thực tế các đường pause/revoke/offline/GPS/kill trên A34 trước khi coi là sẵn sàng sản xuất.
+
+## Hiển thị metadata trong lịch sử
+
+Bảng lịch sử hiển thị chiều gọi tiếng Việt, thời lượng, thiết bị sở hữu, app_package, IP/vị trí/sai số nếu đã lưu, máy chủ khai báo nếu có, mẫu agent và thời điểm máy chủ nhận. Nút Chi tiết dẫn đến toàn bộ metadata. Không xin thêm quyền, không thay APK, không bổ sung ngược trường chưa thu thập. Quan hệ event/device được eager-load và lọc theo tài khoản, policy vẫn kiểm tra trang chi tiết. Blade tiếp tục thoát tên, gói ứng dụng và metadata. Laravel MySQL: 26/26 tests, 212 assertions đạt; Pint đạt.
