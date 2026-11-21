@@ -7,7 +7,7 @@ Theo lựa chọn cuối của người dùng: **hoàn thiện mã nguồn và h
 ## Đã chạy
 
 - PHP CLI **8.4.27**, Laravel **13.43.0**, MySQL Community **8.4.13**, InnoDB, Windows local.
-- Toàn bộ PHPUnit: **21 tests, 21 passed, 136 assertions**, bao gồm hai bài kiểm tra đồng thời bằng hai tiến trình PHP dùng cùng MySQL database riêng. Không bỏ qua test MySQL trong lượt này.
+- Toàn bộ PHPUnit ở lần bàn giao đầu: **21 tests, 21 passed, 136 assertions**, bao gồm hai bài kiểm tra đồng thời bằng hai tiến trình PHP dùng cùng MySQL database riêng. Không bỏ qua test MySQL trong lượt này. Kết quả cập nhật cho yêu cầu dùng lại database cũ ghi ở cuối báo cáo.
 - `composer validate --no-check-publish`: hợp lệ. `composer audit --locked --format=json`: advisories=[], abandoned=[]. Kết quả tại thời điểm chạy, cần chạy lại khi triển khai hoặc cập nhật dependency.
 - Pint đã chạy và sửa định dạng. Blade view cache thành công. JavaScript kiểm tra cú pháp thành công.
 - Git ignore chặn `.env`, runtime, vendor, SQLite/SQL, log và archive; `.env.example` chỉ chứa giá trị mẫu, khóa production để trống. Khóa trong phpunit.xml là fixture công khai chỉ dành cho test, không dùng ở môi trường thật.
@@ -40,7 +40,7 @@ Trước khi push ứng dụng mới, HTTPS tại techai.sbs đã trả lời qu
 
 - Phiên bản PHP **web và CLI chính xác** trên hosting. Người dùng xác nhận 8.4 hoặc 8.5; chưa có truy cập SSH đã đối chiếu khóa để tự đọc. PHP 8.5 được thêm vào CI nhưng chưa chạy local trong phiên này.
 - CI GitHub chưa được quan sát hoàn tất. Không ghi kết quả CI là đã đạt.
-- Document root `portal/public`; MySQL riêng cùng quyền runtime/migration thực tế; `.env`, storage và các khóa ngoài Git; chạy migrations/preflight/config cache trên hosting.
+- Document root `portal/public`; cấu hình MySQL hiện có với namespace bảng `portal_` cùng quyền runtime/migration thực tế; `.env`, storage và các khóa ngoài Git; chạy migrations/preflight/config cache trên hosting.
 - SMTP thật và nhận thư mời; tài khoản quản trị đầu tiên, thiết lập mật khẩu và 2FA trên hosting.
 - HTTPS redirect, cookie, CSP và auth/API end-to-end của **bản mới**, kiểm tra bên ngoài các URL nhạy cảm sau triển khai. `.htaccess` gốc từ chối truy cập nếu hosting còn trỏ vào repository root; 403 tại đây không phải portal đã hoạt động.
 - Cron thực tế và theo dõi lỗi purge. `BACKUP_RETENTION_DAYS` không tự chỉnh chính sách backup Hostinger. Script backup chưa chạy trên hosting; chưa cài/kiểm tra age và chưa thử restore. Cần xác minh thời hạn giữ, khóa giải mã, quyền truy cập và quy trình khôi phục/xóa với nhà cung cấp.
@@ -48,3 +48,10 @@ Trước khi push ứng dụng mới, HTTPS tại techai.sbs đã trả lời qu
 - Android: có hợp đồng API, lớp Keystore mẫu và quy tắc loại token khỏi backup. Chưa có APK/bộ thu thập metadata hoàn chỉnh; chưa biên dịch với Android SDK, chưa test Keystore/backup/quyền trên thiết bị thật.
 
 Hướng dẫn thao tác: [DEPLOYMENT.md](DEPLOYMENT.md). Hợp đồng Android và giới hạn dữ liệu: [ANDROID-API.md](ANDROID-API.md).
+
+## Cập nhật: dùng lại database hiện có
+
+- Tiền tố mặc định `portal_` cho SQLite/MySQL/MariaDB; migrations repository, user, phiên, cache, token và dữ liệu mới tách khỏi bảng cũ. Production preflight từ chối tiền tố khác `portal_`.
+- Đã chuẩn bị `.env.hostinger` riêng ngoài Git với tên database/tài khoản hiện có. Mật khẩu và khóa production để trống, chưa kết nối hay thay đổi database hosting. Không tự nhập tài khoản cũ vào portal mới.
+- Thêm test MySQL có bảng `users`, `meals`, `migrations` cũ, trong đó tên migration trùng bản mới; sau `migrate`, dữ liệu và lịch sử migrations cũ vẫn nguyên, bảng portal mới được tạo riêng. Các thao tác wipe trong test chỉ được phép với database disposable có tên kết thúc `_testing`; không dùng chúng trên hosting.
+- Bộ test sau thay đổi: **22/22 đạt, 144 assertions** trên PHP 8.4.27/MySQL 8.4.13, gồm các bài kiểm tra đồng thời. Backup script được giới hạn trong các bảng `portal_*`, kiểm tra cú pháp shell đạt; chưa chạy backup/restore thực tế.

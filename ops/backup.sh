@@ -10,10 +10,16 @@ RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-7}"
 [[ "$BACKUP_DATABASE" =~ ^[a-zA-Z0-9_]+$ ]]
 test -d "$BACKUP_DIR"
 command -v age >/dev/null
+command -v mysql >/dev/null
 BACKUP_DIR="$(cd "$BACKUP_DIR" && pwd)"
 OUTPUT="$BACKUP_DIR/portal-$(date -u +%Y%m%dT%H%M%SZ).sql.age"
 trap 'test ! -e "$OUTPUT.partial" || rm -f -- "$OUTPUT.partial"' EXIT
-mysqldump --defaults-extra-file="$MYSQL_BACKUP_CONFIG" --single-transaction --no-tablespaces --skip-comments "$BACKUP_DATABASE" | age -r "$AGE_RECIPIENT" -o "$OUTPUT.partial"
+mapfile -t TABLES < <(mysql --defaults-extra-file="$MYSQL_BACKUP_CONFIG" --batch --skip-column-names --execute "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA='$BACKUP_DATABASE' AND LEFT(TABLE_NAME,7)='portal_' AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME")
+(( ${#TABLES[@]} > 0 )) || { echo 'No portal tables found; refusing an empty backup' >&2; exit 1; }
+for TABLE in "${TABLES[@]}"; do
+  [[ "$TABLE" =~ ^portal_[a-zA-Z0-9_]+$ ]] || { echo 'Unexpected table name' >&2; exit 1; }
+done
+mysqldump --defaults-extra-file="$MYSQL_BACKUP_CONFIG" --single-transaction --skip-lock-tables --skip-triggers --no-tablespaces --skip-comments "$BACKUP_DATABASE" "${TABLES[@]}" | age -r "$AGE_RECIPIENT" -o "$OUTPUT.partial"
 mv -- "$OUTPUT.partial" "$OUTPUT"
 # The selected directory is dedicated to this application's encrypted backups.
 find "$BACKUP_DIR" -maxdepth 1 -type f -name 'portal-*.sql.age' -mmin "+$((RETENTION_DAYS * 1440))" -delete

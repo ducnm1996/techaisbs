@@ -77,6 +77,9 @@ Artisan::command('portal:preflight', function (PhoneIndex $index): int {
     if (config('database.default') !== 'mysql') {
         $fail[] = 'MySQL is required';
     }
+    if (DB::connection()->getTablePrefix() !== 'portal_') {
+        $fail[] = 'DB_TABLE_PREFIX must be portal_ to isolate the new portal from legacy tables';
+    }
     if (! config('session.secure') || ! config('session.http_only') || ! config('session.encrypt') || config('session.same_site') !== 'lax') {
         $fail[] = 'Secure session configuration required';
     }
