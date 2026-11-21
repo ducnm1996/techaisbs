@@ -5,5 +5,7 @@
   "application_directory": "portal-app",
   "public_directory": "portal-app/public",
   "web_root": "public_html",
-  "shared_directory": "portal-shared"
+  "shared_directory": "portal-shared",
+  "deployment_mode": "ssh-private-worktree",
+  "legacy_public_html_auto_deploy_must_be_disabled": true
 }

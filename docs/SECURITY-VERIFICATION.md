@@ -50,6 +50,7 @@ Pint, composer validate, Blade cache, cú pháp JavaScript và script shell đ�
 - **Backup:** script chỉ xuất portal_ và mã hóa bằng age; chưa cài/kiểm tra age, chưa chạy backup/restore thực tế hoặc xác minh thời hạn giữ backup Hostinger. BACKUP_RETENTION_DAYS không tự chỉnh chính sách hPanel.
 - Chưa kiểm tra cấu hình access log/WAF/APM/crash reporting của nhà cung cấp. App không ghi body/token/mật khẩu/mã ghép/số đầy đủ vào log.
 - Chưa quan sát CI GitHub hoàn tất; không tính CI là đã đạt.
+- **Đồng bộ Git cũ:** đã phát hiện hPanel chép lại toàn bộ repo vào vùng public sau push, làm 403 tái phát. Đã khôi phục public sạch và kiểm tra login 200/CSRF 419/API 401. Người dùng xác nhận đã tắt auto-deploy cũ trong hPanel; các lần cập nhật chuyển sang SSH vào checkout riêng, xem update-hostinger.sh. Không coi việc Git nhận commit mới là đủ để xác nhận portal vẫn chạy.
 - Android hiện có hợp đồng API, lớp Keystore mẫu và quy tắc backup, chưa có APK/bộ thu thập hoàn chỉnh hoặc test thiết bị thật.
 
 Hướng dẫn: [DEPLOYMENT.md](DEPLOYMENT.md). Hợp đồng Android: [ANDROID-API.md](ANDROID-API.md).

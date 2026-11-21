@@ -37,7 +37,11 @@ Kiểm tra TLS certificate, HTTP redirect HTTPS, `/login` 200, đăng ký 404, c
 
 ## Trạng thái site techai.sbs sau triển khai
 
-Bố cục đã áp dụng: `<domain>/portal-app` chứa checkout và vendor production; `<domain>/portal-shared/.env` cùng storage là dữ liệu riêng; `<domain>/public_html` trỏ tới `portal-app/public`. Không cần đưa .env/vendor vào Git. Hooks Git trên hosting gọi script triển khai sau merge/checkout; khi đổi cách auto-deploy phải kiểm tra lại worktree và trang đăng nhập sau push.
+Bố cục đã áp dụng: `<domain>/portal-app` chứa checkout và vendor production; `<domain>/portal-shared/.env` cùng storage là dữ liệu riêng; `<domain>/public_html` trỏ tới `portal-app/public`. Không cần đưa .env/vendor vào Git.
+
+**Phải tắt Git auto-deploy cũ của hPanel đang nhắm vào public_html.** Đã quan sát cơ chế này sao chép toàn bộ repository vào đích public ngay cả khi Git worktree ở thư mục riêng; kết quả là root .htaccess lại gây 403. Git hooks không ngăn được bước sao chép của nhà cung cấp. Không chỉ sửa worktree rồi giả định auto-deploy đã an toàn.
+
+Sau khi tắt cơ chế cũ, cập nhật qua SSH: từ `<domain>/portal-app`, chạy `SHARED_DIR=<domain>/portal-shared WEB_ROOT=<domain>/public_html bash ops/update-hostinger.sh`. Script xác nhận web root là symlink public, từ chối khi mã nguồn bị chép vào public, fetch/fast-forward main ở checkout riêng rồi cài/cache app. Push GitHub riêng lẻ không được coi là đã triển khai nếu chưa chạy bước SSH này. Các Git hooks trên máy chủ chỉ hỗ trợ chạy script sau merge/checkout, không thay thế kiểm tra deployment.
 
 PHP web thực tế 8.5.13, CLI 8.3.37. Database của gói Hostinger hiện là MariaDB 11.8.9 (kết nối MySQL-compatible), không phải Oracle MySQL. Namespace portal_ đã được kiểm tra khớp file SQL import.
 
