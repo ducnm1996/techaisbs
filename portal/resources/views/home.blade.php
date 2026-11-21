@@ -1,0 +1,7 @@
+@extends('layout')
+@section('title','Tổng quan')
+@section('content')
+<div class="page-heading"><div><span class="kicker">KHÔNG GIAN CÁ NHÂN</span><h1>Lịch sử, trong tầm tay.</h1><p class="muted">Chỉ những thiết bị bạn đã ghép và cho phép mới gửi dữ liệu.</p></div><a class="btn btn-primary" href="{{ route('devices') }}">+ Ghép thiết bị</a></div>
+<div class="stats"><article class="panel"><span>Sự kiện của tôi</span><strong>{{ number_format($eventCount) }}</strong><a href="{{ route('history') }}">Xem lịch sử ↗</a></article><article class="panel"><span>Thiết bị đang liên kết</span><strong>{{ $deviceCount }}</strong><a href="{{ route('devices') }}">Quản lý thiết bị ↗</a></article><article class="panel"><span>Thời hạn lưu lịch sử</span><strong>{{ config('history.retention_days') }} <small>ngày</small></strong><p class="muted mb-0">Tự dọn theo lịch trên máy chủ.</p></article></div>
+<section class="panel privacy-card"><span class="kicker">BẠN QUYẾT ĐỊNH DỮ LIỆU ĐƯỢC GỬI</span><h2>Biết điều gì được lưu.</h2><p>Nguồn hỗ trợ: Zalo, Viber, SMS, cuộc gọi và email. Chỉ ghi thời gian, loại nguồn và metadata được phép. Không lưu nội dung tin nhắn, tiêu đề email hay nội dung thông báo.</p><p class="muted mb-0">IP/vị trí là của thiết bị đồng bộ, không phải của người liên hệ. Vị trí và IP mặc định tắt; máy chủ do ứng dụng khai báo chưa được xác minh.</p></section>
+@endsection

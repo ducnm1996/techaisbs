@@ -1,0 +1,5 @@
+@extends('layout')
+@section('title','Thiết lập mật khẩu')
+@section('content')
+<div class="auth-card"><span class="kicker">LIÊN KẾT DÙNG MỘT LẦN</span><h1>Thiết lập mật khẩu</h1><p class="muted">Liên kết có hạn 60 phút. Mật khẩu cần 14 ký tự, chữ hoa, chữ thường và số.</p><form method="post" action="{{ route('password.update') }}" data-reset-form>@csrf<input type="hidden" name="token" id="reset-token"><label for="email">Email tài khoản</label><input class="form-control" type="email" name="email" id="email" value="{{ request('email') }}" autocomplete="username" maxlength="254" required><label for="password">Mật khẩu mới</label><input class="form-control" id="password" type="password" name="password" autocomplete="new-password" minlength="14" maxlength="200" required><label for="password_confirmation">Nhập lại mật khẩu</label><input class="form-control" id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password" minlength="14" maxlength="200" required><button class="btn btn-primary w-100 mt-4">Lưu mật khẩu</button></form><noscript>Bật JavaScript để đọc mã bảo mật trong liên kết.</noscript></div>
+@endsection

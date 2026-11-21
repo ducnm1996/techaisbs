@@ -1,0 +1,3 @@
+# Fail closed when hosting accidentally serves the repository root.
+# The hosting document root MUST be portal/public.
+Require all denied
