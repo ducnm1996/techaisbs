@@ -24,11 +24,8 @@ jobs:
           extensions: pdo_mysql, mbstring, xml, dom, fileinfo, openssl
           coverage: none
       - run: composer install --no-interaction --prefer-dist
-        working-directory: portal
       - run: composer check-platform-reqs && composer audit --locked
-        working-directory: portal
       - run: php vendor/phpunit/phpunit/phpunit
-        working-directory: portal
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1

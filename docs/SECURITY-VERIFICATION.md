@@ -40,7 +40,7 @@ Trước khi push ứng dụng mới, HTTPS tại techai.sbs đã trả lời qu
 
 - Phiên bản PHP **web và CLI chính xác** trên hosting. Người dùng xác nhận 8.4 hoặc 8.5; chưa có truy cập SSH đã đối chiếu khóa để tự đọc. PHP 8.5 được thêm vào CI nhưng chưa chạy local trong phiên này.
 - CI GitHub chưa được quan sát hoàn tất. Không ghi kết quả CI là đã đạt.
-- Document root `portal/public`; cấu hình MySQL hiện có với namespace bảng `portal_` cùng quyền runtime/migration thực tế; `.env`, storage và các khóa ngoài Git; chạy migrations/preflight/config cache trên hosting.
+- Document root `public`; cấu hình MySQL hiện có với namespace bảng `portal_` cùng quyền runtime/migration thực tế; `.env`, storage và các khóa ngoài Git; chạy migrations/preflight/config cache trên hosting.
 - SMTP thật và nhận thư mời; tài khoản quản trị đầu tiên, thiết lập mật khẩu và 2FA trên hosting.
 - HTTPS redirect, cookie, CSP và auth/API end-to-end của **bản mới**, kiểm tra bên ngoài các URL nhạy cảm sau triển khai. `.htaccess` gốc từ chối truy cập nếu hosting còn trỏ vào repository root; 403 tại đây không phải portal đã hoạt động.
 - Cron thực tế và theo dõi lỗi purge. `BACKUP_RETENTION_DAYS` không tự chỉnh chính sách backup Hostinger. Script backup chưa chạy trên hosting; chưa cài/kiểm tra age và chưa thử restore. Cần xác minh thời hạn giữ, khóa giải mã, quyền truy cập và quy trình khôi phục/xóa với nhà cung cấp.
@@ -55,3 +55,9 @@ Hướng dẫn thao tác: [DEPLOYMENT.md](DEPLOYMENT.md). Hợp đồng Android 
 - Đã chuẩn bị `.env.hostinger` riêng ngoài Git với tên database/tài khoản hiện có. Mật khẩu và khóa production để trống, chưa kết nối hay thay đổi database hosting. Không tự nhập tài khoản cũ vào portal mới.
 - Thêm test MySQL có bảng `users`, `meals`, `migrations` cũ, trong đó tên migration trùng bản mới; sau `migrate`, dữ liệu và lịch sử migrations cũ vẫn nguyên, bảng portal mới được tạo riêng. Các thao tác wipe trong test chỉ được phép với database disposable có tên kết thúc `_testing`; không dùng chúng trên hosting.
 - Bộ test sau thay đổi: **22/22 đạt, 144 assertions** trên PHP 8.4.27/MySQL 8.4.13, gồm các bài kiểm tra đồng thời. Backup script được giới hạn trong các bảng `portal_*`, kiểm tra cú pháp shell đạt; chưa chạy backup/restore thực tế.
+
+## Cập nhật: chuyển ứng dụng ra gốc repository
+
+- Đã bỏ thư mục bọc `portal/`; ứng dụng Laravel, `.env` local và dependencies hiện ở gốc. `.env`, `.env.hostinger` và vendor tiếp tục nằm ngoài Git.
+- Đã cập nhật CI, script triển khai và tài liệu. Document root cần là `<release>/public`, tương ứng `public_html/public` nếu checkout nằm trong public_html. Chưa thay đổi cấu hình document root trên Hostinger.
+- Kiểm thử lại tại vị trí mới: **22/22 đạt, 144 assertions** trên MySQL; composer validate, Blade cache, Pint và cú pháp script shell đều đạt.
