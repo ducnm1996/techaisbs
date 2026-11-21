@@ -70,3 +70,13 @@ APK có chữ ký cài thử, không có secret production; khóa ký riêng đ�
 Kiểm tra trực tiếp techai.sbs sau triển khai: ghép mã một lần trả đúng năm nguồn và quyền IP/vị trí mặc định tắt; gửi metadata giả lập cả năm nguồn thành công; gửi lại có 5 duplicates; trường body bị từ chối 422. Chi tiết metadata mới hiển thị trên portal. Đã xóa cả 5 bản ghi giả lập và thu hồi thiết bị kiểm tra, xác nhận token trả 401. HTTPS hoạt động và các đường dẫn .env, .git/config, storage/logs/laravel.log, composer.json bị chặn 403/404. Không dùng kết quả này để khẳng định APK đã chạy trên điện thoại thật.
 
 APK 0.1.0: 1.883.702 byte; SHA-256 `df477cc796c1e7eaeb553bfff3872e00b82e863a9989b726a12ef08b2cc868bf`. Chứng thư ký cài thử SHA-256 `6231f91e4ce9bef3b587bd8036bc16fcad64e5291e9430474df1fb4d8513bf77`.
+
+## Bản Agent Android 0.2.0
+
+Đã chạy 26/26 Laravel tests trên MySQL local, 206 assertions: cấp sáu nguồn khi ghép; snapshot chỉ nhận khi có quyền device; whitelist metadata và giới hạn trường; mã hóa JSON; escaped Blade; không đọc/xóa/hiển thị snapshot chéo tài khoản; vị trí bắt buộc allow_location. Migrations và SQL schema sạch được kiểm tra trên database riêng (14 bảng portal_, 6 migration records), giữ nguyên bảng legacy. Composer audit không có advisory.
+
+Android: assembleRelease, testDebugUnitTest (5 tests, 0 failures) và lintRelease (0 errors, 19 warnings về i18n, commit SharedPreferences, phiên bản dependency) đạt. Các pure unit tests kiểm tra cả hai đồng ý vị trí, không dùng tọa độ trước lúc đồng ý/quá 5 phút và khoảng cách lấy mẫu 15 phút. Chưa phải kiểm thử integration service/permission trên Android thật.
+
+APK 0.2.0 minSdk 26 / targetSdk 36, versionCode 2; release không debuggable, chữ ký v2/v3 được apksigner xác minh và cùng chứng thư 0.1.0. File 1.887.798 byte; SHA-256 `71f62d918473f4607d59e57e90dd1de3734975a8ab03e515b4d81d2a847a7e28`. APK và khóa ký bị ignore, mã nguồn có trên Git.
+
+Người dùng cung cấp ảnh cho thấy 0.1.0 bị Play Protect chặn. 0.2.0 chưa được kiểm tra cài đặt trên A34 hoặc được Google xem xét; không tuyên bố đã hết chặn. Agent không có lệnh điều khiển từ xa, không dùng Accessibility/đọc màn hình, không tự cấp quyền/tắt bảo vệ. Vị trí chỉ khởi động từ Activity theo thao tác và xác nhận riêng; foreground service không exported, START_NOT_STICKY, không tự khởi động lại sau reboot/kill. Dừng chia sẻ xóa tọa độ RAM/mẫu device đang chờ; batch bỏ tọa độ khi phiên/quyền đã tắt. Yêu cầu đã truyền đi có thể hoàn tất sau khi dừng. Cần kiểm tra thực tế các đường pause/revoke/offline/GPS/kill trên A34 trước khi coi là sẵn sàng sản xuất.

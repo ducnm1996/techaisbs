@@ -76,7 +76,9 @@ class PortalController extends Controller
 
     public function devices(Request $request): View
     {
-        return view('devices', ['devices' => Device::where('user_id', $request->user('web')->id)->latest()->get()]);
+        $owner = $request->user('web')->id;
+
+        return view('devices', ['devices' => Device::where('user_id', $owner)->with(['latestTelemetry' => fn ($query) => $query->where('user_id', $owner)])->latest()->get()]);
     }
 
     public function createPair(DeviceOptionsRequest $request): RedirectResponse

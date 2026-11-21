@@ -49,7 +49,7 @@ class DeviceApiController extends Controller
             foreach ($request->validated('events') as $event) {
                 abort_unless(in_array($event['source'], $locked->sources, true), 403);
                 $values = ['user_id' => $owner->id, 'source' => $event['source'], 'occurred_at' => CarbonImmutable::parse($event['occurred_at'])->utc(), 'phone_index' => isset($event['sender_phone']) ? $phone->hash($event['sender_phone']) : null];
-                foreach (['sender_phone', 'sender_name', 'server_domain', 'app_package', 'call_direction', 'duration_seconds'] as $field) {
+                foreach (['sender_phone', 'sender_name', 'server_domain', 'app_package', 'call_direction', 'duration_seconds', 'device_metadata'] as $field) {
                     $values[$field] = $event[$field] ?? null;
                 }
                 $values['device_ip'] = $locked->allow_ip ? $request->ip() : null;

@@ -10,6 +10,6 @@ class HistoryEvent extends Model
 
     protected function casts(): array
     {
-        return ['sender_phone' => 'encrypted', 'sender_name' => 'encrypted', 'server_domain' => 'encrypted', 'device_ip' => 'encrypted', 'latitude' => 'encrypted', 'longitude' => 'encrypted', 'accuracy_m' => 'encrypted', 'app_package' => 'encrypted', 'call_direction' => 'encrypted', 'duration_seconds' => 'encrypted', 'occurred_at' => 'immutable_datetime'];
+        return ['sender_phone' => 'encrypted', 'sender_name' => 'encrypted', 'server_domain' => 'encrypted', 'device_ip' => 'encrypted', 'latitude' => 'encrypted', 'longitude' => 'encrypted', 'accuracy_m' => 'encrypted', 'app_package' => 'encrypted', 'call_direction' => 'encrypted', 'duration_seconds' => 'encrypted', 'device_metadata' => 'encrypted:array', 'occurred_at' => 'immutable_datetime'];
     }
 }

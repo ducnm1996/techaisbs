@@ -14,6 +14,6 @@ class DeviceOptionsRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['sources' => ['required', 'array', 'min:1', 'max:5'], 'sources.*' => ['required', 'distinct', Rule::in(config('history.sources'))], 'allow_ip' => ['sometimes', 'boolean'], 'allow_location' => ['sometimes', 'boolean']];
+        return ['sources' => ['required', 'array', 'min:1', 'max:6'], 'sources.*' => ['required', 'distinct', Rule::in(config('history.sources'))], 'allow_ip' => ['sometimes', 'boolean'], 'allow_location' => ['sometimes', 'boolean']];
     }
 }

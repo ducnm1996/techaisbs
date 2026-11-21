@@ -4,7 +4,7 @@ Không có chức năng thu thập ẩn. Android phải giải thích từng quy
 
 ## Ghép thiết bị
 
-1. Người dùng đăng nhập portal, chọn nguồn trong `sms`, `call`, `zalo`, `viber`, `email`; vị trí và IP thiết bị mặc định tắt. Tạo mã sử dụng một lần, hết hạn sau 5 phút.
+1. Người dùng đăng nhập portal, chọn nguồn trong `sms`, `call`, `zalo`, `viber`, `email`, `device`; vị trí và IP thiết bị mặc định tắt. Tạo mã sử dụng một lần, hết hạn sau 5 phút.
 2. `POST /api/v1/pair` JSON: `{"code":"mã từ portal","device_name":"Pixel của tôi"}`. Nhận `token`, `expires_at`, `device_id`, `sources`, `allow_ip`, `allow_location`. App phải dùng giao của nguồn được portal cấp và nguồn người dùng chủ động bật. Chỉ nhận token lần này. Mỗi thiết bị có một token `events:write`, mặc định 30 ngày.
 3. Dùng `Authorization: Bearer <token>` cho `POST /api/v1/events`. Không truyền user_id/device_id; backend lấy chủ sở hữu từ token.
 4. Khi 401/403, dừng gửi và yêu cầu ghép lại. Khi 429, dùng exponential backoff + jitter. Giữ nguyên event_id khi thử lại.
@@ -21,4 +21,11 @@ Sự kiện gửi lại cùng thiết bị + event_id được bỏ qua, không 
 
 Tạo khóa AES/GCM/NoPadding không xuất được trong Android Keystore (`KeyGenParameterSpec`, PURPOSE_ENCRYPT | PURPOSE_DECRYPT, randomizedEncryptionRequired=true). Mã hóa token bằng IV mới cho mỗi lần ghi, lưu IV+ciphertext trong vùng riêng của ứng dụng; chỉ giải mã trong bộ nhớ khi gửi HTTPS. Không lưu token plaintext trong SharedPreferences, SQLite, logcat, crash report, clipboard hoặc backup. Loại trừ tệp token khỏi Auto Backup/data extraction rules; xử lý mất/đổi khóa bằng cách xóa ciphertext và ghép lại. Không ghim khóa mã hóa trong APK. Máy đã root/đang mở khóa không được xem là ranh giới bảo vệ tuyệt đối.
 
-App Android hoàn chỉnh nằm trong `android/`; xem [hướng dẫn cài thử và build](ANDROID-APP.md). Thư mục `android-integration/` chỉ giữ mẫu tích hợp cũ để tham khảo. App hiện không gửi vị trí hoặc server_domain; không suy đoán các trường không có trong API Android.
+App Android hoàn chỉnh nằm trong `android/`; xem [hướng dẫn cài thử và build](ANDROID-APP.md). Thư mục `android-integration/` chỉ giữ mẫu tích hợp cũ để tham khảo. App 0.2 có thể gửi vị trí của chính thiết bị trong phiên chia sẻ được bật rõ ràng. App không gửi server_domain hoặc suy đoán các trường không có trong API Android.
+
+
+## Snapshot agent
+
+Nguồn device cần được cấp trong mã ghép và được chọn riêng trên app. Một sự kiện device bắt buộc có device_metadata, một object có danh sách trường cho phép cố định trong EventBatchRequest. Trường ngoài schema (ví dụ imei, installed_apps, body) bị từ chối. Device_metadata chỉ nhận với source=device, được lưu bằng cast encrypted:array trong TEXT; Blade thoát dữ liệu và chỉ hiển thị các nhãn cố định. Các cột vị trí vẫn là latitude/longitude/accuracy_m ở cấp event; backend bắt buộc allow_location. Token hiện có không được tự thêm nguồn device.
+
+Ví dụ không có vị trí: {"events":[{"event_id":"019c1122-1234-7123-8123-123456789abc","source":"device","occurred_at":"2026-11-21T09:15:00+07:00","device_metadata":{"manufacturer":"Samsung","model":"SM-A346","sdk":36,"android_release":"16","battery_percent":80,"charging":false,"network_type":"wifi"}}]}. Thông tin do client khai báo, không xác thực phần cứng. Thời gian lấy mẫu và nhận trên portal là hai giá trị khác nhau; không dùng mẫu cũ để khẳng định đang online.

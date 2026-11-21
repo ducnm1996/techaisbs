@@ -42,8 +42,8 @@ public final class MainActivity extends Activity {
   if(Build.VERSION.SDK_INT>=30)scroll.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets bars=insets.getInsets(WindowInsets.Type.systemBars());v.setPadding(bars.left,bars.top,bars.right,bars.bottom);return insets;});
   // Android 8-10 use legacy inset values; the modern API is called only on Android 11+.
   if(Build.VERSION.SDK_INT<30){scroll.setOnApplyWindowInsetsListener((v,insets)->{v.setPadding(insets.getSystemWindowInsetLeft(),insets.getSystemWindowInsetTop(),insets.getSystemWindowInsetRight(),insets.getSystemWindowInsetBottom());return insets;});}
-  text("TechAI · Metadata",28);text("Thiết bị của bạn, quyền do bạn chọn",18);
-  text("Chỉ sử dụng trên thiết bị của bạn hoặc có sự đồng ý của người sử dụng. App gửi metadata đến https://techai.sbs khi bạn chủ động bật đồng bộ. Không thu nội dung tin nhắn, tiêu đề email, ảnh, âm thanh, danh bạ hay GPS.",15);
+  text("TechAI · Agent",28);text("Thiết bị của bạn, quyền do bạn chọn",18);
+  text("Chỉ sử dụng trên thiết bị của bạn hoặc có sự đồng ý của người sử dụng. App gửi metadata đến https://techai.sbs khi bạn chủ động bật đồng bộ. Không thu nội dung tin nhắn, tiêu đề email, ảnh, âm thanh hay danh bạ. Thông tin thiết bị và chia sẻ vị trí là các lựa chọn riêng, mặc định tắt.",15);
   text("Zalo / Viber / email: tên gói ứng dụng và thời điểm thông báo mới. SMS / cuộc gọi: có thể thêm số điện thoại; cuộc gọi có chiều gọi và thời lượng nếu Android cấp quyền. Portal có thể ghi IP kết nối nếu bạn đã cho phép khi tạo mã. Không xác định máy chủ/IP của người gửi.",15);
   status=text("",15);
   if(!screenPaired){
@@ -53,17 +53,20 @@ public final class MainActivity extends Activity {
    button("Ghép thiết bị",v->pair());
   }else{
    text("2. Chọn nguồn",22);text("Chỉ các nguồn được mã ghép cho phép mới bật được. Bỏ chọn sẽ xóa metadata đang chờ của nguồn đó.",15);
-   AppState state=new AppState(this);sources.clear();String[] labels={"Zalo · thông báo mới","Viber · thông báo mới","SMS · mới nhận","Cuộc gọi · sự kiện mới","Email · thông báo mới"};
+   AppState state=new AppState(this);sources.clear();String[] labels={"Zalo · thông báo mới","Viber · thông báo mới","SMS · mới nhận","Cuộc gọi · sự kiện mới","Email · thông báo mới","Agent · pin, bộ nhớ, Android và trạng thái mạng"};
    for(int i=0;i<AppState.SOURCES.length;i++){
     String source=AppState.SOURCES[i];CheckBox box=new CheckBox(this);box.setText(labels[i]+(state.grants().contains(source)?"":" (portal chưa cấp quyền)"));box.setChecked(state.selected(source));box.setEnabled(state.grants().contains(source));root.addView(box);sources.put(source,box);
-    box.setOnCheckedChangeListener((b,selected)->{state.selected(source,selected);if("call".equals(source))state.resetCallCursor();if(!selected)Capture.IO.execute(()->Capture.queue(this).clearSource(source));});
+    box.setOnCheckedChangeListener((b,selected)->{state.selected(source,selected);if("call".equals(source))state.resetCallCursor();if("device".equals(source)){state.lastTelemetry(0);if(!selected)LocationCaptureService.stop(this);}if(!selected)Capture.IO.execute(()->Capture.queue(this).clearSource(source));});
    }
    text("3. Cấp quyền có chọn lọc",22);
    button("Cho phép truy cập thông báo",v->new AlertDialog.Builder(this).setTitle("Quyền thông báo của Android").setMessage("Android cấp khả năng truy cập thông báo khá rộng. App này chỉ đọc tên gói và thời gian của nguồn bạn chọn; không đọc extras, tiêu đề hay nội dung. Bạn có thể thu hồi quyền trong Cài đặt bất cứ lúc nào.").setNegativeButton("Hủy",null).setPositiveButton("Mở cài đặt",(d,w)->startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))).show());
    button("Quyền SMS (tùy chọn)",v->requestMetadataPermission(Manifest.permission.RECEIVE_SMS,21,"Chỉ lấy số gửi và thời gian SMS mới nhận. Android có thể từ chối quyền này. Khi đó app chỉ ghi metadata thông báo SMS nếu được phép."));
    button("Quyền cuộc gọi (tùy chọn)",v->requestMetadataPermission(Manifest.permission.READ_CALL_LOG,22,"Chỉ lấy số, thời gian, chiều và thời lượng các cuộc gọi mới sau khi bật. Không ghi âm. Android có thể không cấp quyền; app không vượt qua hạn chế này."));
+   text("Thông tin agent gồm hãng/model, Android/bản vá, pin/sạc/tiết kiệm pin, RAM, dung lượng lưu trữ, loại mạng/tính phí, Internet, múi giờ/ngôn ngữ và thời gian từ lúc khởi động. Không lấy IMEI, serial, MAC, tên Wi-Fi, file hay danh sách app.",15);
+   button("Bật chia sẻ vị trí thiết bị",v->startLocation());
+   button("Dừng vị trí và xóa mẫu thiết bị đang chờ",v->{LocationCaptureService.stop(this);state.status("Đã dừng chia sẻ vị trí; mẫu thiết bị chưa gửi được xóa. Dữ liệu trên portal vẫn giữ theo thời hạn lưu.");refresh();});
    consent=new CheckBox(this);consent.setText("Tôi đã đọc thông tin trên và đồng ý đồng bộ các nguồn đã chọn đến tài khoản của mình.");root.addView(consent);
-   button("Bật đồng bộ",v->startSync());button("Đồng bộ ngay",v->{if(new AppState(this).enabled()){SyncControl.sync(this);toast("Đã yêu cầu đồng bộ khi có mạng.");}else toast("Hãy bật đồng bộ trước.");});
+   button("Bật đồng bộ",v->startSync());button("Đồng bộ ngay",v->{if(new AppState(this).enabled()){new AppState(this).lastTelemetry(0);SyncControl.sync(this);toast("Đã yêu cầu đồng bộ khi có mạng.");}else toast("Hãy bật đồng bộ trước.");});
    button("Dừng đồng bộ",v->{SyncControl.pause(this);state.status("Bạn đã dừng đồng bộ. Metadata đã chờ vẫn được giữ mã hóa.");refresh();});
    button("Xóa hàng đợi trên máy",v->new AlertDialog.Builder(this).setMessage("Xóa metadata chưa gửi trên máy? Dữ liệu đã lên portal không bị xóa.").setNegativeButton("Hủy",null).setPositiveButton("Xóa",(d,w)->Capture.IO.execute(()->{Capture.queue(this).clear();runOnUiThread(this::refresh);})).show());
    button("Ngắt liên kết thiết bị",v->new AlertDialog.Builder(this).setMessage("Dừng đồng bộ, xóa token và hàng đợi trên máy. Bạn cũng nên thu hồi thiết bị trên portal; gỡ app không tự thu hồi token trên máy chủ.").setNegativeButton("Hủy",null).setPositiveButton("Ngắt liên kết",(d,w)->{SyncControl.pause(this);Capture.IO.execute(()->{Capture.queue(this).clear();new SecureStore(this).clear();state.clearPair();state.status("Đã ngắt liên kết trên máy.");runOnUiThread(this::render);});}).show());
@@ -78,9 +81,20 @@ public final class MainActivity extends Activity {
    ApiClient.Reply reply=ApiClient.post("/api/v1/pair",new JSONObject().put("code",pairing).put("device_name",deviceName),null);
    if(reply.status!=201&&reply.status!=200)throw new IllegalStateException("HTTP "+reply.status);
    org.json.JSONArray grants=reply.json.getJSONArray("sources");String token=reply.json.getString("token"),expiry=reply.json.getString("expires_at");java.time.Instant.parse(expiry);
-   Capture.queue(this).clear();new SecureStore(this).token(token);new AppState(this).paired(grants,expiry);new AppState(this).status("Đã ghép. Chọn nguồn và cấp quyền trước khi bật đồng bộ.");
+   Capture.queue(this).clear();new SecureStore(this).token(token);new AppState(this).paired(grants,expiry);new AppState(this).locationAllowed(reply.json.optBoolean("allow_location",false));new AppState(this).status("Đã ghép. Chọn nguồn và cấp quyền trước khi bật đồng bộ.");
    runOnUiThread(()->{busy=false;render();});
   }catch(Exception ignored){runOnUiThread(()->{busy=false;toast("Chưa ghép được. Kiểm tra mạng, mã còn hạn và tạo mã mới nếu đã sử dụng.");});}});
+ }
+ private void startLocation(){
+  AppState state=new AppState(this);
+  if(!state.accepts("device")){toast("Chọn nguồn Agent và bật đồng bộ trước khi chia sẻ vị trí.");return;}
+  if(!state.locationAllowed()){toast("Portal chưa cho phép vị trí. Thu hồi thiết bị cũ và ghép mã mới có nguồn Agent và Cho phép vị trí.");return;}
+  if(!StatusNotice.permitted(this)){toast("Cần cho phép thông báo trạng thái.");return;}
+  if(!LocationCaptureService.permitted(this)){requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION},24);toast("Chọn vị trí gần đúng hoặc chính xác, rồi bấm bật vị trí lại.");return;}
+  new AlertDialog.Builder(this).setTitle("Chia sẻ vị trí thiết bị đến techai.sbs?").setMessage("Trong phiên này, app lấy vị trí khoảng mỗi phút và gửi kèm mẫu Agent khoảng 15 phút/lần hoặc khi bạn bấm đồng bộ. Có thể tiếp tục khi màn hình tắt và tốn pin. Có thông báo thường trực, nút Dừng vị trí; không tự bật lại sau khởi động hoặc khi Android dừng dịch vụ. Chỉ vị trí có tuổi tối đa 5 phút được gửi.").setNegativeButton("Hủy",null).setPositiveButton("Đồng ý chia sẻ",(d,w)->{
+   state.selected("location",true);state.locationSharing(true);
+   try{startForegroundService(new Intent(this,LocationCaptureService.class));}catch(IllegalStateException|SecurityException error){state.locationSharing(false);toast("Android chưa cho phép phiên vị trí. Hãy mở app và thử lại.");}
+  }).show();
  }
  private void requestMetadataPermission(String permission,int request,String explanation){new AlertDialog.Builder(this).setMessage(explanation).setNegativeButton("Hủy",null).setPositiveButton("Yêu cầu quyền",(d,w)->{if(checkSelfPermission(permission)==PackageManager.PERMISSION_GRANTED)toast("Quyền đã được cấp.");else requestPermissions(new String[]{permission},request);}).show();}
  private void startSync(){
@@ -96,7 +110,7 @@ public final class MainActivity extends Activity {
  @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] results){super.onRequestPermissionsResult(request,permissions,results);toast(results.length>0&&results[0]==PackageManager.PERMISSION_GRANTED?"Đã cấp quyền.":"Android chưa cấp quyền; app không truy cập dữ liệu bị chặn.");if(request==22){new AppState(this).resetCallCursor();NotificationListenerService.requestRebind(new ComponentName(this,MetadataListener.class));}refresh();}
  private void refresh(){if(status==null)return;if(screenPaired!=new SecureStore(this).paired()){render();return;}AppState state=new AppState(this);String access=Settings.Secure.getString(getContentResolver(),"enabled_notification_listeners");ComponentName component=new ComponentName(this,MetadataListener.class);boolean notificationAccess=false;if(access!=null)for(String value:access.split(":"))if(component.equals(ComponentName.unflattenFromString(value)))notificationAccess=true;
   String last=state.lastSync()==0?"chưa có":DateFormat.getDateTimeInstance().format(new Date(state.lastSync()));
-  status.setText((state.enabled()?"● ĐANG ĐỒNG BỘ":"○ ĐÃ DỪNG")+"\n"+state.status()+"\nQuyền thông báo nguồn: "+(notificationAccess?"đã cấp":"chưa cấp")+" · SMS: "+(checkSelfPermission(Manifest.permission.RECEIVE_SMS)==PackageManager.PERMISSION_GRANTED?"đã cấp":"chưa cấp")+" · cuộc gọi: "+(CallMetadata.permitted(this)?"đã cấp":"chưa cấp")+"\nLần đồng bộ: "+last+(new SecureStore(this).paired()?"\nToken hết hạn: "+state.expiry():""));
+  status.setText((state.enabled()?"● ĐANG ĐỒNG BỘ":"○ ĐÃ DỪNG")+"\n"+state.status()+"\nQuyền thông báo nguồn: "+(notificationAccess?"đã cấp":"chưa cấp")+" · SMS: "+(checkSelfPermission(Manifest.permission.RECEIVE_SMS)==PackageManager.PERMISSION_GRANTED?"đã cấp":"chưa cấp")+" · cuộc gọi: "+(CallMetadata.permitted(this)?"đã cấp":"chưa cấp")+"\nVị trí: "+(LocationCaptureService.active()&&state.locationSharing()?"đang chia sẻ":"đã tắt")+" · Agent: "+(state.selected("device")?"đã chọn":"đã tắt")+"\nLần đồng bộ: "+last+(new SecureStore(this).paired()?"\nToken hết hạn: "+state.expiry():""));
  }
  private void toast(String value){Toast.makeText(this,value,Toast.LENGTH_LONG).show();}
 }

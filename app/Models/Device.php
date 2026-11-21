@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -22,5 +24,10 @@ class Device extends Authenticatable
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function latestTelemetry(): HasOne
+    {
+        return $this->hasOne(HistoryEvent::class)->ofMany(['id' => 'max'], fn (Builder $query) => $query->where('source', 'device'));
     }
 }

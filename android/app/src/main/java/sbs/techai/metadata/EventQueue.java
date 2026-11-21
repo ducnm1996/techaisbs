@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class EventQueue extends SQLiteOpenHelper {
- EventQueue(Context context) { super(context,"metadata_queue.db",null,1); }
+ private final Context context;
+ EventQueue(Context context) { super(context,"metadata_queue.db",null,1);this.context=context.getApplicationContext(); }
  public void onCreate(SQLiteDatabase db) { db.execSQL("CREATE TABLE events (id TEXT PRIMARY KEY, source TEXT NOT NULL, created INTEGER NOT NULL, payload TEXT NOT NULL)"); }
  public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion) { throw new IllegalStateException("Unsupported schema migration"); }
  synchronized void enqueue(JSONObject event) throws Exception {
@@ -28,7 +29,11 @@ final class EventQueue extends SQLiteOpenHelper {
   db.delete("events","created < ?",new String[]{Long.toString(System.currentTimeMillis()-7L*24*60*60*1000)});
   for(String source:AppState.SOURCES)if(!state.accepts(source))db.delete("events","source = ?",new String[]{source});
   try(Cursor cursor=db.query("events",new String[]{"payload"},null,null,null,null,"created ASC","40")) {
-   while(cursor.moveToNext())result.add(new JSONObject(SecureStore.decrypt(cursor.getString(0),"event")));
+   while(cursor.moveToNext()){
+    JSONObject event=new JSONObject(SecureStore.decrypt(cursor.getString(0),"event"));
+    if(!state.locationAllowed()||!state.locationSharing()||!LocationCaptureService.active()||!LocationCaptureService.permitted(context)){event.remove("latitude");event.remove("longitude");event.remove("accuracy_m");}
+    result.add(event);
+   }
   }
   return result;
  }

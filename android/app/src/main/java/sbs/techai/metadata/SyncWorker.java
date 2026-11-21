@@ -20,6 +20,7 @@ public final class SyncWorker extends Worker {
    SecureStore store=new SecureStore(context);String token=store.token();
    if(token==null||(!state.expiry().isEmpty()&&Instant.parse(state.expiry()).isBefore(Instant.now()))){SyncControl.pause(context);state.status("Token hết hạn. Hãy ngắt liên kết và ghép lại.");return Result.failure();}
    CallMetadata.scan(context);
+   DeviceTelemetry.capture(context);
    for(int batch=0;batch<10&&!isStopped()&&state.enabled();batch++){
     List<JSONObject> events=Capture.queue(context).batch(state);if(events.isEmpty()){state.status("Đã đồng bộ; không còn sự kiện chờ.");state.synced();return Result.success();}
     JSONArray data=new JSONArray();for(JSONObject event:events)data.put(event);

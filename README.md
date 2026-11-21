@@ -19,3 +19,5 @@ Có thể chạy nhanh bằng SQLite với cùng lệnh; ba test MySQL sẽ bị
 ## Android
 
 App cài thử nằm trong [android/](android/) với hướng dẫn [cài trên Samsung A34 và build APK](docs/ANDROID-APP.md). Mỗi nguồn mặc định tắt; ghép bằng mã một lần rồi người dùng chọn quyền và bật đồng bộ. Zalo/Viber/email chỉ có metadata thông báo, không truy cập nội dung. APK và khóa ký không đưa lên Git.
+
+Agent Android 0.2 bổ sung trạng thái thiết bị/pin/bộ nhớ/mạng và phiên chia sẻ vị trí tùy chọn có thông báo thường trực. Portal có nguồn device riêng và thẻ mẫu cuối trên trang Thiết bị. Thiết bị ghép cũ cần mã mới để có quyền nguồn mới; không tự mở rộng quyền.

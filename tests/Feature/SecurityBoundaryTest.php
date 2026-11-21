@@ -192,6 +192,51 @@ class SecurityBoundaryTest extends TestCase
         $this->assertDatabaseCount('history_events', 1);
     }
 
+    public function test_agent_telemetry_requires_grant_is_encrypted_and_never_leaks_between_accounts(): void
+    {
+        $owner = $this->member();
+        $other = $this->member();
+        $device = $this->device($owner, ['sources' => ['device'], 'allow_location' => true]);
+        $token = $this->token($device);
+        $event = ['event_id' => (string) Str::uuid(), 'source' => 'device', 'occurred_at' => now()->toIso8601String(), 'device_metadata' => ['manufacturer' => 'Samsung', 'model' => '<script>agent-model</script>', 'sdk' => 36, 'android_release' => '16', 'battery_percent' => 76, 'charging' => false, 'network_type' => 'wifi', 'ram_total_bytes' => 8000000000], 'latitude' => 10.7, 'longitude' => 106.6, 'accuracy_m' => 30];
+        $this->api($token, ['events' => [$event]])->assertCreated();
+        $this->api($token, ['events' => [$event]])->assertOk()->assertJson(['duplicates' => 1]);
+        $saved = HistoryEvent::firstOrFail();
+        $this->assertSame(76, $saved->device_metadata['battery_percent']);
+        $this->assertFalse($saved->device_metadata['charging']);
+        $this->assertStringNotContainsString('Samsung', DB::table('history_events')->first()->device_metadata);
+        $this->actingAs($owner, 'web')->get('/devices')->assertOk()->assertSee('agent-model')->assertDontSee('<script>agent-model</script>', false)->assertSee('76%');
+        $this->get('/history/'.$saved->id)->assertOk()->assertSee('Samsung')->assertSee('&lt;script&gt;agent-model&lt;/script&gt;', false);
+        $this->actingAs($other, 'web')->get('/devices')->assertOk()->assertDontSee('agent-model');
+        $this->get('/history?source=device')->assertOk()->assertDontSee('agent-model');
+        $this->get('/history/'.$saved->id)->assertForbidden();
+        $this->delete('/history/'.$saved->id)->assertForbidden();
+        $sms = $this->device($other, ['sources' => ['sms']]);
+        $this->api($this->token($sms), ['events' => [$event]])->assertUnprocessable();
+        foreach ([['imei' => 'not-allowed'], ['battery_percent' => 101], ['network_type' => 'secret'], ['sdk' => 1]] as $invalid) {
+            $bad = $event;
+            $bad['event_id'] = (string) Str::uuid();
+            $bad['device_metadata'] = $invalid;
+            $this->api($token, ['events' => [$bad]])->assertUnprocessable();
+        }
+        $missing = $event;
+        unset($missing['device_metadata']);
+        $this->api($token, ['events' => [$missing]])->assertUnprocessable();
+        $wrongSource = $event;
+        $wrongSource['source'] = 'sms';
+        $this->api($this->token($sms), ['events' => [$wrongSource]])->assertUnprocessable();
+        $device->update(['allow_location' => false]);
+        $this->api($token, ['events' => [$event]])->assertUnprocessable();
+        $this->assertDatabaseCount('history_events', 1);
+    }
+
+    public function test_pairing_can_grant_all_six_sources_for_agent(): void
+    {
+        $owner = $this->member();
+        $this->actingAs($owner)->post('/devices/pair', ['sources' => config('history.sources'), 'allow_location' => '1'])->assertRedirect('/devices');
+        $this->postJson('/api/v1/pair', ['code' => session('pair_code'), 'device_name' => 'A34 Agent'])->assertCreated()->assertJson(['sources' => config('history.sources'), 'allow_location' => true]);
+    }
+
     public function test_admin_logs_in_directly_and_legacy_mfa_page_redirects_home(): void
     {
         $admin = $this->member(['role' => 'admin', 'password' => 'ExamplePassword123']);
